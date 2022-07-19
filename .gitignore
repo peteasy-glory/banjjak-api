@@ -173,6 +173,10 @@ cython_debug/
 #.idea/
 
 # Add by hptop
-
+banjjak_partner/asgi.py
+banjjak_partner/settings.py
+banjjak_partner/urls.py
+banjjak_partner/wsgi.py
+manage.py
 
 # End of https://www.toptal.com/developers/gitignore/api/django
