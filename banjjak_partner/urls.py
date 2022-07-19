@@ -25,4 +25,5 @@ urlpatterns = [
     path('partner/', include('apiSetting.urls')),
     path('partner/', include('apiLogin.urls')),
 
+
 ]
