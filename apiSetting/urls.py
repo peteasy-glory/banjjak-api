@@ -3,10 +3,10 @@
 from django.urls import path
 from apiSetting.views import api_auth_setting
 
+
 urlpatterns = [
 
     path('auth/artist/<str:partner_id>', api_auth_setting.TAuthSetting.as_view()),
-    path('auth/artist', api_auth_setting.TAuthSetting.as_view()),
     path('auth/artist', api_auth_setting.TAuthSetting.as_view()),
 
     # path('pet/<str:owner_id>/<int:year>/<int:month>', api_log.TPetLogMonth.as_view()),

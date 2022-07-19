@@ -8,6 +8,10 @@ from hptopLib.TSha256 import TSha256
 import random
 
 class TJoin(TAPIBase):
+    """
+    회원 조회
+    회원 가입
+    """
     def get (self, request, partner_id):
         try:
             dic = request.data
@@ -19,10 +23,12 @@ class TJoin(TAPIBase):
             body = {}
             if data is None or data[0] > 0:
                 if data[0] > 0:
+                    body["exist"] = True
                     body["message"] = "사용 할 수 없는 아이디입니다"
                 else:
                     return HttpResponse(self.json.dicToJson(self.message.loginIdFail()))
             else:
+                body["exist"] = False
                 body["message"] = "사용 가능한 아이디입니다"
             ret["body"] =  body
             return HttpResponse(self.json.dicToJson(ret))
@@ -52,8 +58,8 @@ class TJoin(TAPIBase):
                 return HttpResponse(self.json.dicToJson(self.message.loginFail()))
             elif data[1] < 0:
                 return HttpResponse(self.json.dicToJson(self.message.errorDBQuery()))
-            body = self.queryDataToSimpleDic((data[0],), rows, ["idx"])
-            ret["body"] = body
+            # body = self.queryDataToSimpleDic((data[0],), rows, ["idx"])
+            # ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))

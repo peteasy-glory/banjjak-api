@@ -7,6 +7,9 @@ from hptopLib.TAPIBase import TAPIBase
 
 
 class TAuthSetting(TAPIBase):
+    """
+    미용사 권한 설정.
+    """
 
     def __init__(self):
         pass

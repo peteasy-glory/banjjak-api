@@ -10,6 +10,12 @@ from hptopLib.TMessage import TMessage
 
 
 class TAPIBase(APIView):
+    """
+    기본 클래스.
+    자주 사용하는 DB, JSON, MESSAGE를 정의하여
+    상속된 하위 클래스에서 사용한다.
+    """
+
     db = TDB()
     json = TJson()
     message = TMessage()
