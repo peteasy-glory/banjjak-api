@@ -9,8 +9,8 @@ import random
 
 class TJoin(TAPIBase):
     """
-    회원 조회
-    회원 가입
+    - 회원 조회
+    - 회원 가입
     """
     def get (self, request, partner_id):
         try:
@@ -18,7 +18,7 @@ class TJoin(TAPIBase):
             if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
 
-            data, rows, columns = self.db.resultDBQuery(PROC_ID_GET % (partner_id.strip(),), QUERY_DB)
+            data, rows, columns = self.db.resultDBQuery(PROC_IS_EXIST_ID_GET % (partner_id.strip(),), QUERY_DB)
             ret = self.message.successOk()
             body = {}
             if data is None or data[0] > 0:
