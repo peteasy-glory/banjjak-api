@@ -25,14 +25,16 @@ class TLogin(TAPIBase):
             dic = request.data
             if dic["id"] is None or dic["pw"] is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
-            data, rows, columns = self.db.resultDBQuery(PROC_LOGIN_GET % (dic["id"].strip(),), QUERY_DB)
-            ret = self.message.successOk()
-            if data is None:
-                return HttpResponse(self.json.dicToJson(self.message.loginFail()))
             sha256 = TSha256()
             pw = sha256.strToShaDigestBase64Encode(dic["pw"].strip())
-            if data[1] != pw:
+            data, rows, columns = self.db.resultDBQuery(PROC_LOGIN_GET % (dic["id"].strip(), pw), QUERY_DB)
+            ret = self.message.successOk()
+            if data is None or data[1] == 1:
                 return HttpResponse(self.json.dicToJson(self.message.loginFail()))
+            if data[0] < 0: # 에러
+                return HttpResponse(self.json.dicToJson(self.message.loginFail()))
+            if data[1] == 2: #일반 고객
+                return HttpResponse(self.json.dicToJson(self.message.loginAuthFail()))
 
             body = self.queryDataToDic(data, rows, columns)
             ret["body"] = body

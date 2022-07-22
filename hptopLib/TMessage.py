@@ -9,7 +9,10 @@ class TMessage:
         return {"head": {"code": 401, "message": "아이디/비밀번호를 확인 해주세요."}}
 
     def loginIdFail(self):
-        return {"head": {"code": 401, "message": "사용할 수 없는 아이디 입니다."}}
+        return {"head": {"code": 402, "message": "사용할 수 없는 아이디 입니다."}}
+
+    def loginAuthFail(self):
+        return {"head": {"code": 403, "message": "등록된 사용자가 아닙니다."}}
 
     def error(self, message):
         return {"head": {"code": 999, "message": message}}

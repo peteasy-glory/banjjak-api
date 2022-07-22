@@ -21,7 +21,7 @@ class TAuthSetting(TAPIBase):
         try:
             if len(partner_id) < 1:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
-            data, rows, columns = self.db.resultDBQuery(PROC_AUTH_SETTING_GET % (partner_id), QUERY_DB)
+            data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_GET % (partner_id), QUERY_DB)
             ret = self.message.successOk()
             if data is None:
                 ret["body"] = {}
