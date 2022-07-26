@@ -83,3 +83,6 @@ class TAPIBase(APIView):
                     i += 1
                 body.append(k)
         return body
+
+    def datetimeToStr(self, dateTime, format):
+        return datetime(dateTime).striftime(format)
