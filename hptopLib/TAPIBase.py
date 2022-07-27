@@ -123,10 +123,10 @@ class TAPIBase(APIView):
                     tmp = {}
                     tmp["idx"] = d[0]
                     tmp["title"] = d[2]
-                    tmp["order"] = d[4]
-                    tmp["link"] = d[5]
+                    tmp["contents"] = d[3]
+                    tmp["type"] = d[4]      # 타입(0-공지, 1-업데이트, 2-일반)
+                    tmp["is_show"] = d[5]      # 메인 노출여부(0-미노출, 1-노출)
                     tmp["image"] = d[6]
-                    tmp["is_use_period"] = True if d[7] == 1 else False
                     tmp["reg_date"] = d[8].strftime("%Y-%m-%d %H:%M:%S") if d[8] is not None else ""
                     body["notice"].append(tmp)
             data, rows, columns = self.db.resultDBQuery(PROC_CONSULT_MGR_GET % (partner_id), QUERY_DB)
