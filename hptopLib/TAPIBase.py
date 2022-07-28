@@ -104,9 +104,14 @@ class TAPIBase(APIView):
                 body["schedule_count"] = data[2]
                 body["new_review_count"] = data[3]
                 body["total_count"] = data[4]
-            data, rows, columns = self.db.resultDBQuery(PROC_SPETIAL_MALL_GET % (), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_SPETIAL_MALL_GET % (), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["banner"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     tmp["idx"] = d[0]
@@ -118,9 +123,14 @@ class TAPIBase(APIView):
                     tmp["start_dt"] = d[8].strftime("%Y-%m-%d %H:%M:%S") if d[8] is not None else ""
                     tmp["end_dt"] = d[9].strftime("%Y-%m-%d %H:%M:%S") if d[9] is not None else ""
                     body["banner"].append(tmp)
-            data, rows, columns = self.db.resultDBQuery(PROC_NOTICE_MGR_GET % (0, "", ""), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_NOTICE_MGR_GET % (0, "", ""), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["notice"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     tmp["idx"] = d[0]
@@ -131,9 +141,14 @@ class TAPIBase(APIView):
                     tmp["image"] = d[6]
                     tmp["reg_date"] = d[8].strftime("%Y-%m-%d %H:%M:%S") if d[8] is not None else ""
                     body["notice"].append(tmp)
-            data, rows, columns = self.db.resultDBQuery(PROC_CONSULT_MGR_GET % (partner_id), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_CONSULT_MGR_GET % (partner_id), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["consulting"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     tmp["approval"] = d[0]  # 0:첫이용상담신청, 1:미용, 2:첫이용상담수락, 3:첫이용상담거절
@@ -145,12 +160,16 @@ class TAPIBase(APIView):
                     tmp["pet_name"] = d[7]
                     tmp["pet_type"] = d[8]
                     body["consulting"].append(tmp)
-            data, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["beauty"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
-                    d_format = "%Y-%m-%d %H:%M:%S"
                     booking_st = "%s-%s-%s %s:%s" % (
                     d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[26]).zfill(2), str(d[27]).zfill(2))
                     booking_fi = "%s-%s-%s %s:%s" % (
@@ -176,10 +195,14 @@ class TAPIBase(APIView):
                     tmp["pet"] = pet
                     tmp["product"] = product
                     body["beauty"].append(tmp)
-
-            data, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["hotel"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     d_format = "%Y-%m-%d %H:%M:%S"
@@ -205,10 +228,14 @@ class TAPIBase(APIView):
                     tmp["pet"] = pet
                     tmp["product"] = product
                     body["hotel"].append(tmp)
-
-            data, rows, columns = self.db.resultDBQuery(PROC_KINDERGADEN_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_KINDERGADEN_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["kindergarden"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     d_format = "%Y-%m-%d %H:%M:%S"
@@ -241,9 +268,14 @@ class TAPIBase(APIView):
     def getBodyHomePeriodStatus(self, partner_id, yy, mm):
         try:
             body = {}
-            data, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["beauty"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     d_format = "%Y-%m-%d %H:%M:%S"
@@ -273,9 +305,14 @@ class TAPIBase(APIView):
                     tmp["product"] = product
                     body["beauty"].append(tmp)
 
-            data, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["hotel"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     d_format = "%Y-%m-%d %H:%M:%S"
@@ -302,9 +339,14 @@ class TAPIBase(APIView):
                     tmp["product"] = product
                     body["hotel"].append(tmp)
 
-            data, rows, columns = self.db.resultDBQuery(PROC_KINDERGADEN_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_KINDERGADEN_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
             body["kindergarden"] = []
-            if data is not None:
+            if value is not None:
                 for d in data:
                     tmp = {}
                     d_format = "%Y-%m-%d %H:%M:%S"

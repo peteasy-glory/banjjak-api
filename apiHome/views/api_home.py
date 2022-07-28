@@ -58,6 +58,13 @@ class TCellSearch(TAPIBase):
                 ret["body"] = body
                 return HttpResponse(self.json.dicToJson(ret))
             body = self.queryDataToDic(data, rows, columns)
+            for item in body:
+                phoneArr = item["family_cell"].split(",")
+                tmpArr = []
+                for p in phoneArr:
+                    tmp = {"phone":p}
+                    tmpArr.append(tmp)
+                item["family_cell"] = tmpArr
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
