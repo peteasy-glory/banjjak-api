@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from django.http import HttpResponse
 
 from apiShare.constVar import QUERY_DB
@@ -19,6 +21,7 @@ class TLogin(TAPIBase):
 
     - 로그아웃의 경우 클라이언트/웹서버만으로 처리
 
+
     """
     def get(self, request):
         try:
@@ -35,9 +38,17 @@ class TLogin(TAPIBase):
                 return HttpResponse(self.json.dicToJson(self.message.loginFail()))
             if data[1] == 2: #일반 고객
                 return HttpResponse(self.json.dicToJson(self.message.loginAuthFail()))
-
-            body = self.queryDataToDic(data, rows, columns)
+            if data[1] == 3: #작업 미용사: 예약 화면을 보여줌
+                err, body = self.getBodyBooking(dic["id"])
+                if body["shop_name"] == "":
+                    body["shop_name"] = self.db.resultDBQuery(PROC_SHOP_NAME_GET % (dic["id"].strip(),), QUERY_DB)[0][0]
+            else:
+                err, body = self.getBodyHome(dic["id"])
+            if err < 0:
+                return HttpResponse(self.json.dicToJson(self.message.errorDBSelect()))
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
+
+
