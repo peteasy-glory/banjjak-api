@@ -89,7 +89,42 @@ class TAPIBase(APIView):
     def datetimeToStr(self, dateTime, format):
         return datetime(dateTime).striftime(format)
 
+    def setBeautyData(self, d):
+        booking_st = "%s-%s-%s %s:%s" % (
+            d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[26]).zfill(2), str(d[27]).zfill(2))
+        booking_fi = "%s-%s-%s %s:%s" % (
+            d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
+        p_split = d[36].split('|')
+        price = totalPrice(d[36])
 
+        customer = {"customer_id": d[3], "phone": d[39]}
+        pet = {"pet_seq": d[1], "animal": d[74], "type": d[75], "name": d[73]}  # 71~ 펫
+        product = {
+            "payment_idx": d[0],
+            "worker": d[18],
+            "is_no_show": d[51],
+            "is_cancel": d[50],
+            "category": p_split[3],
+            "category_sub": p_split[4],
+            "pay_type": d[40],
+            # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
+            "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
+            "product_detail": d[36],
+            "origin_price": price,
+            "store_payment": {"discount_type": d[15], "discount": d[16], "card": d[13], "cash": d[14],
+                              "reserve_point": d[9]},
+            "app_payment": {"total_price": d[7], "spend_point": d[8]},
+            "date": {"regist": str(d[62])  # self.datetimeToStr(d[62], d_format)
+                , "booking_st": booking_st
+                , "booking_fi": booking_fi},
+            "memo": d[58],
+            "is_approve": d[76]  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
+        }
+        tmp = {}
+        tmp["customer"] = customer
+        tmp["pet"] = pet
+        tmp["product"] = product
+        return tmp
 
     def getBodyHome(self, partner_id):
         try:
@@ -163,6 +198,7 @@ class TAPIBase(APIView):
                     tmp["pet_name"] = d[7]
                     tmp["pet_type"] = d[8]
                     body["consulting"].append(tmp)
+
             value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
             data = []
             if rows < 2:
@@ -172,39 +208,8 @@ class TAPIBase(APIView):
             body["beauty"] = []
             if value is not None:
                 for d in data:
-                    tmp = {}
-                    booking_st = "%s-%s-%s %s:%s" % (
-                    d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[26]).zfill(2), str(d[27]).zfill(2))
-                    booking_fi = "%s-%s-%s %s:%s" % (
-                    d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
-                    p_split = d[36].split('|')
-                    price = totalPrice(d[36])
+                    body["beauty"].append(self.setBeautyData(d))
 
-                    customer = {"customer_id": d[3], "phone": d[39]}
-                    pet = {"pet_seq": d[1], "animal": d[74], "type": d[75], "name": d[73]}  # 71~ 펫
-                    product = {
-                        "payment_idx": d[0],
-                        "worker": d[18],
-                        "is_no_show": d[51],
-                        "is_cancel": d[50],
-                        "category": p_split[3],
-                        "category_sub": p_split[4],
-                        "pay_type": d[40],      # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
-                        "pay_status": d[19],    # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
-                        "product_detail": d[36],
-                        "origin_price":price,
-                        "store_payment": {"discount_type":d[15], "discount":d[16], "card": d[13], "cash": d[14], "reserve_point": d[9] },
-                        "app_payment": {"total_price": d[7], "spend_point": d[8]},
-                        "date": {"regist": str(d[62])  # self.datetimeToStr(d[62], d_format)
-                            , "booking_st": booking_st
-                            , "booking_fi": booking_fi},
-                        "memo": d[58],
-                        "is_approve":d[76]    #승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
-                    }
-                    tmp["customer"] = customer
-                    tmp["pet"] = pet
-                    tmp["product"] = product
-                    body["beauty"].append(tmp)
             value, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
             data = []
             if rows < 2:
@@ -287,40 +292,7 @@ class TAPIBase(APIView):
             body["beauty"] = []
             if value is not None:
                 for d in data:
-                    tmp = {}
-                    d_format = "%Y-%m-%d %H:%M:%S"
-                    booking_st = "%s-%s-%s %s:%s" % (
-                    d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[26]).zfill(2), str(d[27]).zfill(2))
-                    booking_fi = "%s-%s-%s %s:%s" % (
-                    d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
-                    p_split = d[36].split('|')
-                    price = totalPrice(d[36])
-
-                    customer = {"customer_id": d[3], "phone": d[39]}
-                    pet = {"pet_seq": d[1], "animal": d[74], "type": d[75], "name": d[73]}  # 71~ 펫
-                    product = {
-                        "payment_idx": d[0],
-                        "worker": d[18],
-                        "is_no_show": d[51],
-                        "is_cancel": d[50],
-                        "category": p_split[3],
-                        "category_sub": p_split[4],
-                        "pay_type": d[40],      # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
-                        "pay_status": d[19],    # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
-                        "product_detail": d[36],
-                        "origin_price":price,
-                        "store_payment": {"discount_type":d[15], "discount":d[16], "card": d[13], "cash": d[14], "reserve_point": d[9] },
-                        "app_payment": {"total_price": d[7], "spend_point": d[8]},
-                        "date": {"regist": str(d[62])  # self.datetimeToStr(d[62], d_format)
-                            , "booking_st": booking_st
-                            , "booking_fi": booking_fi},
-                        "memo": d[58],
-                        "is_approve":d[76]    #승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
-                    }
-                    tmp["customer"] = customer
-                    tmp["pet"] = pet
-                    tmp["product"] = product
-                    body["beauty"].append(tmp)
+                    body["beauty"].append(self.setBeautyData(d))
 
             value, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
             data = []

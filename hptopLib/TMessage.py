@@ -20,6 +20,9 @@ class TMessage:
     def searchPhoneFail(self):
         return {"head": {"code": 404, "message": "조회할 전화번호가 없습니다."}}
 
+    def errorBadRequst(self):
+        return {"head": {"code": 405, "message": "파라메타를 확인 해주세요."}}
+
     def error(self, message):
         return {"head": {"code": 999, "message": message}}
 
