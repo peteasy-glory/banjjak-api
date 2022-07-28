@@ -25,7 +25,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Home_TopInfo_get('pettester@peteasy.kr', 2022, 7, 25);
+call procPartnerPC_Home_TopInfo_get('pettester@peteasy.kr', 2022, 7, 28);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_TopInfo_get $$
 CREATE PROCEDURE procPartnerPC_Home_TopInfo_get(
@@ -43,12 +43,18 @@ BEGIN
 	DECLARE aNewReview INT DEFAULT 0;
 	DECLARE aTotalCustomer INT DEFAULT 0;
 	DECLARE aShopName VARCHAR(128) DEFAULT '';
+	DECLARE aNickName VARCHAR(128) DEFAULT '';
+	DECLARE aFrontImage VARCHAR(128) DEFAULT '';
+    DECLARE aMinus DATETIME;
+    
+    
     
     #상담 대기 건수
-	SELECT COUNT(*) INTO aConsulting  
+	SET aMinus = DATE_SUB(NOW(), INTERVAL 12 HOUR);
+    SELECT COUNT(*) INTO aConsulting  
 	FROM tb_payment_log 
-	WHERE data_delete = 0 AND artist_id = dataPartnerId AND approval = 0 AND is_cancel = 0 AND is_no_show = 0;
-	
+	WHERE data_delete = 0 AND artist_id = dataPartnerId AND approval = 0 AND is_cancel = 0 AND is_no_show = 0 AND update_time > aMinus;
+    
     #오늘 일정
 	SELECT COUNT(*) INTO aTodaySchedule  
 	FROM tb_payment_log 
@@ -76,10 +82,11 @@ BEGIN
 	) A;
     
     #샵명
-    SELECT name INTO aShopName FROM tb_shop 
-    WHERE customer_id = dataPartnerId;
+    SELECT A.name, A.front_image, B.nickname  INTO aShopName, aFrontImage, aNickName FROM tb_shop A JOIN tb_customer B ON A.customer_id = B.id  
+    WHERE A.customer_id = dataPartnerId 
+		AND (B.my_shop_flag = 1 or B.artist_flag = 1) and B.enable_flag = 1;
     
-    SELECT aShopName, aConsulting, aTodaySchedule, aNewReview, aTotalCustomer;
+    SELECT aShopName, aFrontImage, aNickName, aConsulting, aTodaySchedule, aNewReview, aTotalCustomer;
 END $$ 
 DELIMITER ;
 
@@ -143,7 +150,16 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Home_BeautyBookingMgr_get('itseokbeom@gmail.com', 2021, 12);
+call procPartnerPC_Home_BeautyBookingMgr_get('eaden@peteasy.kr', 2022, 7);
+select * from tb_payment_log where payment_log_seq = 556206;
+
+                SELECT a.idx, b.*, c.name, c.pet_type, DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d') reg_date FROM tb_grade_reserve_approval_mgr a 
+                LEFT JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq 
+                LEFT JOIN tb_mypet c ON b.pet_seq = c.pet_seq 
+                WHERE is_approve = '0'
+                AND b.artist_id = 'eaden@peteasy.kr'
+                ORDER BY DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d')
+            
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_BeautyBookingMgr_get $$
 CREATE PROCEDURE procPartnerPC_Home_BeautyBookingMgr_get(
@@ -172,11 +188,12 @@ BEGIN
     END;
     END IF;
  
-	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type FROM 
+	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve FROM 
 	(
-		SELECT * FROM gobeautypet.tb_payment_log
+		SELECT * FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId
-	) A LEFT JOIN (SELECT * FROM tb_mypet WHERE data_delete = 0) B ON A.pet_seq = B.pet_seq
+	) A LEFT JOIN (SELECT * FROM tb_mypet WHERE data_delete = 0) B ON A.pet_seq = B.pet_seq 
+    LEFT JOIN (SELECT * FROM tb_grade_reserve_approval_mgr WHERE is_delete = 0) C ON A.payment_log_seq = C.payment_log_seq
 	WHERE gobeautypet.funcYMDToDate(A.year, A.month, A.day) >= CONCAT(aYear, '-', aMonth, '-01') AND
 		gobeautypet.funcYMDToDate(A.year, A.month, A.day) < CONCAT(aNextYear, '-', aNextMonth, '-01');
 

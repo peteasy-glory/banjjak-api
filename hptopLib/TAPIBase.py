@@ -9,6 +9,7 @@ from hptopLib.TJson import TJson
 from hptopLib.TMessage import TMessage
 from apiShare.sqlQuery import *
 from apiShare.constVar import QUERY_DB
+from apiShare.funcLib import *
 
 class TAPIBase(APIView):
     """
@@ -100,10 +101,12 @@ class TAPIBase(APIView):
             body = {}
             if data is not None:
                 body["shop_name"] = data[0]
-                body["consulting_count"] = data[1]
-                body["schedule_count"] = data[2]
-                body["new_review_count"] = data[3]
-                body["total_count"] = data[4]
+                body["front_image"] = data[1]
+                body["nick"] = data[2]
+                body["consulting_count"] = data[3]
+                body["schedule_count"] = data[4]
+                body["new_review_count"] = data[5]
+                body["total_count"] = data[6]
             value, rows, columns = self.db.resultDBQuery(PROC_SPETIAL_MALL_GET % (), QUERY_DB)
             data = []
             if rows < 2:
@@ -175,6 +178,8 @@ class TAPIBase(APIView):
                     booking_fi = "%s-%s-%s %s:%s" % (
                     d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
                     p_split = d[36].split('|')
+                    price = totalPrice(d[36])
+
                     customer = {"customer_id": d[3], "phone": d[39]}
                     pet = {"pet_seq": d[1], "animal": d[74], "type": d[75], "name": d[73]}  # 71~ 펫
                     product = {
@@ -183,13 +188,18 @@ class TAPIBase(APIView):
                         "is_no_show": d[51],
                         "is_cancel": d[50],
                         "category": p_split[3],
-                        "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
-                        "post_payment": {"card": d[13], "cash": d[14], "reserve_point": d[9]},
-                        "pre_payment": {"total_price": d[7], "spend_point": d[8]},
+                        "category_sub": p_split[4],
+                        "pay_type": d[40],      # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
+                        "pay_status": d[19],    # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
+                        "product_detail": d[36],
+                        "origin_price":price,
+                        "store_payment": {"discount_type":d[15], "discount":d[16], "card": d[13], "cash": d[14], "reserve_point": d[9] },
+                        "app_payment": {"total_price": d[7], "spend_point": d[8]},
                         "date": {"regist": str(d[62])  # self.datetimeToStr(d[62], d_format)
                             , "booking_st": booking_st
                             , "booking_fi": booking_fi},
-                        "memo": d[58]
+                        "memo": d[58],
+                        "is_approve":d[76]    #승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
                     }
                     tmp["customer"] = customer
                     tmp["pet"] = pet
@@ -284,6 +294,8 @@ class TAPIBase(APIView):
                     booking_fi = "%s-%s-%s %s:%s" % (
                     d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
                     p_split = d[36].split('|')
+                    price = totalPrice(d[36])
+
                     customer = {"customer_id": d[3], "phone": d[39]}
                     pet = {"pet_seq": d[1], "animal": d[74], "type": d[75], "name": d[73]}  # 71~ 펫
                     product = {
@@ -292,13 +304,18 @@ class TAPIBase(APIView):
                         "is_no_show": d[51],
                         "is_cancel": d[50],
                         "category": p_split[3],
-                        "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
-                        "post_payment": {"card": d[13], "cash": d[14], "reserve_point": d[9]},
-                        "pre_payment": {"total_price": d[7], "spend_point": d[8]},
+                        "category_sub": p_split[4],
+                        "pay_type": d[40],      # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
+                        "pay_status": d[19],    # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
+                        "product_detail": d[36],
+                        "origin_price":price,
+                        "store_payment": {"discount_type":d[15], "discount":d[16], "card": d[13], "cash": d[14], "reserve_point": d[9] },
+                        "app_payment": {"total_price": d[7], "spend_point": d[8]},
                         "date": {"regist": str(d[62])  # self.datetimeToStr(d[62], d_format)
                             , "booking_st": booking_st
                             , "booking_fi": booking_fi},
-                        "memo": d[58]
+                        "memo": d[58],
+                        "is_approve":d[76]    #승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
                     }
                     tmp["customer"] = customer
                     tmp["pet"] = pet
