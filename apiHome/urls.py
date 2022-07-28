@@ -8,5 +8,6 @@ urlpatterns = [
     path('home/<str:partner_id>', api_home.THome.as_view()),
     path('home/<int:year>/<int:month>/<str:partner_id>', api_home.THome.as_view()),
     path('home/search/<str:partner_id>', api_home.TCellSearch.as_view()),
+    path('home/consulting/<str:partner_id>', api_home.TConsulting.as_view()),
 
 ]

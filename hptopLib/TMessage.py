@@ -5,6 +5,9 @@ class TMessage:
     def successOk(self):
         return {"head": {"code": 200, "message": "정상"}}
 
+    def errorBadRequst(self):
+        return {"head": {"code": 400, "message": "인자 오류"}}
+
     def loginFail(self):
         return {"head": {"code": 401, "message": "아이디/비밀번호를 확인 해주세요."}}
 
@@ -14,14 +17,14 @@ class TMessage:
     def loginAuthFail(self):
         return {"head": {"code": 403, "message": "등록된 사용자가 아닙니다."}}
 
+    def searchPhoneFail(self):
+        return {"head": {"code": 404, "message": "조회할 전화번호가 없습니다."}}
+
     def error(self, message):
         return {"head": {"code": 999, "message": message}}
 
     def errorServer(self):
         return {"head": {"code": 500, "message": "서버 오류"}}
-
-    def errorBadRequst(self):
-        return {"head": {"code": 400, "message": "인자 오류"}}
 
     def errorDBSelect(self):
         return {"head": {"code": 903, "message": "데이타 가져오기 오류"}}
