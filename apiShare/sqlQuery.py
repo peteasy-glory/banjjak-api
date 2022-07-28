@@ -22,4 +22,5 @@ PROC_CELLPHONE_SEARCH_GET= "call procPartnerPC_Home_PhoneSearch_get('%s', '%s')"
 
 #AUTH SETTING
 PROC_SETTING_ARTIST_GET = "call procPartnerPC_Setting_Artist_get('%s')"
+PROC_SETTING_ARTIST_SCHEDULE_GET = "call procPartnerPC_Setting_Artist_schedule_get('%s', '%s')"
 

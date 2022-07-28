@@ -347,3 +347,36 @@ class TAPIBase(APIView):
             return 0, body
         except Exception as e:
             return -1, e.args[0]
+
+    def getArtistList(self, partner_id):
+        try:
+            data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_GET % (partner_id), QUERY_DB)
+            #          ret = self.message.successOk()
+            body = {}
+            body["artist"] = []
+            if data is not None:
+                for d in data:
+                    tmp = {}
+                    tmp["name"] = d[0]
+                    tmp["nickname"] = d[1]
+                    tmp["is_main"] = d[2]
+                    tmp["is_out"] = d[3]
+                    tmp["is_view"] = d[4]
+                    tmp["sequ_prnt"] = d[5]
+
+                    data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_SCHEDULE_GET % (partner_id, d[0]), QUERY_DB)
+                    tmp["week_list"] = []
+                    if data is not None:
+                        for d_1 in data:
+                            tmp_1 = {}
+                            tmp_1["seq"] = d_1[0]
+                            tmp_1["week"] = d_1[1]
+                            tmp_1["time_start"] = d_1[2]
+                            tmp_1["time_end"] = d_1[3]
+                            tmp["week_list"].append(tmp_1)
+
+                    body["artist"].append(tmp)
+
+            return 0, body
+        except Exception as e:
+            return -1, e.args[0]
