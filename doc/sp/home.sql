@@ -151,15 +151,6 @@ END $$
 DELIMITER ;
 
 call procPartnerPC_Home_BeautyBookingMgr_get('eaden@peteasy.kr', 2022, 7);
-select * from tb_payment_log where payment_log_seq = 556206;
-
-                SELECT a.idx, b.*, c.name, c.pet_type, DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d') reg_date FROM tb_grade_reserve_approval_mgr a 
-                LEFT JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq 
-                LEFT JOIN tb_mypet c ON b.pet_seq = c.pet_seq 
-                WHERE is_approve = '0'
-                AND b.artist_id = 'eaden@peteasy.kr'
-                ORDER BY DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d')
-            
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_BeautyBookingMgr_get $$
 CREATE PROCEDURE procPartnerPC_Home_BeautyBookingMgr_get(
@@ -188,7 +179,7 @@ BEGIN
     END;
     END IF;
  
-	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve FROM 
+	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve, B.photo AS pet_photo FROM 
 	(
 		SELECT * FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId
@@ -196,9 +187,9 @@ BEGIN
     LEFT JOIN (SELECT * FROM tb_grade_reserve_approval_mgr WHERE is_delete = 0) C ON A.payment_log_seq = C.payment_log_seq
 	WHERE gobeautypet.funcYMDToDate(A.year, A.month, A.day) >= CONCAT(aYear, '-', aMonth, '-01') AND
 		gobeautypet.funcYMDToDate(A.year, A.month, A.day) < CONCAT(aNextYear, '-', aNextMonth, '-01');
-
 END $$ 
 DELIMITER ;
+
 
 call procPartnerPC_Home_HotelBookingMgr_get('choi7072@naver.com', 2022, 7);
 DELIMITER $$
@@ -278,8 +269,8 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Home_PhoneSearch_get('eaden@peteasy.kr', '111');
-call procPartnerPC_Home_PhoneSearch_get('eaden@peteasy.kr', '111')
+-- call procPartnerPC_Home_PhoneSearch_get('eaden@peteasy.kr', '111');
+-- call procPartnerPC_Home_PhoneSearch_get('eaden@peteasy.kr', '111')
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_PhoneSearch_get $$
 CREATE PROCEDURE procPartnerPC_Home_PhoneSearch_get(

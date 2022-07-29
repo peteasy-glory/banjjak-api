@@ -2,8 +2,8 @@
 
 from django.urls import path
 
-from apiBooking.views import api_booking
+from apiBooking.views import api_beauty
 
 urlpatterns = [
-    path('booking/<str:partner_id>', api_booking.TBooking.as_view()),
+    path('booking/b/<str:partner_id>', api_beauty.TBooking.as_view()),
 ]
