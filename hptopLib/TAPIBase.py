@@ -380,40 +380,6 @@ class TAPIBase(APIView):
         except Exception as e:
             return -1, e.args[0]
 
-    # def getArtistList(self, partner_id):
-    #     try:
-    #         data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_GET % (partner_id), QUERY_DB)
-    #         #          ret = self.message.successOk()
-    #         body = {}
-    #         body["artist"] = []
-    #         if data is not None:
-    #             for d in data:
-    #                 tmp = {}
-    #                 tmp["name"] = d[0]
-    #                 tmp["nickname"] = d[1]
-    #                 tmp["is_main"] = d[2]
-    #                 tmp["is_out"] = d[3]
-    #                 tmp["is_view"] = d[4]
-    #                 tmp["sequ_prnt"] = d[5]
-    #
-    #                 data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_SCHEDULE_GET % (partner_id, d[0]), QUERY_DB)
-    #                 tmp["week_list"] = []
-    #                 if data is not None:
-    #                     for d_1 in data:
-    #                         tmp_1 = {}
-    #                         tmp_1["seq"] = d_1[0]
-    #                         tmp_1["week"] = d_1[1]
-    #                         tmp_1["time_start"] = d_1[2]
-    #                         tmp_1["time_end"] = d_1[3]
-    #                         tmp["week_list"].append(tmp_1)
-    #
-    #                 body["artist"].append(tmp)
-    #
-    #         return 0, body
-    #     except Exception as e:
-    #         return -1, e.args[0]
-
-
     def getArtistList(self, partner_id):
         try:
             data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_GET % (partner_id), QUERY_DB)
@@ -421,55 +387,32 @@ class TAPIBase(APIView):
             body = {}
             body["artist"] = []
             if data is not None:
-                test = ''
                 for d in data:
                     tmp = {}
-                    tmp_1 = {}
+                    tmp["name"] = d[0]
+                    tmp["nickname"] = d[1]
+                    tmp["is_main"] = d[2]
+                    tmp["is_out"] = d[3]
+                    tmp["is_view"] = d[4]
+                    tmp["week_list"] = []
 
-                    if d is not 0:
-                        if d[2] == test:
-                            tmp["seq"] = d[0]
-                            tmp["week"] = d[7]
-                            tmp["time_start"] = d[8]
-                            tmp["time_end"] = d[9]
+                    seq_list = d[8].split(',')
+                    week_list = d[5].split(',')
+                    start_list = d[6].split(',')
+                    end_list = d[7].split(',')
 
-                            tmp_1["week_list"].append(tmp)
+                    for i, d_1 in enumerate(seq_list):
+                        tmp_1 = {}
+                        tmp_1["seq"] = seq_list[i]
+                        tmp_1["week"] = week_list[i]
+                        tmp_1["time_start"] = start_list[i]
+                        tmp_1["time_end"] = end_list[i]
 
-                        else:
-                            test = d[2]
-                            tmp_1["name"] = d[2]
-                            tmp_1["nickname"] = d[3]
-                            tmp_1["is_main"] = d[4]
-                            tmp_1["is_out"] = d[5]
-                            tmp_1["is_view"] = d[6]
-                            tmp_1["sequ_prnt"] = d[10]
-                            tmp_1["week_list"] = []
-
-                            tmp["seq"] = d[0]
-                            tmp["week"] = d[7]
-                            tmp["time_start"] = d[8]
-                            tmp["time_end"] = d[9]
-
-                            tmp_1["week_list"].append(tmp)
-                    else:
-                        test = d[2]
-                        tmp_1["name"] = d[2]
-                        tmp_1["nickname"] = d[3]
-                        tmp_1["is_main"] = d[4]
-                        tmp_1["is_out"] = d[5]
-                        tmp_1["is_view"] = d[6]
-                        tmp_1["sequ_prnt"] = d[10]
-                        tmp_1["week_list"] = []
-
-                        tmp["seq"] = d[0]
-                        tmp["week"] = d[7]
-                        tmp["time_start"] = d[8]
-                        tmp["time_end"] = d[9]
-
-                        tmp_1["week_list"].append(tmp)
+                        tmp["week_list"].append(tmp_1)
 
 
-                    body["artist"].append(tmp_1)
+                    body["artist"].append(tmp)
+
 
             return 0, body
         except Exception as e:
