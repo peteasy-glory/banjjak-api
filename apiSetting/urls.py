@@ -2,9 +2,12 @@
 
 from django.urls import path
 from apiSetting.views import api_auth_setting
+from apiSetting.views import api_auth_setting, api_schedule_setting
 
 
 urlpatterns = [
+
+    path('schedule/artist-work/<str:partner_id>', api_schedule_setting.TArtistWork.as_view()),
 
     path('auth/artist/<str:partner_id>', api_auth_setting.TAuthSetting.as_view()),
     path('auth/artist', api_auth_setting.TAuthSetting.as_view()),
