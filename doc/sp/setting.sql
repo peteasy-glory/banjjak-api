@@ -1,6 +1,5 @@
 
 call procPartnerPC_Setting_Artist_Working_get('eaden@peteasy.kr');
-#call procPartnerPC_Booking_BeautyBookingPeroid_get(\'eaden@peteasy.kr\', \'2022-07-02\', \'2022-07-20\')
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Artist_Working_get $$
 CREATE PROCEDURE procPartnerPC_Setting_Artist_Working_get(
@@ -10,10 +9,31 @@ BEGIN
 	/**
 		샵별 미용사 근무일시 조회 
    */
-	SELECT * FROM tb_artist_list
-	WHERE artist_id = dataPartnerId;	
+	SELECT sequ_prnt, artist_id, name, nicname, if((is_main = ''or is_main = null), 0, is_main) AS is_host
+		,is_out AS is_leave, is_view AS is_show
+		, GROUP_CONCAT(CONCAT(seq,'|',week,'|', time_start,'|',time_end)) AS work
+	FROM tb_artist_list
+	WHERE artist_id = dataPartnerId
+	GROUP BY name, nicname
+	ORDER BY sequ_prnt ASC, seq ASC;
 END $$ 
 DELIMITER ;
+
+
+-- call procPartnerPC_Setting_Artist_Working_get('eaden@peteasy.kr');
+-- DELIMITER $$
+-- DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Artist_Working_get $$
+-- CREATE PROCEDURE procPartnerPC_Setting_Artist_Working_get(
+-- 	dataPartnerId VARCHAR(64)
+-- )
+-- BEGIN
+-- 	/**
+-- 		샵별 미용사 근무일시 조회 
+--    */
+-- 	SELECT * FROM tb_artist_list
+-- 	WHERE artist_id = dataPartnerId;	
+-- END $$ 
+-- DELIMITER ;
 
 -- 	SELECT GROUP_CONCAT(seq) AS seq, name, nicname, GROUP_CONCAT(week)
 --     ,  GROUP_CONCAT(CONCAT(time_start, '-',time_end)) AS peroid, GROUP_CONCAT(sequ_prnt)

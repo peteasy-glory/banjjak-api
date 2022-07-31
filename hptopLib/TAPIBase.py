@@ -381,6 +381,36 @@ class TAPIBase(APIView):
             return -1, e.args[0]
 
     def getArtistWorkInfo(self, partner_id):
+        try:
+            # 작업
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id,), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+            body = []
+            if value is not None:
+                for d in data:
+                    tmp = {}
+                    artist = []
+                    tmp["ord"] = d[0]
+                    tmp["name"] = d[2]
+                    tmp["nick"] = d[3]
+                    tmp["is_host"] = True if d[4] == 1 else False
+                    tmp["is_leave"] = True if d[5] == 1 else False
+                    tmp["is_show"] = True if d[6] == 2 else False
+                    sub = d[7].split(',')
+                    for s in sub:
+                        resub = s.split('|')
+                        artist.append({"idx": resub[0], "week": resub[1], "time_st": resub[2], "time_fi": resub[3]})
+                    tmp["work"] = artist
+                    body.append(tmp)
+                return 0, "success", body
+        except Exception as e:
+            return -1, e.args[1], None
+
+    def getArtistWorkInfo1(self, partner_id, body):
         # 작업
         value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id,), QUERY_DB)
         data = []
@@ -412,7 +442,7 @@ class TAPIBase(APIView):
             tmp["work"] = artist
             body.append(tmp)
         # 휴가
-        value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id,), QUERY_DB)
+        value, rows, columns = self.db.resultDBQuery(PROC_SETTING_PERSONAL_VACATION_GET % (partner_id,), QUERY_DB)
         data = []
         if rows < 2:
             data.append(value)

@@ -21,12 +21,14 @@ class TAuthSetting(TAPIBase):
         try:
             if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
-            err, body = self.getArtistList(partner_id)
-            ret = self.message.successOk()
-            ret["body"] = body
-            return HttpResponse(self.json.dicToJson(ret))
+            err, msg, body = self.getArtistWorkInfo(partner_id)
+            if err == 0:
+                ret = self.message.successOk()
+                ret["body"] = body
+                return HttpResponse(self.json.dicToJson(ret))
+            else:
+                return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
-            print(e)
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
 
     # def get(self, request, year, month, partner_id):
