@@ -406,7 +406,7 @@ class TAPIBase(APIView):
                         artist.append({"idx": resub[0], "week": resub[1], "time_st": resub[2], "time_fi": resub[3]})
                     tmp["work"] = artist
                     body.append(tmp)
-                return 0, "success", body
+            return 0, "success", body
         except Exception as e:
             return -1, e.args[1], None
 

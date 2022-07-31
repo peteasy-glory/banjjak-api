@@ -15,3 +15,6 @@ def totalPrice(src):
     if len(div) > 11 and len(div[11]) > 0:
         price += int(div[11])
     return price
+
+def zeroToBool(is_zero):
+    return False if is_zero == 0 else True
