@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from inspect import getframeinfo, currentframe
-from hptopLib.TSettingBase import TSettingBase
+from hptopLib.TAPISettingBase import TAPISettingBase
 from apiShare.constVar import QUERY_DB
 from apiShare.funcLib import zeroToBool
 from apiShare.sqlQuery import *
 
 
-class TOpenClose(TSettingBase):
+class TOpenClose(TAPISettingBase):
 
     def getInfo(self, partner_id):
         try:
@@ -21,7 +21,7 @@ class TOpenClose(TSettingBase):
             if value is not None:
                 for d in data:
                     tmp = {"open_time": d[1], "close_time": d[2],
-                           "is_work_of_holiday": zeroToBool(d[3]), "update_date": str(d[4])}
+                           "is_work_on_holiday": zeroToBool(d[3]), "update_date": str(d[4])}
                     body.append(tmp)
             return 0, "success", body
         except Exception as e:

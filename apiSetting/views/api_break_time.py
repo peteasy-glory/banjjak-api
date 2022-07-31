@@ -2,12 +2,12 @@
 
 from inspect import getframeinfo, currentframe
 
-from hptopLib.TSettingBase import TSettingBase
+from hptopLib.TAPISettingBase import TAPISettingBase
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import *
 
 
-class TBreakTime(TSettingBase):
+class TBreakTime(TAPISettingBase):
 
 
     def getInfo(self, partner_id):

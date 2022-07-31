@@ -2,12 +2,12 @@
 from inspect import getframeinfo, currentframe
 
 
-from hptopLib.TSettingBase import TSettingBase
+from hptopLib.TAPISettingBase import TAPISettingBase
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import *
 
 
-class TVacation(TSettingBase):
+class TVacation(TAPISettingBase):
 
     def getInfo(self, partner_id):
         try:
@@ -26,7 +26,7 @@ class TVacation(TSettingBase):
                     sub = d[1].split(',')
                     for rs in sub:
                         r = rs.split("|")
-                        vacation.append({"idx":r[0], "date_st":r[1], "date_fi":r[2], "update_date":r[3]})
+                        vacation.append({"idx":r[0],"type":r[1], "date_st":r[2], "date_fi":r[3], "update_date":r[4]})
                     tmp["vacation"] = vacation
                     body.append(tmp)
             return 0, "success", body

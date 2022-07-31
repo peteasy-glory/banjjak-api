@@ -6,7 +6,10 @@ from django.http import HttpResponse
 from hptopLib.TAPIBase import TAPIBase
 
 
-class TSettingBase(TAPIBase):
+class TAPISettingBase(TAPIBase):
+    """
+    설정 기본 클래스.
+    """
 
     def get(self, request, partner_id):
         try:

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from inspect import getframeinfo, currentframe
-from hptopLib.TSettingBase import TSettingBase
+from hptopLib.TAPISettingBase import TAPISettingBase
 from apiShare.constVar import QUERY_DB
 from apiShare.funcLib import zeroToBool
 from apiShare.sqlQuery import *
 
 
-class TReqularHoliday(TSettingBase):
+class TReqularHoliday(TAPISettingBase):
 
     def getInfo(self, partner_id):
         try:
@@ -22,7 +22,7 @@ class TReqularHoliday(TSettingBase):
                 for d in data:
                     tmp = {"is_work_sun": zeroToBool(d[1]),
                            "is_work_mon": zeroToBool(d[2]),
-                           "is_work_tus": zeroToBool(d[3]),
+                           "is_work_tue": zeroToBool(d[3]),
                            "is_work_wed": zeroToBool(d[4]),
                            "is_work_thu": zeroToBool(d[5]),
                            "is_work_fri": zeroToBool(d[6]),

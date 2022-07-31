@@ -83,7 +83,7 @@ BEGIN
 	/**
 		미용사 휴가 설정  
    */
-	SELECT worker , GROUP_CONCAT(ph_seq,'|',
+	SELECT worker , GROUP_CONCAT(ph_seq,'|', type, '|',
 			CONCAT(start_year,'-', LPAD(start_month,2,0),'-', LPAD(start_day,2,0),' ', LPAD(start_hour,2,0),':', LPAD(start_minute,2,0)), '|',
            CONCAT(end_year,'-', LPAD(end_month,2,0),'-', LPAD(end_day,2,0),' ', LPAD(end_hour,2,0),':', LPAD(end_minute,2,0)), '|', 
            update_time) AS vacation
@@ -103,8 +103,10 @@ BEGIN
 	/**
 		타임제 설정 조회   
    */
-	SELECT * FROM tb_time_schedule
-    WHERE artist_id = dataPartnerId;
+	SELECT A.*, B.nicname, B.is_main, B.is_out, B.is_view FROM tb_time_schedule A LEFT JOIN 
+    (SELECT artist_id, name, nicname, is_main, is_out, is_view FROM  tb_artist_list where artist_id = 'pettester@peteasy.kr' GROUP BY name) B 
+		ON (A.artist_id = B.artist_id AND A.artist_name = B.name)
+    WHERE A.artist_id = dataPartnerId;
 END $$ 
 DELIMITER ;
 
