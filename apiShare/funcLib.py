@@ -6,8 +6,12 @@ def totalPrice(src):
     div = src.split("|")
     for d in div:
         if ":" in d:
-            tmp = d.split(":")
-            price += int(tmp[1])
+            if d.count(":") == 3:
+                tmp = d.split(":")
+                price += (int(tmp[2]) * int(tmp[3]))
+            else:
+                tmp = d.split(":")
+                price += int(tmp[1])
     if len(div) > 10 and len(div[9]) > 0:
         price += int(div[9])
     if len(div) > 10 and len(div[10]) > 0:
@@ -15,6 +19,9 @@ def totalPrice(src):
     if len(div) > 11 and len(div[11]) > 0:
         price += int(div[11])
     return price
+
+
+
 
 def zeroToBool(is_zero):
     return False if is_zero == 0 else True

@@ -22,6 +22,8 @@ PROC_CELLPHONE_SEARCH_GET= "call procPartnerPC_Home_PhoneSearch_get('%s', '%s')"
 
 #BOOKING
 PROC_BEAUTY_BOOKING_PEROID_GET = "call procPartnerPC_Booking_BeautyPeroid_get('%s', '%s', '%s')"
+PROC_BEAUTY_BOOKING_CUSTOMER_PET_INFO_GET = "call procPartnerPC_Booking_CustomerPetInfo_get(%s)"
+PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_BeforePaymentInfo_get(%s, %s, %s)"
 
 
 #AUTH SETTING
