@@ -22,9 +22,20 @@ PROC_CELLPHONE_SEARCH_GET= "call procPartnerPC_Home_PhoneSearch_get('%s', '%s')"
 
 #BOOKING
 PROC_BEAUTY_BOOKING_PEROID_GET = "call procPartnerPC_Booking_BeautyPeroid_get('%s', '%s', '%s')"
+PROC_BEAUTY_BOOKING_CUSTOMER_PET_INFO_GET = "call procPartnerPC_Booking_CustomerPetInfo_get(%s)"
+PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_BeforePaymentInfo_get(%s, %s, %s)"
 
 
 #AUTH SETTING
+
 PROC_SETTING_ARTIST_GET = "call procPartnerPC_Setting_Artist_get('%s')"
 PROC_SETTING_ARTIST_POST = "call procPartnerPC_Setting_Artist_post('%s', '%s', '%s', '%s', '%s', '%s', %s, '%s', '%s', %s)"
+
+PROC_SETTING_ARTIST_WORKING_GET = "call procPartnerPC_Setting_Artist_Working_get('%s')"
+PROC_SETTING_SHOP_OPEN_CLOSE_GET = "call procPartnerPC_Setting_Shop_OpenClose_get('%s')"
+PROC_SETTING_REGULAR_HOLIDAY_GET = "call procPartnerPC_Setting_Regular_Holiday_get('%s')"
+PROC_SETTING_PERSONAL_VACATION_GET = "call procPartnerPC_Setting_Personal_Vacation_get('%s')"
+PROC_SETTING_TIME_LIMIT_GET = "call procPartnerPC_Setting_Time_Limit_get('%s')"
+PROC_SETTING_BREAK_TIME_GET = "call procPartnerPC_Setting_Break_Time_get('%s')"
+
 

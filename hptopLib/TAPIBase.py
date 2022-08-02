@@ -4,6 +4,7 @@ from datetime import datetime
 
 from rest_framework.views import APIView
 
+from apiShare import funcLib
 from hptopLib.TDB import TDB
 from hptopLib.TJson import TJson
 from hptopLib.TMessage import TMessage
@@ -95,7 +96,7 @@ class TAPIBase(APIView):
         booking_fi = "%s-%s-%s %s:%s" % (
             d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
         p_split = d[36].split('|')
-        price = totalPrice(d[36])
+        #price = totalPrice(d[36])
 
         customer = {"customer_id": d[3], "phone": d[39]}
         pet = {"idx": d[1], "animal": d[74], "type": d[75], "name": d[73], "photo":d[77]}  # 71~ 펫
@@ -106,12 +107,12 @@ class TAPIBase(APIView):
             "is_cancel": d[50],
             "category": p_split[3],
             "category_sub": p_split[4],
-            "pay_type": d[40],
-            # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
+            "pay_type": d[40],    # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
             "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
             "product_detail": d[36],
+            "product_detail_parsing": funcLib.productToDic(d[36]),
             "is_vat": True if d[59] == 1 else False,
-            "origin_price": price,
+           "origin_price": 0,
             "store_payment": {"discount_type": d[15], "discount": d[16], "card": d[13], "cash": d[14],
                               "reserve_point": d[9]},
             "app_payment": {"total_price": d[7], "spend_point": d[8]},
@@ -380,40 +381,73 @@ class TAPIBase(APIView):
         except Exception as e:
             return -1, e.args[0]
 
-    def getArtistList(self, partner_id):
+    def getArtistWorkInfo(self, partner_id):
         try:
-            data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_GET % (partner_id), QUERY_DB)
-            #          ret = self.message.successOk()
-            body = {}
-            body["artist"] = []
-            if data is not None:
+            # 작업
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id,), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+            body = []
+            if value is not None:
                 for d in data:
                     tmp = {}
-                    tmp["name"] = d[0]
-                    tmp["nickname"] = d[1]
-                    tmp["is_main"] = d[2]
-                    tmp["is_out"] = d[3]
-                    tmp["is_view"] = d[4]
-                    tmp["week_list"] = []
-
-                    seq_list = d[8].split(',')
-                    week_list = d[5].split(',')
-                    start_list = d[6].split(',')
-                    end_list = d[7].split(',')
-
-                    for i, d_1 in enumerate(seq_list):
-                        tmp_1 = {}
-                        tmp_1["seq"] = seq_list[i]
-                        tmp_1["week"] = week_list[i]
-                        tmp_1["time_start"] = start_list[i]
-                        tmp_1["time_end"] = end_list[i]
-
-                        tmp["week_list"].append(tmp_1)
-
-
-                    body["artist"].append(tmp)
-
-
-            return 0, body
+                    artist = []
+                    tmp["ord"] = d[0]
+                    tmp["name"] = d[2]
+                    tmp["nick"] = d[3]
+                    tmp["is_host"] = True if d[4] == 1 else False
+                    tmp["is_leave"] = True if d[5] == 1 else False
+                    tmp["is_show"] = True if d[6] == 2 else False
+                    sub = d[7].split(',')
+                    for s in sub:
+                        resub = s.split('|')
+                        artist.append({"idx": resub[0], "week": resub[1], "time_st": resub[2], "time_fi": resub[3]})
+                    tmp["work"] = artist
+                    body.append(tmp)
+            return 0, "success", body
         except Exception as e:
-            return -1, e.args[0]
+            return -1, e.args[1], None
+
+    def getArtistWorkInfo1(self, partner_id, body):
+        # 작업
+        value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id,), QUERY_DB)
+        data = []
+        if rows < 2:
+            data.append(value)
+        else:
+            data = value
+        body = []
+        before_name = ""
+        if value is not None:
+            for d in data:
+                if before_name == "" or before_name != d[2]:
+                    if before_name != "" and before_name != d[2]:
+                        tmp["work"] = artist
+                        body.append(tmp)
+                    tmp = {}
+                    artist = []
+                    tmp["name"] = d[2]
+                    tmp["nick"] = d[3]
+                    tmp["is_host"] = True if d[4] == 1 else False
+                    tmp["is_leave"] = True if d[5] == 1 else False
+                    tmp["is_show"] = True if d[6] == 2 else False
+                    tmp["ord"] = d[10]
+                    artist.append({"seq": d[0], "week": d[7], "time_st": d[8], "time_fi": d[9]})
+                    before_name = d[2]
+                else:
+                    artist.append({"seq": d[0], "week": d[7], "time_st": d[8], "time_fi": d[9]})
+                    before_name = d[2]
+            tmp["work"] = artist
+            body.append(tmp)
+        # 휴가
+        value, rows, columns = self.db.resultDBQuery(PROC_SETTING_PERSONAL_VACATION_GET % (partner_id,), QUERY_DB)
+        data = []
+        if rows < 2:
+            data.append(value)
+        else:
+            data = value
+
+        return body

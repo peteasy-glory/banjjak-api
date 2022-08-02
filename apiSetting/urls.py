@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from django.urls import path
-from apiSetting.views import api_auth_setting
+from apiSetting.views import api_artist_work, api_open_close, api_regular_holiday, api_artist_vacation, api_part_time, \
+    api_break_time
+from apiSetting.views import api_artist_work, api_schedule_artist
 
 
 urlpatterns = [
 
-    path('auth/artist/<str:partner_id>', api_auth_setting.TAuthSetting.as_view()),
-    path('auth/artist', api_auth_setting.TAuthSetting.as_view()),
+    path('setting/schedule-mgr/<str:partner_id>', api_schedule_artist.TScheduleArtist.as_view()),
 
-    # path('pet/<str:owner_id>/<int:year>/<int:month>', api_log.TPetLogMonth.as_view()),
-    # path('pets/<str:owner_id>', api_log.TPet.as_view()),
-    # path('pet/<int:pet_id>', api_log.TPetLogInfo.as_view()),
-    # path('year/<str:owner_id>/<int:pet_id>/<int:year>', api_log.TPetIndividualLogYear.as_view()),
-    # path('month/<str:owner_id>/<int:pet_id>/<int:year>/<int:month>', api_log.TPetIndividualLogMonth.as_view()),
-    # path('graph/<str:owner_id>/<int:year>/<int:month>', api_log.TPetLogGraph.as_view()),
-    # path('photo/<str:owner_id>/<int:pet_id>/<int:year>/<int:month>', api_log.TPetIndividualLogMonthPhoto.as_view()),
+    path('setting/working/<str:partner_id>', api_artist_work.TArtistWork.as_view()),
+    path('setting/open-close/<str:partner_id>', api_open_close.TOpenClose.as_view()),
+    path('setting/regular-holiday/<str:partner_id>', api_regular_holiday.TReqularHoliday.as_view()),
+    path('setting/artist-vacation/<str:partner_id>', api_artist_vacation.TVacation.as_view()),
+    path('setting/part-time/<str:partner_id>', api_part_time.TPartTime.as_view()),
+    path('setting/break-time/<str:partner_id>', api_break_time.TBreakTime.as_view()),
 
 ]
