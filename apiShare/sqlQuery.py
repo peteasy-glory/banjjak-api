@@ -28,7 +28,6 @@ PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_Before
 
 #AUTH SETTING
 
-PROC_SETTING_ARTIST_GET = "call procPartnerPC_Setting_Artist_get('%s')"
 PROC_SETTING_ARTIST_POST = "call procPartnerPC_Setting_Artist_post('%s', '%s', '%s', '%s', '%s', '%s', %s, '%s', '%s', %s)"
 
 PROC_SETTING_ARTIST_WORKING_GET = "call procPartnerPC_Setting_Artist_Working_get('%s')"
