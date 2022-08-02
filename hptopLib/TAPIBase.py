@@ -109,7 +109,8 @@ class TAPIBase(APIView):
             "category_sub": p_split[4],
             "pay_type": d[40],    # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
             "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
-            "product_detail": funcLib.productToDic(d[36]),
+            "product_detail": d[36],
+            "product_detail_parsing": funcLib.productToDic(d[36]),
             "is_vat": True if d[59] == 1 else False,
            "origin_price": 0,
             "store_payment": {"discount_type": d[15], "discount": d[16], "card": d[13], "cash": d[14],
