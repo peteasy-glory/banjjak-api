@@ -4,6 +4,7 @@ from datetime import datetime
 
 from rest_framework.views import APIView
 
+from apiShare import funcLib
 from hptopLib.TDB import TDB
 from hptopLib.TJson import TJson
 from hptopLib.TMessage import TMessage
@@ -95,7 +96,7 @@ class TAPIBase(APIView):
         booking_fi = "%s-%s-%s %s:%s" % (
             d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
         p_split = d[36].split('|')
-        price = totalPrice(d[36])
+        #price = totalPrice(d[36])
 
         customer = {"customer_id": d[3], "phone": d[39]}
         pet = {"idx": d[1], "animal": d[74], "type": d[75], "name": d[73], "photo":d[77]}  # 71~ 펫
@@ -106,12 +107,11 @@ class TAPIBase(APIView):
             "is_cancel": d[50],
             "category": p_split[3],
             "category_sub": p_split[4],
-            "pay_type": d[40],
-            # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
+            "pay_type": d[40],    # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
             "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
-            "product_detail": d[36],
+            "product_detail": funcLib.productToDic(d[36]),
             "is_vat": True if d[59] == 1 else False,
-            "origin_price": price,
+           "origin_price": 0,
             "store_payment": {"discount_type": d[15], "discount": d[16], "card": d[13], "cash": d[14],
                               "reserve_point": d[9]},
             "app_payment": {"total_price": d[7], "spend_point": d[8]},
