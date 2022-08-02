@@ -110,7 +110,7 @@ class TAPIBase(APIView):
             "pay_type": d[40],    # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
             "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
             "product_detail": d[36],
-            "product_detail_parsing": funcLib.productToDic(d[36]),
+            "product_detail_parsing": self.productToDic(d[36]),
             "is_vat": True if d[59] == 1 else False,
            "origin_price": 0,
             "store_payment": {"discount_type": d[15], "discount": d[16], "card": d[13], "cash": d[14],
@@ -120,7 +120,9 @@ class TAPIBase(APIView):
                 , "booking_st": booking_st
                 , "booking_fi": booking_fi},
             "memo": d[58],
-            "is_approve": d[76]  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
+            "is_approve": d[76],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
+            "is_confirm": zeroToBool(d[67])   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
+
         }
         tmp = {}
         tmp["customer"] = customer
@@ -380,6 +382,117 @@ class TAPIBase(APIView):
             return 0, body
         except Exception as e:
             return -1, e.args[0]
+
+    def productToDic(self, product):
+        p_split = product.split("|")
+        if p_split[1].strip() == "개":
+            return self.typeDog(product)
+        else:
+            return self.typeCat(product)
+
+    def typeDog(self,product):
+        try:
+            p_split = product.split("|")
+            products = {
+                "name": p_split[0],
+                "animal": p_split[1],
+                "shop": p_split[2],
+                "base": {
+                    "size": p_split[3],
+                    "beauty_kind": p_split[4],
+                    "weight": {
+                        "unit": subSplit(p_split[5], ":")[0],
+                        "price": subSplit(p_split[5], ":")[1]
+                    },
+                    "hair_features": setArr(p_split[8]),
+                    "hair_lenth": {
+                        "unit": subSplit(p_split[7], ":")[0],
+                        "price": subSplit(p_split[7], ":")[1]
+                    }
+                },
+                "add": {
+                    "face": {
+                        "unit": subSplit(p_split[6], ":")[0],
+                        "price": subSplit(p_split[6], ":")[1]
+                    },
+                    "leg": {
+                        "nail": p_split[9],
+                        "rain_boots": p_split[10],
+                        "bell": p_split[11]
+                    }
+                }
+            }
+            pos = 15
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 스파 개수
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["add"]["spa"] = body
+                pos += count
+            pos += 1
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 염색 개수
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["add"]["hair_color"] = body
+                pos += count
+            pos += 1
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 기타
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["add"]["etc"] = body
+                pos += count
+            pos += 1
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 쿠폰상품
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["coupon"] = body
+                pos += count
+            pos += 1
+
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 제품
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["goods"] = body
+                pos += count
+
+            return products
+        except Exception as e:
+            print(e.args[0])
+
+    def typeCat(self, product):
+        try:
+            p_split = product.split("|")
+            products = {
+                "name": p_split[0],
+                "animal": p_split[1],
+                "shop": p_split[2],
+                "category": p_split[3],
+                "base": {
+                    "weight": {
+                        "unit": subSplit(p_split[4], ":")[0],
+                        "price": subSplit(p_split[4], ":")[1]
+                    },
+                    "hair_beauty": p_split[5],
+                    "bath_shot": p_split[7],
+                    "bath_long": p_split[8]
+                },
+                "add": {
+                    "nail": p_split[6]
+                }
+            }
+            pos = 9
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 기타
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["add"]["etc"] = body
+                pos += count
+            pos += 1
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 쿠폰상품
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["coupon"] = body
+                pos += count
+            pos += 1
+            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 제품
+                count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                products["goods"] = body
+                pos += count
+
+            return products
+        except Exception as e:
+            print(e.args[0])
 
     def getArtistWorkInfo(self, partner_id):
         try:
