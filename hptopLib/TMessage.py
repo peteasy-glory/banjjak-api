@@ -23,6 +23,9 @@ class TMessage:
     def errorBadRequst(self):
         return {"head": {"code": 405, "message": "파라메타를 확인 해주세요."}}
 
+    def errorNonePostData(self):
+        return {"head": {"code": 406, "message": "Post Data가 없습니다."}}
+
     def error(self, message):
         return {"head": {"code": 999, "message": message}}
 

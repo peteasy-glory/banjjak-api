@@ -17,7 +17,8 @@ PROC_NOTICE_MGR_GET= "call procPartnerPC_Home_NoticeMgr_get(%s, '%s', '%s')"
 PROC_BEAUTY_BOOKING_GET= "call procPartnerPC_Home_BeautyBookingMgr_get('%s', %s, %s)"
 PROC_HOTEL_BOOKING_GET= "call procPartnerPC_Home_HotelBookingMgr_get('%s', %s, %s)"
 PROC_KINDERGADEN_BOOKING_GET= "call procPartnerPC_Home_KindergardenBookingMgr_get('%s', %s, %s)"
-PROC_CELLPHONE_SEARCH_GET= "call procPartnerPC_Home_PhoneSearch_get('%s', '%s')"
+PROC_CELLPHONE_SEARCH_GET = "call procPartnerPC_Home_PhoneSearch_get('%s', '%s')"
+PROC_NO_SHOW_COUNT_GET = "call procPartnerPC_Home__NoShowCount_get('%s','%s')"
 
 
 #BOOKING
@@ -25,6 +26,13 @@ PROC_BEAUTY_BOOKING_PEROID_GET = "call procPartnerPC_Booking_BeautyPeroid_get('%
 PROC_BEAUTY_BOOKING_CUSTOMER_PET_INFO_GET = "call procPartnerPC_Booking_CustomerPetInfo_get(%s)"
 PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_BeforePaymentInfo_get(%s, %s, %s)"
 
+PROC_BEAUTY_BOOKING_PAYMENT_INFO_GET = "call procPartnerPC_Booking_PaymentInfo_get(%s)"
+PROC_BEAUTY_BOOKING_NO_SHOW_PUT = "call procPartnerPC_Booking_NoShow_put(%s, %s)"
+
+PROC_BEAUTY_BOOKING_GRADE_SHOP_ID_GET = "call procPartnerPC_Booking_GRADE_SHOP_ID_get('%s')"
+PROC_BEAUTY_BOOKING_GRADE_SHOP_IDX_GET = "call procPartnerPC_Booking_GRADE_SHOP_IDX_get(%s)"
+PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_POST = "call procPartnerPC_Booking_GradeCustomer_post(%s,'%s')"
+PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_PUT = "call procPartnerPC_Booking_GradeCustomer_put(%s, %s)"
 
 #AUTH SETTING
 PROC_SETTING_ARTIST_WORKING_GET = "call procPartnerPC_Setting_Artist_Working_get('%s')"

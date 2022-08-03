@@ -49,32 +49,25 @@ class TCellSearch(TAPIBase):
             if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
             if request.GET.get('phone') is not None:
-                data, rows, columns = self.db.resultDBQuery(PROC_CELLPHONE_SEARCH_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_CELLPHONE_SEARCH_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
             else:
                 return HttpResponse(self.json.dicToJson(self.message.searchPhoneFail()))
             ret = self.message.successOk()
-            body = {}
-            if data is None:
+            body = self.queryDataToDic(value, rows, columns)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+            if value is not None:
+
+                for d in data:
+                    value1, rows1, columns1 = self.db.resultDBQuery(
+                        PROC_NO_SHOW_COUNT_GET % (partner_id.strip(), d[1]), QUERY_DB)
+
                 ret["body"] = body
                 return HttpResponse(self.json.dicToJson(ret))
             body = self.queryDataToDic(data, rows, columns)
-            if type(body) is list:
-                for item in body:
-                    tmpArr = []
-                    if item["family_cell"].strip() != "":
-                        phoneArr = item["family_cell"].split(",")
-                        for p in phoneArr:
-                            tmp = {"phone": p}
-                            tmpArr.append(tmp)
-                    item["family_cell"] = tmpArr
-            else:
-                tmpArr = []
-                if  body["family_cell"].strip() != "":
-                    phoneArr = body["family_cell"].split(",")
-                    for p in phoneArr:
-                        tmp = {"phone":p}
-                        tmpArr.append(tmp)
-                body["family_cell"] = tmpArr
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
