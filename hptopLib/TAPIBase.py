@@ -183,7 +183,7 @@ class TAPIBase(APIView):
                     tmp["image"] = d[6]
                     tmp["reg_date"] = d[8].strftime("%Y-%m-%d %H:%M:%S") if d[8] is not None else ""
                     body["notice"].append(tmp)
-            value, rows, columns = self.db.resultDBQuery(PROC_CONSULT_MGR_GET % (partner_id), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_CONSULT_MGR_GET % (partner_id,), QUERY_DB)
             data = []
             if rows < 2:
                 data.append(value)
@@ -208,12 +208,26 @@ class TAPIBase(APIView):
                     tmp["weight"] = d[12]
                     tmp["photo"] = d[13]
                     tmp["beauty_exp"] = d[14]
-                    tmp["vassination"] = d[15]
+                    tmp["vaccination"] = d[15]
                     tmp["bite"] = zeroToBool(d[16])
                     tmp["heart_trouble"] = zeroToBool(d[17])
                     tmp["marking"] = zeroToBool(d[18])
                     tmp["mounting"] = zeroToBool(d[19])
                     tmp["luxation"] = d[20]
+                    tmp["dermatosis"] = zeroToBool(d[21])
+                    tmp["photocounseling"] = d[22]
+                    photo = []
+                    try:
+                        if d[22] is not None and len(d[22]) > 0:
+                            code = tmp["photocounseling"].split(',')
+                            for c in code:
+                                value2, rows2, columns2 = self.db.resultDBQuery(PROC_CONSULT_PHOTO_GET % (c,),QUERY_DB)
+                                if value2 is not None:
+                                    p = {"photo": value2[3]}
+                                    photo.append(p)
+                    except Exception as e:
+                        print(e.args[0])
+                    tmp["consult_photo"]=photo
                     body["consulting"].append(tmp)
 
             value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)

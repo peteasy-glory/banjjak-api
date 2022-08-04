@@ -2,6 +2,7 @@
 
 from django.http import HttpResponse
 from apiShare.constVar import QUERY_DB
+from apiShare.funcLib import zeroToBool
 from apiShare.sqlQuery import *
 from hptopLib.TAPIBase import TAPIBase
 
@@ -99,6 +100,33 @@ class TConsulting(TAPIBase):
                     tmp["pet_id"] = d[6]
                     tmp["pet_name"] = d[7]
                     tmp["pet_type"] = d[8]
+
+                    tmp["birth"] = d[9]
+                    tmp["gender"] = d[10]
+                    tmp["neutral"] = zeroToBool(d[11])
+                    tmp["weight"] = d[12]
+                    tmp["photo"] = d[13]
+                    tmp["beauty_exp"] = d[14]
+                    tmp["vaccination"] = d[15]
+                    tmp["bite"] = zeroToBool(d[16])
+                    tmp["heart_trouble"] = zeroToBool(d[17])
+                    tmp["marking"] = zeroToBool(d[18])
+                    tmp["mounting"] = zeroToBool(d[19])
+                    tmp["luxation"] = d[20]
+                    tmp["dermatosis"] = zeroToBool(d[21])
+                    tmp["photocounseling"] = d[22]
+                    photo = []
+                    try:
+                        if d[22] is not None and len(d[22]) > 0:
+                            code = tmp["photocounseling"].split(',')
+                            for c in code:
+                                value2, rows2, columns2 = self.db.resultDBQuery(PROC_CONSULT_PHOTO_GET % (c,),QUERY_DB)
+                                if value2 is not None:
+                                    p = {"photo": value2[3]}
+                                    photo.append(p)
+                    except Exception as e:
+                        print(e.args[0])
+                    tmp["consult_photo"]=photo
                     body.append(tmp)
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))

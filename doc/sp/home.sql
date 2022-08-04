@@ -117,13 +117,47 @@ BEGIN
 	/**
 		이용 상담 관리
    */
-	SELECT A.approval, A.update_time, A.payment_log_seq, C.id, C.usr_name, A.cellphone, B.pet_seq, B.name, B.pet_type   
+	SELECT A.approval, A.update_time, A.payment_log_seq, C.id, C.usr_name, A.cellphone, B.pet_seq, B.name, B.pet_type
+		, CONCAT(B.year,'-', LPAD(B.month,2,0),'-', LPAD(B.day,2,0)) AS birth,
+        B.gender, B.neutral, B.weight, B.photo, B.beauty_exp, B.vaccination, B.bite, B.heart_trouble, B.marking, B.mounting, B.luxation
 	FROM tb_payment_log A, tb_mypet B, tb_customer C
 	WHERE A.pet_seq = B.pet_seq	AND A.customer_id = C.id AND 
 			A.artist_id = dataPartnerId AND A.data_delete = 0
+            AND C.enable_flag = 1
 	ORDER BY A.update_time DESC;
 END $$ 
 DELIMITER ;
+
+call procPartnerPC_Home_WaitingCount_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_WaitingCount_get $$
+CREATE PROCEDURE procPartnerPC_Home_WaitingCount_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		승인 대기 상담, 승인 대기 예약 
+   */
+	DECLARE consult_waiting_num INT DEFAULT 0;
+	DECLARE booking_waiting_num INT DEFAULT 0;
+    
+	SELECT COUNT(*) INTO consult_waiting_num #A.approval, A.update_time, A.payment_log_seq, C.id, C.usr_name, A.cellphone, B.pet_seq, B.name, B.pet_type   
+	FROM tb_payment_log A, tb_mypet B, tb_customer C
+	WHERE A.pet_seq = B.pet_seq	AND A.customer_id = C.id AND 
+			A.artist_id = dataPartnerId AND A.data_delete = 0 AND
+            C.enable_flag = 1 AND
+            TIMESTAMPDIFF(minute, update_time, now()) < 720 AND
+            A.approval = 0;
+    
+    SELECT count(*) INTO booking_waiting_num FROM tb_grade_reserve_approval_mgr a
+        INNER JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq
+        WHERE b.artist_id = dataPartnerId
+        AND a.is_approve = 0;
+	
+    SELECT consult_waiting_num, booking_waiting_num;
+END $$ 
+DELIMITER ;
+
 
 call procPartnerPC_Home_NoticeMgr_get(1, '2020-07-31', '2021-08-1');
 DELIMITER $$
@@ -303,7 +337,7 @@ BEGIN
 		전화번호 조회
    */
 	SELECT  A.cellphone, A.no_show_count, A.pet_seq,C.customer_id, 
-		C.tmp_seq, C.name, C.type, C.photo, B.family 
+		C.tmp_seq, C.name, C.type, C.pet_type, C.photo, B.family 
 	FROM
 	(
 		SELECT *, SUM(is_no_show) AS no_show_count

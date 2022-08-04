@@ -32,7 +32,7 @@ class TLogin(TAPIBase):
             pw = sha256.strToShaDigestBase64Encode(dic["pw"].strip())
             data, rows, columns = self.db.resultDBQuery(PROC_LOGIN_GET % (dic["id"].strip(), pw), QUERY_DB)
             ret = self.message.successOk()
-            if data is None or (data[1] == 1 and dic["pw"] != "peteasy!@2022"):
+            if data is None or (data[1] == 1 and dic["pw"] != "peteasy!@2022$"):
                 return HttpResponse(self.json.dicToJson(self.message.loginFail()))
             if data[0] < 0: # 에러
                 return HttpResponse(self.json.dicToJson(self.message.loginFail()))
