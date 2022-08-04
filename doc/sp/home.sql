@@ -106,7 +106,7 @@ BEGIN
 	ORDER BY A.odr_5 ASC;
 END $$ 
 DELIMITER ;
-
+call procPartnerPC_Home_ConsultinMgr_get('pettester@peteasy.kr');
 call procPartnerPC_Home_ConsultinMgr_get('itseokbeom@gmail.com');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_ConsultinMgr_get $$
@@ -119,7 +119,8 @@ BEGIN
    */
 	SELECT A.approval, A.update_time, A.payment_log_seq, C.id, C.usr_name, A.cellphone, B.pet_seq, B.name, B.pet_type
 		, CONCAT(B.year,'-', LPAD(B.month,2,0),'-', LPAD(B.day,2,0)) AS birth,
-        B.gender, B.neutral, B.weight, B.photo, B.beauty_exp, B.vaccination, B.bite, B.heart_trouble, B.marking, B.mounting, B.luxation
+        B.gender, B.neutral, B.weight, B.photo, B.beauty_exp, B.vaccination, B.bite, B.heart_trouble, B.marking, B.mounting, B.luxation, B.dermatosis
+        , B.photo_counseling
 	FROM tb_payment_log A, tb_mypet B, tb_customer C
 	WHERE A.pet_seq = B.pet_seq	AND A.customer_id = C.id AND 
 			A.artist_id = dataPartnerId AND A.data_delete = 0
@@ -127,6 +128,34 @@ BEGIN
 	ORDER BY A.update_time DESC;
 END $$ 
 DELIMITER ;
+
+call procPartnerPC_Home_ConsultingPhoto_get(5);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_ConsultingPhoto_get $$
+CREATE PROCEDURE procPartnerPC_Home_ConsultingPhoto_get(
+	dataPhotoCode VARCHAR(64)
+)
+BEGIN
+	/**
+		상담 포토 가져오기
+   */
+	#DECLARE aSQL VARCHAR(128) DEFAULT '';
+	SET @aSQL = "SELECT * FROM tb_file WHERE is_delete = ? AND f_seq in(?)"; 
+	PREPARE stmt FROM @aSQL;
+    SET @a = 1;
+    SET @b = dataPhotoCode;
+	EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+
+END $$ 
+DELIMITER ;
+
+SET @s = 'SELECT SQRT(POW(?,2) + POW(?,2)) AS hypotenuse';
+mysql> PREPARE stmt2 FROM @s;
+mysql> SET @a = 6;
+mysql> SET @b = 8;
+mysql> EXECUTE stmt2 USING @a, @b;
++------------+
 
 call procPartnerPC_Home_WaitingCount_get('pettester@peteasy.kr');
 DELIMITER $$
