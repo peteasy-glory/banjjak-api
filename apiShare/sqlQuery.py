@@ -28,7 +28,9 @@ PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_Before
 
 #AUTH SETTING
 
-PROC_SETTING_ARTIST_POST = "call procPartnerPC_Setting_Artist_post('%s', '%s', '%s', '%s', '%s', '%s', %s, '%s', '%s', %s)"
+PROC_SETTING_ARTIST_POST = "call procPartnerPC_Setting_Artist_post('%s', '%s', '%s', '%s', '%s', '%s', %s, '%s', " \
+                           "'%s', %s) "
+PROC_SETTING_THE_ARTIST_DEL = "call procPartnerPC_Setting_The_Artist_del('%s', '%s')"
 
 PROC_SETTING_ARTIST_WORKING_GET = "call procPartnerPC_Setting_Artist_Working_get('%s')"
 PROC_SETTING_SHOP_OPEN_CLOSE_GET = "call procPartnerPC_Setting_Shop_OpenClose_get('%s')"
