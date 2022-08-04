@@ -17,11 +17,16 @@ class TMessage:
     def loginAuthFail(self):
         return {"head": {"code": 403, "message": "등록된 사용자가 아닙니다."}}
 
-    def searchPhoneFail(self):
-        return {"head": {"code": 404, "message": "조회할 전화번호가 없습니다."}}
+    def searchFail(self):
+        return {"head": {"code": 404, "message": "조회할 검색어가 없습니다."}}
+    def multiplSsearchFail(self):
+        return {"head": {"code": 405, "message": "다중 검색은 지원하지 않습니다."}}
 
     def errorBadRequst(self):
-        return {"head": {"code": 405, "message": "파라메타를 확인 해주세요."}}
+        return {"head": {"code": 406, "message": "파라메타를 확인 해주세요."}}
+
+    def errorNonePostData(self):
+        return {"head": {"code": 407, "message": "Post Data가 없습니다."}}
 
     def error(self, message):
         return {"head": {"code": 999, "message": message}}

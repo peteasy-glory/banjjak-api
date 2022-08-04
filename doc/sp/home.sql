@@ -270,7 +270,7 @@ END $$
 DELIMITER ;
 
 -- call procPartnerPC_Home_PhoneSearch_get('eaden@peteasy.kr', '111');
--- call procPartnerPC_Home_PhoneSearch_get('eaden@peteasy.kr', '111')
+call procPartnerPC_Home_PhoneSearch_get('pettester@peteasy.kr', '003');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_PhoneSearch_get $$
 CREATE PROCEDURE procPartnerPC_Home_PhoneSearch_get(
@@ -281,25 +281,172 @@ BEGIN
 	/**
 		전화번호 조회
    */
-	SELECT A.payment_log_seq,A.cellphone, A.pet_type, A.name, GROUP_CONCAT(B.from_cellphone SEPARATOR ',') AS family_cell FROM
+	SELECT A.*, B.name, B.type, B.pet_type, B.photo FROM
 	(
-		SELECT AA.payment_log_seq, AA.cellphone, BB.pet_type, BB.name FROM tb_payment_log AA JOIN tb_mypet BB ON AA.pet_seq = BB.pet_seq 
-		WHERE AA.data_delete = 0 AND
-			AA.artist_id = dataPartnerId AND
-			AA.cellphone LIKE CONCAT('%',dataPhone,'%')
-	) A JOIN (
-		SELECT *
-		FROM tb_customer_family 
-		WHERE is_delete = 0 AND
-			artist_id = dataPartnerId AND
-			to_cellphone like CONCAT('%',dataPhone,'%')
-	) B ON A.cellphone = B.to_cellphone
-	GROUP BY A.cellphone;
-
+		SELECT payment_log_seq, cellphone , pet_seq
+		FROM tb_payment_log 
+		WHERE data_delete = 0 AND artist_id = dataPartnerId AND
+			cellphone LIKE CONCAT('%',dataPhone,'%') 
+		GROUP BY cellphone
+	 ) A LEFT JOIN tb_mypet B ON A.pet_seq = B.pet_seq;
 END $$ 
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPhone_get $$
+CREATE PROCEDURE procPartnerPC_Home_SearchPhone_get(
+	dataPartnerId VARCHAR(64),
+    dataPhone VARCHAR(50)
+)
+BEGIN
+	/**
+		전화번호 조회
+   */
+	SELECT  A.cellphone, A.no_show_count, A.pet_seq,C.customer_id, 
+		C.tmp_seq, C.name, C.type, C.photo, B.family 
+	FROM
+	(
+		SELECT *, SUM(is_no_show) AS no_show_count
+		FROM tb_payment_log 
+		WHERE data_delete = 0 AND artist_id = dataPartnerId AND
+			cellphone LIKE CONCAT('%',dataPhone,'%') 
+		GROUP BY cellphone
+	) A
+	LEFT JOIN
+	(
+		SELECT to_cellphone , group_concat(from_cellphone) AS family
+		FROM tb_customer_family 
+		WHERE is_delete = 0 AND
+			artist_id = dataPartnerId AND
+			(from_cellphone like CONCAT('%',dataPhone,'%')
+			OR to_cellphone like CONCAT('%',dataPhone,'%'))
+		GROUP BY to_cellphone 
+	) B ON A.cellphone = B.to_cellphone
+	JOIN tb_mypet C ON A.pet_seq = C.pet_seq;
+END $$ 
+DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPetName_get $$
+CREATE PROCEDURE procPartnerPC_Home_SearchPetName_get(
+	dataPartnerId VARCHAR(64),
+    dataPetName VARCHAR(64)
+)
+BEGIN
+    /**
+		펫명 조회
+   */
+    SELECT AA.cellphone, AA.no_show_count, AA.pet_seq, AA.customer_id, 
+		AA.tmp_seq, AA.name, AA.type, AA.pet_type, AA.photo, BB.family
+	FROM
+	(
+		SELECT A.cellphone, SUM(A.is_no_show) AS no_show_count, 
+				B.pet_seq, B.customer_id, B.tmp_seq, B.name, B.type, B.pet_type, B.photo
+		FROM tb_payment_log A JOIN tb_mypet B ON A.pet_seq = B.pet_seq
+		WHERE A.data_delete = 0 AND B.data_delete = 0
+			AND A.artist_id = dataPartnerId 
+			AND B.name LIKE CONCAT('%', dataPetName, '%')
+		GROUP BY A.cellphone
+	) AA LEFT JOIN 
+	(
+		SELECT to_cellphone, GROUP_CONCAT(from_cellphone) AS family
+		FROM tb_customer_family
+		WHERE artist_id = dataPartnerId
+			AND is_delete = 0
+		GROUP BY to_cellphone
+	)BB ON AA.cellphone = BB.to_cellphone;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Home__NoShowCount_get('pettester@peteasy.kr', '01089267510');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home__NoShowCount_get $$
+CREATE PROCEDURE procPartnerPC_Home__NoShowCount_get(
+	dataPartnerId VARCHAR(64),
+    dataPhone VARCHAR(50)
+)
+BEGIN
+	/**
+		노쇼 갯수 조회
+   */
+	SELECT COUNT(*)
+	FROM tb_payment_log 
+	WHERE data_delete = 0 AND artist_id = dataPartnerId AND
+		is_no_show = 1 AND cellphone = dataPhone;
+
+END $$ 
+DELIMITER ;
+-- DELIMITER $$
+-- DROP PROCEDURE IF EXISTS procPartnerPC_Home_PhoneSearch_get $$
+-- CREATE PROCEDURE procPartnerPC_Home_PhoneSearch_get(
+-- 	dataPartnerId VARCHAR(64),
+--     dataPhone VARCHAR(50)
+-- )
+-- BEGIN
+-- 	/**
+-- 		전화번호 조회
+--    */
+--     DECLARE EOF INT DEFAULT FALSE;
+--     DECLARE aPhone VARCHAR(20) DEFAULT '';
+--     DECLARE aNoShow INT DEFAULT 0;
+--     DECLARE aTotalNoShow VARCHAR(512) DEFAULT '';
+--     DECLARE cursorPhones CURSOR FOR 
+-- 		SELECT A.*, B.name, B.type, B.pet_type, B.photo FROM
+-- 		(
+-- 			SELECT payment_log_seq, cellphone , pet_seq
+-- 			FROM tb_payment_log 
+-- 			WHERE data_delete = 0 AND artist_id = dataPartnerId AND
+-- 				cellphone LIKE CONCAT('%',dataPhone,'%') 
+-- 			GROUP BY cellphone
+-- 		 ) A LEFT JOIN tb_mypet B ON A.pet_seq = B.pet_seq;
+
+-- 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET EOF = TRUE;
+--  	OPEN cursorPhones;
+--     
+--     loof: LOOP
+-- 		FETCH cursorPhones
+-- 			INTO aPhone;
+-- 		IF EOF THEN
+-- 			LEAVE loof;
+-- 		END IF;
+--         SELECT COUNT(*) INTO aNoShow
+--         FROM tb_payment_log 
+--         WHERE data_delete = 0 AND is_no_show = 1 AND cellphone = aPhone;
+--         SET aTotalNoShow = CONCAT(aTotalNoShow, '|', aPhone, '|', aNoShow);
+--         
+--     END LOOP;
+--     CLOSE cursorPhones;
+-- END $$ 
+-- DELIMITER ;
+
+SELECT *
+		FROM tb_customer_family 
+		WHERE is_delete = 0 AND
+			artist_id = 'pettester@peteasy.kr' AND
+			to_cellphone ='01053906571';
+
+SELECT * FROM
+(
+	SELECT cellphone , pet_seq
+	FROM tb_payment_log 
+	WHERE data_delete = 0 AND artist_id = 'pettester@peteasy.kr' AND
+		cellphone LIKE CONCAT('%','003','%') 
+	GROUP BY cellphone
+ ) A LEFT JOIN tb_mypet B ON A.pet_seq = B.pet_seq   
+        
+ 		SELECT *
+		FROM tb_customer_family 
+		WHERE is_delete = 0 AND
+			artist_id = 'pettester@peteasy.kr' AND
+			to_cellphone like CONCAT('%','3','%')
+		GROUP BY from_cellphone
+            
+        
+			LEFT JOIN tb_mypet BB ON AA.pet_seq = BB.pet_seq 
+		WHERE AA.data_delete = 0 AND
+			AA.artist_id = 'pettester@peteasy.kr' AND
+			AA.cellphone LIKE CONCAT('%','01053906571','%')
 
 
 

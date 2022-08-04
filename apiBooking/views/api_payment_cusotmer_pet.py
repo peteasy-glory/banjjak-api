@@ -38,3 +38,6 @@ class TCustomerPetInfo(TAPIBookingBase):
             msg = "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (
             frame_info.filename, frame_info.lineno, frame_info.function, e.args[0])
             return -1, msg, None
+
+    def putInfo(self, *args):
+        pass

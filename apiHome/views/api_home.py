@@ -48,34 +48,16 @@ class TCellSearch(TAPIBase):
         try:
             if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+            if request.GET.get('phone') is not None and request.GET.get('name') is not None:
+                return HttpResponse(self.json.dicToJson(self.message.multiplSsearchFail()))
             if request.GET.get('phone') is not None:
-                data, rows, columns = self.db.resultDBQuery(PROC_CELLPHONE_SEARCH_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_SEARCH_PHONE_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
+            elif request.GET.get('name') is not None:
+                value, rows, columns = self.db.resultDBQuery(PROC_SEARCH_PET_NAME_GET % (partner_id.strip(), request.GET.get('name')), QUERY_DB)
             else:
-                return HttpResponse(self.json.dicToJson(self.message.searchPhoneFail()))
+                return HttpResponse(self.json.dicToJson(self.message.searchFail()))
             ret = self.message.successOk()
-            body = {}
-            if data is None:
-                ret["body"] = body
-                return HttpResponse(self.json.dicToJson(ret))
-            body = self.queryDataToDic(data, rows, columns)
-            if type(body) is list:
-                for item in body:
-                    tmpArr = []
-                    if item["family_cell"].strip() != "":
-                        phoneArr = item["family_cell"].split(",")
-                        for p in phoneArr:
-                            tmp = {"phone": p}
-                            tmpArr.append(tmp)
-                    item["family_cell"] = tmpArr
-            else:
-                tmpArr = []
-                if  body["family_cell"].strip() != "":
-                    phoneArr = body["family_cell"].split(",")
-                    for p in phoneArr:
-                        tmp = {"phone":p}
-                        tmpArr.append(tmp)
-                body["family_cell"] = tmpArr
-            ret["body"] = body
+            ret["body"] = self.queryDataToDic(value, rows, columns)
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
@@ -119,6 +101,18 @@ class TConsulting(TAPIBase):
                     tmp["pet_type"] = d[8]
                     body.append(tmp)
             ret["body"] = body
+            return HttpResponse(self.json.dicToJson(ret))
+        except Exception as e:
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
+
+class TConsultBookingWaiting(TAPIBase):
+    def get(self, request, partner_id):
+        try:
+            if partner_id is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+            value, rows, columns = self.db.resultDBQuery(PROC_CONSULT_BOOKING_WAITING_COUNT_GET % (partner_id.strip()), QUERY_DB)
+            ret = self.message.successOk()
+            ret["body"] = self.queryDataToDic(value, rows, columns)
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))

@@ -185,24 +185,200 @@ BEGIN
     END IF;
 END $$ 
 DELIMITER ;
-select * from tb_payment_log where payment_log_seq = 571052;
 
-SELECT * FROM tb_coupon WHERE customer_id = 'pettester@peteasy.kr' AND product_type = 'B' AND del_yn = 'N' AND (given > 0 OR price > 0);
+call procPartnerPC_Booking_NoShow_put(568420, false);
+call procPartnerPC_Booking_PaymentInfo_get(568420);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PaymentInfo_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PaymentInfo_get(
+	dataPaymentIdx INT
+)
+BEGIN
+	/**
+		구매건 조회
+   */
+	SELECT * FROM tb_payment_log WHERE payment_log_seq = dataPaymentIdx;
+    
+END $$ 
+DELIMITER ;
 
-    SELECT *
-	FROM tb_payment_log 
-  	WHERE artist_id = 'pettester@peteasy.kr' 
-		#AND is_no_show = 0 
-		#AND is_cancel = 0 
-        and data_delete = 0
-		AND approval = 1
-		AND etc_memo != ''
-		#AND pet_seq = 184764   
-		AND CONCAT(year,'-', LPAD(month, 2, 0),'-', LPAD(day, 2, 0), 
-							' ', LPAD(hour, 2, 0),':', LPAD(minute, 2, 0)) < '2022-08-02 09:00'
-					
-;   
-select * from tb_payment_log
-where pet_seq = 3956;
- 
-                            
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_put $$
+CREATE PROCEDURE procPartnerPC_Booking_NoShow_put(
+	dataPaymentIdx INT,
+    dataNoShow BOOL 
+)
+BEGIN
+	/**
+		노쇼 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+	IF dataNoShow THEN
+		UPDATE tb_payment_log SET is_no_show = 1 WHERE payment_log_seq = dataPaymentIdx;
+    ELSE
+		UPDATE tb_payment_log SET is_no_show = 0 WHERE payment_log_seq = dataPaymentIdx;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_put $$
+CREATE PROCEDURE procPartnerPC_Booking_NoShow_put(
+	dataPaymentIdx INT,
+    dataNoShow BOOL 
+)
+BEGIN
+	/**
+		노쇼 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+	IF dataNoShow THEN
+		UPDATE tb_payment_log SET is_no_show = 1 WHERE payment_log_seq = dataPaymentIdx;
+    ELSE
+		UPDATE tb_payment_log SET is_no_show = 0 WHERE payment_log_seq = dataPaymentIdx;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+
+--         $que = "SELECT COUNT(*) AS cnt FROM tb_grade_of_customer WHERE customer_id = '{$_POST['id']}' AND grade_idx = '{$_POST['org_grade']}'";
+--         //echo $que;
+--         $row = sql_fetch_array($que);
+--         if($row[0]['cnt']>0) {
+--             $que = "UPDATE tb_grade_of_customer SET grade_idx = '{$_POST['grade']}' WHERE customer_id = '{$_POST['id']}' AND grade_idx = '{$_POST['org_grade']}'";
+--         } else {
+--             //$que = "INSERT INTO tb_grade_of_customer SET grade_idx = '{$_POST['grade']}',  customer_id = '{$_POST['id']}'";
+--             $que = "INSERT INTO `tb_grade_of_customer` (`grade_idx`, `customer_id`, `is_delete`) VALUES ('{$_POST['grade']}', '{$_POST['id']}', 0);";
+--         } 
+
+call procPartnerPC_Booking_GRADE_SHOP_ID_get('pettester@peteasy.kr');        
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GRADE_SHOP_ID_get $$
+CREATE PROCEDURE procPartnerPC_Booking_GRADE_SHOP_ID_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		샵 등급 조회 (조건: 아이디)
+   */
+	SELECT * FROM tb_grade_of_shop 
+    WHERE is_delete = 0 AND artist_id = dataPartnerId;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_GRADE_SHOP_IDX_get(2205);        
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GRADE_SHOP_IDX_get $$
+CREATE PROCEDURE procPartnerPC_Booking_GRADE_SHOP_IDX_get(
+	dataGradeIdx INT
+)
+BEGIN
+	/**
+		샵 등급 조회 (조건: 인덱스)
+   */
+	SELECT * FROM tb_grade_of_shop 
+    WHERE idx = dataGradeIdx;
+    
+END $$ 
+DELIMITER ;
+
+
+	SELECT COUNT(*) as aCount , idx as aIdx FROM tb_grade_of_customer
+    WHERE is_delete = 0 AND grade_idx = 2203 AND customer_id = 'pettester@peteasy.kr';
+    
+call procPartnerPC_Booking_GradeCustomer_post(2203,'pettesterr@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GradeCustomer_post $$
+CREATE PROCEDURE procPartnerPC_Booking_GradeCustomer_post(
+	dataGradeIdx INT,
+	dataCustomerId VARCHAR(64)
+)
+BEGIN
+	/**
+		고객 샵 등급 부여
+   */
+	DECLARE aCount INT DEFAULT 0;
+    DECLARE aIdx INT UNSIGNED DEFAULT 0;
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	SELECT COUNT(*), idx INTO aCount, aIdx FROM tb_grade_of_customer
+    WHERE is_delete = 0 AND grade_idx = dataGradeIdx AND customer_id = dataCustomerId;
+
+	START TRANSACTION;
+	
+    IF aCount < 1 THEN
+		INSERT INTO tb_grade_of_customer (grade_idx, customer_id) VALUES (dataGradeIdx, dataCustomerId);
+    ELSE
+		UPDATE tb_grade_of_customer SET grade_idx = dataGradeIdx, customer_id = dataCustomerId WHERE idx = aIdx;
+    END IF;
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_GradeCustomer_put(2203,'pettesterr@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GradeCustomer_put $$
+CREATE PROCEDURE procPartnerPC_Booking_GradeCustomer_put(
+	dataIdx INT UNSIGNED,
+	dataGradeIdx INT UNSIGNED
+)
+BEGIN
+	/**
+		고객 샵 등급 부여
+   */
+	DECLARE aCount INT DEFAULT 0;
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	SELECT COUNT(*) INTO aCount FROM tb_grade_of_customer WHERE idx = dataIdx;
+
+	
+    IF aCount < 1 THEN
+		SET aErr = -2;
+    ELSE
+    BEGIN
+		START TRANSACTION;
+		UPDATE tb_grade_of_customer SET grade_idx = dataGradeIdx WHERE idx = aIdx;
+		IF aErr < 0 THEN
+			ROLLBACK;
+		ELSE
+			COMMIT;
+		END IF;
+	END;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
