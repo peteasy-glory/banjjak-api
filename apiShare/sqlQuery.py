@@ -17,7 +17,11 @@ PROC_NOTICE_MGR_GET= "call procPartnerPC_Home_NoticeMgr_get(%s, '%s', '%s')"
 PROC_BEAUTY_BOOKING_GET= "call procPartnerPC_Home_BeautyBookingMgr_get('%s', %s, %s)"
 PROC_HOTEL_BOOKING_GET= "call procPartnerPC_Home_HotelBookingMgr_get('%s', %s, %s)"
 PROC_KINDERGADEN_BOOKING_GET= "call procPartnerPC_Home_KindergardenBookingMgr_get('%s', %s, %s)"
+
 PROC_CELLPHONE_SEARCH_GET = "call procPartnerPC_Home_PhoneSearch_get('%s', '%s')"
+PROC_SEARCH_PHONE_GET = "call procPartnerPC_Home_SearchPhone_get('%s', '%s')"
+PROC_SEARCH_PET_NAME_GET = "call procPartnerPC_Home_SearchPetName_get('%s', '%s')"
+
 PROC_NO_SHOW_COUNT_GET = "call procPartnerPC_Home__NoShowCount_get('%s','%s')"
 
 

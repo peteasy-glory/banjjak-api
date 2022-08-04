@@ -194,13 +194,26 @@ class TAPIBase(APIView):
                 for d in data:
                     tmp = {}
                     tmp["approval"] = d[0]  # 0:첫이용상담신청, 1:미용, 2:첫이용상담수락, 3:첫이용상담거절
-                    tmp["date"] = d[1]
+                    tmp["date"] = str(d[1])
                     tmp["user"] = d[3]
                     tmp["user_name"] = d[4]
                     tmp["phone"] = d[5]
                     tmp["pet_id"] = d[6]
                     tmp["pet_name"] = d[7]
                     tmp["pet_type"] = d[8]
+
+                    tmp["birth"] = d[9]
+                    tmp["gender"] = d[10]
+                    tmp["neutral"] = zeroToBool(d[11])
+                    tmp["weight"] = d[12]
+                    tmp["photo"] = d[13]
+                    tmp["beauty_exp"] = d[14]
+                    tmp["vassination"] = d[15]
+                    tmp["bite"] = zeroToBool(d[16])
+                    tmp["heart_trouble"] = zeroToBool(d[17])
+                    tmp["marking"] = zeroToBool(d[18])
+                    tmp["mounting"] = zeroToBool(d[19])
+                    tmp["luxation"] = d[20]
                     body["consulting"].append(tmp)
 
             value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)

@@ -289,8 +289,73 @@ BEGIN
 			cellphone LIKE CONCAT('%',dataPhone,'%') 
 		GROUP BY cellphone
 	 ) A LEFT JOIN tb_mypet B ON A.pet_seq = B.pet_seq;
+END $$ 
+DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPhone_get $$
+CREATE PROCEDURE procPartnerPC_Home_SearchPhone_get(
+	dataPartnerId VARCHAR(64),
+    dataPhone VARCHAR(50)
+)
+BEGIN
+	/**
+		전화번호 조회
+   */
+	SELECT  A.cellphone, A.no_show_count, A.pet_seq,C.customer_id, 
+		C.tmp_seq, C.name, C.type, C.photo, B.family 
+	FROM
+	(
+		SELECT *, SUM(is_no_show) AS no_show_count
+		FROM tb_payment_log 
+		WHERE data_delete = 0 AND artist_id = dataPartnerId AND
+			cellphone LIKE CONCAT('%',dataPhone,'%') 
+		GROUP BY cellphone
+	) A
+	LEFT JOIN
+	(
+		SELECT to_cellphone , group_concat(from_cellphone) AS family
+		FROM tb_customer_family 
+		WHERE is_delete = 0 AND
+			artist_id = dataPartnerId AND
+			(from_cellphone like CONCAT('%',dataPhone,'%')
+			OR to_cellphone like CONCAT('%',dataPhone,'%'))
+		GROUP BY to_cellphone 
+	) B ON A.cellphone = B.to_cellphone
+	JOIN tb_mypet C ON A.pet_seq = C.pet_seq;
+END $$ 
+DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPetName_get $$
+CREATE PROCEDURE procPartnerPC_Home_SearchPetName_get(
+	dataPartnerId VARCHAR(64),
+    dataPetName VARCHAR(64)
+)
+BEGIN
+    /**
+		펫명 조회
+   */
+    SELECT AA.cellphone, AA.no_show_count, AA.pet_seq, AA.customer_id, 
+		AA.tmp_seq, AA.name, AA.type, AA.pet_type, AA.photo, BB.family
+	FROM
+	(
+		SELECT A.cellphone, SUM(A.is_no_show) AS no_show_count, 
+				B.pet_seq, B.customer_id, B.tmp_seq, B.name, B.type, B.pet_type, B.photo
+		FROM tb_payment_log A JOIN tb_mypet B ON A.pet_seq = B.pet_seq
+		WHERE A.data_delete = 0 AND B.data_delete = 0
+			AND A.artist_id = dataPartnerId 
+			AND B.name LIKE CONCAT('%', dataPetName, '%')
+		GROUP BY A.cellphone
+	) AA LEFT JOIN 
+	(
+		SELECT to_cellphone, GROUP_CONCAT(from_cellphone) AS family
+		FROM tb_customer_family
+		WHERE artist_id = dataPartnerId
+			AND is_delete = 0
+		GROUP BY to_cellphone
+	)BB ON AA.cellphone = BB.to_cellphone;
+    
 END $$ 
 DELIMITER ;
 

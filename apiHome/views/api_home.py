@@ -48,27 +48,16 @@ class TCellSearch(TAPIBase):
         try:
             if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+            if request.GET.get('phone') is not None and request.GET.get('name') is not None:
+                return HttpResponse(self.json.dicToJson(self.message.multiplSsearchFail()))
             if request.GET.get('phone') is not None:
-                value, rows, columns = self.db.resultDBQuery(PROC_CELLPHONE_SEARCH_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_SEARCH_PHONE_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
+            elif request.GET.get('name') is not None:
+                value, rows, columns = self.db.resultDBQuery(PROC_SEARCH_PET_NAME_GET % (partner_id.strip(), request.GET.get('name')), QUERY_DB)
             else:
-                return HttpResponse(self.json.dicToJson(self.message.searchPhoneFail()))
+                return HttpResponse(self.json.dicToJson(self.message.searchFail()))
             ret = self.message.successOk()
-            body = self.queryDataToDic(value, rows, columns)
-            data = []
-            if rows < 2:
-                data.append(value)
-            else:
-                data = value
-            if value is not None:
-
-                for d in data:
-                    value1, rows1, columns1 = self.db.resultDBQuery(
-                        PROC_NO_SHOW_COUNT_GET % (partner_id.strip(), d[1]), QUERY_DB)
-
-                ret["body"] = body
-                return HttpResponse(self.json.dicToJson(ret))
-            body = self.queryDataToDic(data, rows, columns)
-            ret["body"] = body
+            ret["body"] = self.queryDataToDic(value, rows, columns)
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
