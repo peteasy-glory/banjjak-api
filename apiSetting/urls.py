@@ -2,8 +2,8 @@
 
 from django.urls import path
 from apiSetting.views import api_artist_work, api_open_close, api_regular_holiday, api_artist_vacation, api_part_time, \
-    api_break_time, api_auth_setting
-from apiSetting.views import api_artist_work, api_schedule_artist
+    api_break_time, api_artist_setting, api_schedule_artist
+# from apiSetting.views import api_artist_work, api_schedule_artist
 
 
 urlpatterns = [
@@ -15,6 +15,7 @@ urlpatterns = [
     path('setting/artist-vacation/<str:partner_id>', api_artist_vacation.TVacation.as_view()),
     path('setting/part-time/<str:partner_id>', api_part_time.TPartTime.as_view()),
     path('setting/break-time/<str:partner_id>', api_break_time.TBreakTime.as_view()),
-    path('setting/join-artist', api_auth_setting.TAuthSetting.as_view()),
+    path('setting/join-artist', api_artist_setting.TAuthSetting.as_view()),
+    path('setting/artist-del', api_artist_setting.TAuthSetting.as_view()),
 
 ]
