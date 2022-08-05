@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from curses.ascii import isdigit
 
 
 def totalPrice(src):
@@ -49,7 +50,6 @@ def setArr(str):
     return body
 
 def setOffSet(st, count, list):
-    i = 1
     tmpStr = ""
     for i in range(count):
         if i > 0:
@@ -57,3 +57,7 @@ def setOffSet(st, count, list):
         tmpStr += list[st+i+1]
     body = setArr(tmpStr)
     return len(body), body
+
+
+def judgeStrOrInt(value):
+    return isdigit(value);
