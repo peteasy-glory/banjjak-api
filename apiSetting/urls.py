@@ -15,7 +15,8 @@ urlpatterns = [
     path('setting/artist-vacation/<str:partner_id>', api_artist_vacation.TVacation.as_view()),
     path('setting/part-time/<str:partner_id>', api_part_time.TPartTime.as_view()),
     path('setting/break-time/<str:partner_id>', api_break_time.TBreakTime.as_view()),
-    path('setting/join-artist', api_artist_setting.TAuthSetting.as_view()),
     path('setting/artist-put', api_artist_setting.TAuthSetting.as_view()),
+    path('setting/out-artist', api_artist_setting.TArtistOut.as_view()),
+    path('setting/view-artist', api_artist_setting.TArtistView.as_view()),
 
 ]

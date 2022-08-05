@@ -49,5 +49,3 @@ class TMessage:
     def errorDBQuery(self):
         return {"head": {"code": 907, "message": "데이타 쿼리 오류"}}
 
-    def errorDBDuplicate(self):
-        return {"head": {"code": 908, "message": "데이타 증복 오류"}}

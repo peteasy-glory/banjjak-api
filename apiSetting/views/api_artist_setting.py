@@ -8,7 +8,7 @@ from hptopLib.TAPIBase import TAPIBase
 
 class TAuthSetting(TAPIBase):
     """
-    미용사 권한 설정.
+    미용사 등록 및 수정.
     """
 
     def __init__(self):
@@ -31,28 +31,7 @@ class TAuthSetting(TAPIBase):
 
     def post(self, request):
         try:
-            dic = request.data
-
-            if dic["artist_id"] is None or dic["name"] is None or dic["week"] is None:
-                return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
-
-            artist_id = dic["artist_id"].strip()
-            name = dic["name"].strip()
-            data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_POST % (artist_id,name,dic["nicname"],dic["is_main"],dic["is_out"],dic["is_view"],dic["week"],dic["time_start"],dic["time_end"],dic["sequ_prnt"]), QUERY_DB)
-            ret = self.message.successOk()
-            print(data)
-            if data is None:
-                return HttpResponse(self.json.dicToJson(self.message.errorDBInsert()))
-            if data[0] > 0:
-                return HttpResponse(self.json.dicToJson(self.message.errorDBDuplicate()))
-            elif data[1] < 0:
-                return HttpResponse(self.json.dicToJson(self.message.errorDBInsert()))
-            # body = self.queryDataToSimpleDic((data[0],), rows, ["idx"])
-            # ret["body"] = body
-            # print(data)
-            # print(data[0])
-            # print(data[1])
-            return HttpResponse(self.json.dicToJson(ret))
+            pass
         except Exception as e:
             print(e)
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
@@ -72,7 +51,7 @@ class TAuthSetting(TAPIBase):
                 if data is None:
                     return HttpResponse(self.json.dicToJson(self.message.errorDBInsert()))
                 if data[0] > 0:
-                    return HttpResponse(self.json.dicToJson(self.message.errorDBDuplicate()))
+                    return HttpResponse(self.json.dicToJson(self.message.errorDBUpdate()))
                 elif data[1] < 0:
                     return HttpResponse(self.json.dicToJson(self.message.errorDBInsert()))
 
@@ -84,6 +63,60 @@ class TAuthSetting(TAPIBase):
     def delete(self, request):
         try:
             pass
+        except Exception as e:
+            print(e)
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
+
+
+class TArtistOut(TAPIBase):
+    """
+    미용사 퇴사 설정.
+    """
+
+    def put(self, request):
+        try:
+            dic = request.data
+
+            if dic["artist_id"] is None or dic["name"] is None or dic["is_out"] is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+
+            artist_id = dic["artist_id"].strip()
+            name = dic["name"].strip()
+            data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_OUT_PUT % (artist_id, name, dic["is_out"]), QUERY_DB)
+            ret = self.message.successOk()
+            if data is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorDBInsert()))
+            if data[0] < 0:
+                return HttpResponse(self.json.dicToJson(self.message.errorDBUpdate()))
+
+            return HttpResponse(self.json.dicToJson(ret))
+        except Exception as e:
+            print(e)
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
+
+
+class TArtistView(TAPIBase):
+    """
+    미용사 숨김 설정.
+    """
+
+    def put(self, request):
+        try:
+            dic = request.data
+
+            if dic["artist_id"] is None or dic["name"] is None or dic["is_view"] is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+
+            artist_id = dic["artist_id"].strip()
+            name = dic["name"].strip()
+            data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_VIEW_PUT % (artist_id, name, dic["is_view"]), QUERY_DB)
+            ret = self.message.successOk()
+            if data is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorDBInsert()))
+            if data[0] < 0:
+                return HttpResponse(self.json.dicToJson(self.message.errorDBUpdate()))
+
+            return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             print(e)
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
