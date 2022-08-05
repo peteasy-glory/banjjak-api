@@ -19,10 +19,11 @@ class TMessage:
 
     def searchFail(self):
         return {"head": {"code": 404, "message": "조회할 검색어가 없습니다."}}
+
     def multiplSsearchFail(self):
         return {"head": {"code": 405, "message": "다중 검색은 지원하지 않습니다."}}
 
-    def errorBadRequst(self):
+    def errorParametaRequst(self):
         return {"head": {"code": 406, "message": "파라메타를 확인 해주세요."}}
 
     def errorNonePostData(self):

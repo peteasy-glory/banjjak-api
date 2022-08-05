@@ -478,7 +478,7 @@ class TAPIBase(APIView):
 
             return products
         except Exception as e:
-            print(e.args[0])
+            print(e.args[0], "[%d : %s] => %s"%(pos,p_split[pos],product), )
 
     def typeCat(self, product):
         try:

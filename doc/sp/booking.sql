@@ -67,7 +67,7 @@ BEGIN
 	DECLARE aPartnerId VARCHAR(64) DEFAULT '';
     DECLARE aPhone VARCHAR(20) DEFAULT '';
     DECLARE aSubPhone VARCHAR(1024) DEFAULT '';
-    DECLARE aTmpId VARCHAR(12) DEFAULT '';
+    DECLARE aTmpId VARCHAR(64) DEFAULT '';
     DECLARE aCustomerGradeIdx INT DEFAULT 0;
     DECLARE aShopGradeIdx  INT DEFAULT 0;
     DECLARE aGradeName VARCHAR(64) DEFAULT '';
@@ -97,7 +97,7 @@ BEGIN
 	SELECT a.idx, a.grade_idx, b.grade_name, b.grade_ord INTO aCustomerGradeIdx, aShopGradeIdx, aGradeName, aGradeOrd
     FROM tb_grade_of_customer a 
 		LEFT JOIN tb_grade_of_shop b ON a.grade_idx = b.idx 
-    WHERE a.customer_id = aTmpId AND b.artist_id = aPartnerId AND a.is_delete = 0 AND b.is_delete = 0;
+    WHERE a.customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId)  AND b.artist_id = aPartnerId AND a.is_delete = 0 AND b.is_delete = 0;
     
     IF LENGTH(aGradeName) < 1 then
 		# 등급이 없으면 해당샵 2번째 등급 부여 
@@ -304,39 +304,32 @@ BEGIN
    */
 	SELECT * FROM tb_grade_of_shop 
     WHERE idx = dataGradeIdx;
-    
+    tb_grade_of_customer
 END $$ 
 DELIMITER ;
 
-
-	SELECT COUNT(*) as aCount , idx as aIdx FROM tb_grade_of_customer
-    WHERE is_delete = 0 AND grade_idx = 2203 AND customer_id = 'pettester@peteasy.kr';
-    
-call procPartnerPC_Booking_GradeCustomer_post(2203,'pettesterr@peteasy.kr');
+call procPartnerPC_Booking_GradeCustomer_post(0, 3357,'hptop.apple@gmail.com');
+select * from tb_grade_of_customer where idx = 22005;
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GradeCustomer_post $$
 CREATE PROCEDURE procPartnerPC_Booking_GradeCustomer_post(
-	dataGradeIdx INT,
+	dataCustomerIdx INT,
+    dataGradeIdx INT,
 	dataCustomerId VARCHAR(64)
 )
 BEGIN
 	/**
 		고객 샵 등급 부여
    */
-	DECLARE aCount INT DEFAULT 0;
-    DECLARE aIdx INT UNSIGNED DEFAULT 0;
    	DECLARE aErr INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
-	SELECT COUNT(*), idx INTO aCount, aIdx FROM tb_grade_of_customer
-    WHERE is_delete = 0 AND grade_idx = dataGradeIdx AND customer_id = dataCustomerId;
-
 	START TRANSACTION;
 	
-    IF aCount < 1 THEN
+    IF dataCustomerIdx = 0 THEN
 		INSERT INTO tb_grade_of_customer (grade_idx, customer_id) VALUES (dataGradeIdx, dataCustomerId);
     ELSE
-		UPDATE tb_grade_of_customer SET grade_idx = dataGradeIdx, customer_id = dataCustomerId WHERE idx = aIdx;
+		UPDATE tb_grade_of_customer SET grade_idx = dataGradeIdx WHERE idx = dataCustomerIdx;
     END IF;
 	IF aErr < 0 THEN
 		ROLLBACK;
