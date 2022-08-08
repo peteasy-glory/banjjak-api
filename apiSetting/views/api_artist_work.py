@@ -37,8 +37,8 @@ class TArtistWork(TAPISettingBase):
                     tmp["name"] = d[2]
                     tmp["nick"] = d[3]
                     tmp["is_host"] = zeroToBool(d[4])
-                    tmp["is_leave"] = zeroToBool(d[5])
-                    tmp["is_show"] = True if d[6] == 2 else False
+                    tmp["is_leave"] = True if int(d[5]) == 1 else False # zeroToBool(d[5])
+                    tmp["is_show"] = True if int(d[6]) == 2 else False
                     sub = d[7].split(',')
                     for s in sub:
                         resub = s.split('|')

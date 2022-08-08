@@ -25,7 +25,7 @@ def totalPrice(src):
 
 
 def zeroToBool(is_zero):
-    return False if is_zero == 0 else True
+    return False if int(is_zero) == 0 else True
 
 
 def subSplit(str, sep):
