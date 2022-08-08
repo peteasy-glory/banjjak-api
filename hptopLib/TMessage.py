@@ -49,3 +49,4 @@ class TMessage:
 
     def errorDBQuery(self):
         return {"head": {"code": 907, "message": "데이타 쿼리 오류"}}
+
