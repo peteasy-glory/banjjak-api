@@ -120,3 +120,32 @@ class TArtistView(TAPIBase):
         except Exception as e:
             print(e)
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
+
+
+class TArtistOrd(TAPIBase):
+    """
+    미용사 순서 설정.
+    """
+
+    def put(self, request):
+        try:
+            dic = request.data
+
+            if dic["artist_id"] is None or dic["work"] is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+
+            artist_id = dic["artist_id"].strip()
+            for d in dic['work']:
+                data, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_ORD_PUT % (artist_id, d["name"], d["sequ_prnt"]), QUERY_DB)
+                if d["name"] is None or d["sequ_prnt"] is None:
+                    return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+                ret = self.message.successOk()
+                if data is None:
+                    return HttpResponse(self.json.dicToJson(self.message.errorDBInsert()))
+                if data[0] > 0:
+                    return HttpResponse(self.json.dicToJson(self.message.errorDBUpdate()))
+
+            return HttpResponse(self.json.dicToJson(ret))
+        except Exception as e:
+            print(e)
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
