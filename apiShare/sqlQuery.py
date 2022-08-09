@@ -40,6 +40,14 @@ PROC_BEAUTY_BOOKING_GRADE_SHOP_IDX_GET = "call procPartnerPC_Booking_GRADE_SHOP_
 PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_POST = "call procPartnerPC_Booking_GradeCustomer_post(%s, %s,'%s')"
 PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_PUT = "call procPartnerPC_Booking_GradeCustomer_put(%s, %s, '%s')"
 
+#CUSTOMER MGR
+PROC_CUSTOMER_TOTAL_COUNT_GET = "call procPartnerPC_CustomerTotalCount_get('%s')"
+PROC_ANIMAL_TOTAL_COUNT_GET = "call procPartnerPC_AnimalTotalCount_get('%s')"
+PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET = "call procPartnerPC_BeautyCutomerSearchTotal_get('%s')"
+PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET = "call procPartnerPC_HotelCutomerSearchTotal_get('%s')"
+PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET = "call procPartnerPC_KinderCutomerSearchTotal_get('%s')"
+PROC_CUSTOMER_BEAUTY_AGREE_GET = "call procPartnerPC_BeautyAgree_get('%s', %s)"
+
 #AUTH SETTING
 
 PROC_SETTING_ARTIST_PUT = "call procPartnerPC_Setting_The_Artist_put('%s', '%s', '%s', '%s', '%s', '%s', '%s', " \

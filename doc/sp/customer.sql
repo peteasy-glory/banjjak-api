@@ -1,424 +1,260 @@
-
-
-    SELECT AA.*, IF((LENGTH(BB.customer_id) > 0 ), BB.customer_id, funcTmpUserIndex(AA.cellphone)) AS id, 
-    BB.pet_seq, BB.name, BB.year, BB.month, BB.day, BB.hour, BB.minute, BB.product 
-    FROM (
-		SELECT cellphone, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) AS ymdhm
-		FROM tb_payment_log 
-		WHERE data_delete = 0 AND artist_id = 'pettester@peteasy.kr'
-		GROUP BY cellphone
-	) AA LEFT JOIN  
-    (
-		SELECT A.*, B.name, B.pet_type, CONCAT(A.year,LPAD(A.month,2,0),LPAD(A.day,2,0),LPAD(A.hour,2,0),LPAD(A.minute,2,0)) AS ymdhm
-        FROM tb_payment_log A JOIN tb_mypet B ON A.pet_seq = B.pet_seq  
-        WHERE A.data_delete = 0 AND A.artist_id = 'pettester@peteasy.kr'
-			AND A.is_cancel = 0 AND A.is_no_show = 0
-            
-	) BB  ON AA.cellphone = BB.cellphone AND AA.ymdhm = BB.ymdhm
-
+SET @count = 0;
+call procPartnerPC_CustomerTotalCount_get('pettester@peteasy.kr');
+SELECT @count;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_CustomerTotalCount_get $$
+CREATE PROCEDURE procPartnerPC_CustomerTotalCount_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		샵별 전체 고객 수
+   */
+	SET @customer_count = 0;
+	SELECT COUNT(*) INTO @customer_count
+	FROM
+	(
+		(
+			SELECT cellphone 
+			FROM tb_payment_log
+			WHERE data_delete = 0 AND artist_id = dataPartnerId
+			GROUP BY cellphone
+		)
+		UNION
+		(
+			SELECT cellphone
+			FROM tb_hotel_payment_log
+			WHERE is_delete = 2 AND artist_id = dataPartnerId
+			GROUP BY cellphone
+		)
+		UNION
+		(
+			SELECT cellphone
+			FROM tb_playroom_payment_log
+			WHERE is_delete = 2 AND artist_id = dataPartnerId
+			GROUP BY cellphone
+		)
+	) A;
     
-    ORDER BY A.cellphone ASC;
+    #SET outCount = @customer_count;
+	SELECT @customer_count AS count;
+END $$ 
+DELIMITER ;
 
-	SELECT * 
-    FROM tb_tmp_user 
-    WHERE cellphone = '01086331776'    
-    ;
-    SELECT * 
-    FROM tb_customer
-    WHERE cellphone = '01074856419'    
-    ;
+call procPartnerPC_AnimalTotalCount_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_AnimalTotalCount_get $$
+CREATE PROCEDURE procPartnerPC_AnimalTotalCount_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		샵별 전체 동물 수
+   */
+	SET @animal_count = 0;
+	SELECT COUNT(*) INTO @animal_count
+	FROM
+	(
+		(
+			SELECT pet_seq 
+			FROM tb_payment_log
+			WHERE data_delete = 0 AND artist_id = dataPartnerId
+			GROUP BY pet_seq
+		)
+		UNION
+		(
+			SELECT pet_seq
+			FROM tb_hotel_payment_log
+			WHERE is_delete = 2 AND artist_id = dataPartnerId
+			GROUP BY pet_seq
+		)
+		UNION
+		(
+			SELECT pet_seq
+			FROM tb_playroom_payment_log
+			WHERE is_delete = 2 AND artist_id = dataPartnerId
+			GROUP BY pet_seq
+		)
+	) A;
     
-    select funcGradeOfCustomer('pettester@peteasy.kr', 'hyejin_85@naver.com');
-    SELECT A.grade_name INTO @grade_name 
-    FROM tb_grade_of_shop A JOIN tb_grade_of_customer B
-		ON A.idx = B.grade_idx
-    WHERE A.artist_id = 'pettester@peteasy.kr' AND A.is_delete = 0
-			AND B.customer_id = 'hyejin_85@naver.com';
-    select @grade_name;
+    #SET @outCount = @animal_count;
+	SELECT @animal_count AS count;
     
-    select * from tb_grade_of_customer
-    where customer_id = 'hyejin_85@naver.com';
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_BeautyCutomerSearchTotal_get('eaden@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_BeautyCutomerSearchTotal_get $$
+CREATE PROCEDURE procPartnerPC_BeautyCutomerSearchTotal_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		샵별 전체 고객 조회 (미용)
+   */
+-- 	SET @total_animal = 0;
+-- 	call procPartnerPC_AnimalTotalCount_get(dataPartnerId, @total_animal);
+-- 	SET @total_customer = 0;
+--     call procPartnerPC_CustomerTotalCount_get(dataPartnerId, @total_customer);
     
-    select * from tb_grade_of_shop
-    where idx in (982,1429,2203);
-    
-    
-    SELECT cellphone, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) AS ymdhm
-		FROM tb_payment_log 
-		WHERE data_delete = 0 AND artist_id = 'pettester@peteasy.kr'
-		GROUP BY cellphone
-    
-			AND pl.cellphone != ''
-						AND (pl.pet_seq != '' OR pl.pet_seq != '0')
-						AND pl.data_delete = '0'
-					GROUP BY pl.cellphone
-cellphone     ) B ) LIMIT 0, 10000	Error Code: 1248. Every derived table must have its own alias	0.0050 sec
+   	SELECT funcGradeOfCustomer(dataPartnerId, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, dataPartnerId) AS reserve
+	FROM (
+		SELECT AA.*, IF((LENGTH(BB.customer_id) > 0 ), BB.customer_id, funcTmpUserIndex(AA.cellphone)) AS id,
+		BB.pet_seq, BB.name, BB.pet_type, BB.type, BB.product
+		FROM (
+			SELECT cellphone, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) AS ymdhm
+					, COUNT(case when product_type='B' then 1 end) AS use_count
+					, SUM(IFNULL(local_price,0)+IFNULL(total_price,0)) AS sum_card 
+					, SUM(IFNULL(local_price_cash, 0)) AS sum_cash 
+			FROM tb_payment_log 
+			WHERE data_delete = 0 AND artist_id = dataPartnerId
+			GROUP BY cellphone
+		) AA LEFT JOIN  
+		(
+			SELECT A.*, B.name, B.pet_type, B.type, CONCAT(A.year,LPAD(A.month,2,0),LPAD(A.day,2,0),LPAD(A.hour,2,0),LPAD(A.minute,2,0)) AS ymdhm
+			FROM tb_payment_log A JOIN tb_mypet B ON A.pet_seq = B.pet_seq  
+			WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId
+				AND A.is_cancel = 0 AND A.is_no_show = 0
+		) BB  ON AA.cellphone = BB.cellphone AND AA.ymdhm = BB.ymdhm
+	) AAA
+    ORDER BY AAA.ymdhm DESC;
 
-(
-	SELECT 'b'AS payment_type, cellphone, MAX(CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0))) AS ymdhm 
-	FROM tb_payment_log 
-	WHERE artist_id = 'pettester@peteasy.kr'
-	GROUP BY cellphone
-	UNION 
-	SELECT 'k'AS payment_type, cellphone, MAX(CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0))) AS ymdhm 
-	FROM tb_playroom_payment_log
-	WHERE artist_id = 'pettester@peteasy.kr'
-	GROUP BY cellphone
-	UNION 
-	SELECT 'h'AS payment_type, cellphone, MAX(CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0))) AS ymdhm 
-	FROM tb_hotel_payment_log
-	WHERE AND artist_id = 'pettester@peteasy.kr'
-	GROUP BY cellphone
-) A 
+END $$ 
+DELIMITER ;
 
-SELECT * 
-FROM (
-	SELECT payment_log_seq, customer_id, pet_seq, cellphone, year, month, day, hour, minute, product
-	FROM tb_payment_log
-	WHERE is_cancel = 0 AND is_no_show = 0 AND data_delete = 0 AND artist_id = 'pettester@peteasy.kr'
-	ORDER BY CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) DESC
-) A 
-GROUP BY cellphone
-    
-    GROUP By cellphone
-GROUP BY cellphone
-;
+call procPartnerPC_HotelCutomerSearchTotal_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_HotelCutomerSearchTotal_get $$
+CREATE PROCEDURE procPartnerPC_HotelCutomerSearchTotal_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		샵별 전체 고객 조회 (호텔)
+   */
+	SELECT funcGradeOfCustomer(dataPartnerId, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, dataPartnerId) AS reserve
+	FROM(
+		SELECT AA.cellphone, AA.use_count, AA.check_in_date, AA.sum_card, AA.sum_cash, BB.id, BB.pet_seq, BB.name, BB.type, BB.pet_type 
+		FROM (
+			SELECT A.cellphone, MAX(CONCAT(B.check_in_date, ' ', B.check_in_time)) AS check_in_date
+				, COUNT(case when LENGTH(A.order_num)>0 then 1 end) AS use_count
+				, SUM(IFNULL(A.add_price_card, 0)) AS sum_card
+				, SUM(IFNULL(A.add_price_cash, 0)) AS sum_cash
+			FROM tb_hotel_payment_log A JOIN tb_hotel_reservation B ON A.order_num = B.order_num
+			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+			GROUP BY A.cellphone
+		) AA LEFT JOIN (
+			SELECT A.cellphone, IF(LENGTH(A.customer_id) > 0, A.customer_id, A.tmp_seq) AS id 
+					, CONCAT(B.check_in_date, ' ', B.check_in_time) AS check_in_date
+					, C.pet_seq, C.name, C.pet_type, C.type
+			FROM tb_hotel_payment_log A JOIN tb_hotel_reservation B ON A.order_num = B.order_num
+				JOIN tb_mypet C ON A.pet_seq = C.pet_seq
+			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+		) BB ON AA.cellphone = BB.cellphone AND AA.check_in_date = BB.check_in_date
+	) AAA
+	ORDER BY AAA.check_in_date DESC;
 
+END $$ 
+DELIMITER ;
 
-SELECT cellphone, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) 
-FROM tb_payment_log 
-WHERE data_delete = 0 AND artist_id = 'pettester@peteasy.kr' AND
-	(cellphone, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)))
-IN 
-(
-	SELECT cellphone, MAX(CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)))
-	FROM tb_payment_log 
-    WHERE data_delete = 0 AND artist_id = 'pettester@peteasy.kr'
-	GROUP BY cellphone
-) 
-ORDER BY cellphone asc
-;
+call procPartnerPC_KinderCutomerSearchTotal_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_KinderCutomerSearchTotal_get $$
+CREATE PROCEDURE procPartnerPC_KinderCutomerSearchTotal_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		샵별 전체 고객 조회 (유치원)
+   */
+	SELECT funcGradeOfCustomer(dataPartnerId, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, dataPartnerId) AS reserve
+	FROM(
+		SELECT AA.cellphone, AA.use_count, AA.check_in_date, AA.sum_card, AA.sum_cash, BB.id, BB.pet_seq, BB.name, BB.type, BB.pet_type 
+		FROM (
+			SELECT A.cellphone, MAX(CONCAT(B.check_in_date, ' ', B.check_in_time)) AS check_in_date
+				, COUNT(case when LENGTH(A.order_num)>0 then 1 end) AS use_count
+				, SUM(IFNULL(A.add_price_card, 0)) AS sum_card
+				, SUM(IFNULL(A.add_price_cash, 0)) AS sum_cash
+			FROM tb_playroom_payment_log A JOIN tb_playroom_reservation B ON A.order_num = B.order_num
+			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+			GROUP BY A.cellphone
+		) AA LEFT JOIN (
+			SELECT A.cellphone, IF(LENGTH(A.customer_id) > 0, A.customer_id, A.tmp_seq) AS id 
+					, CONCAT(B.check_in_date, ' ', B.check_in_time) AS check_in_date
+					, C.pet_seq, C.name, C.pet_type, C.type
+			FROM tb_playroom_payment_log A JOIN tb_playroom_reservation B ON A.order_num = B.order_num
+				JOIN tb_mypet C ON A.pet_seq = C.pet_seq
+			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+		) BB ON AA.cellphone = BB.cellphone AND AA.check_in_date = BB.check_in_date
+	) AAA
+	ORDER BY AAA.check_in_date DESC;
 
+END $$ 
+DELIMITER ;
 
-SELECT * FROM tb_grade_of_shop WHERE artist_id = 'sally@peteasy.kr' ORDER BY grade_ord ASC
+call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr');
+call procPartnerPC_HotelCutomerSearchTotal_get('pettester@peteasy.kr');
+call procPartnerPC_KinderCutomerSearchTotal_get('pettester@peteasy.kr');
 
-;
-
-				SELECT *
-				FROM (
-					SELECT 
-						pl.cellphone, 
-						IFNULL(SUM(pl.local_price), '0') AS sum_local_price, 
-						IFNULL(SUM(pl.local_price_cash), '0') AS sum_local_price_cash, 
-						pl.pet_seq, 
-						mp.pet_seq AS mypet_seq,
-					    pl.customer_id,
-						IFNULL(mp.name, IFNULL(acl.pet_name, SUBSTRING_INDEX(SUBSTRING_INDEX(pl.product,'|',1),'|',-1))) AS pet_name,					   
-						(
-							SELECT payment_log_seq
-							FROM tb_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-							ORDER BY update_time DESC
-							LIMIT 0 , 1
-						) as payment_log_seq,						 
-						(
-							SELECT update_time
-							FROM tb_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-							ORDER BY update_time DESC
-							LIMIT 0 , 1
-						) as update_time2,
-						(
-							SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(product,'|',4),'|',-1) AS service
-							FROM tb_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-                                #AND product LIKE '|'
-							ORDER BY update_time DESC
-							LIMIT 0 , 1
-						) as service,
-						(
-							SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(product,'|',5),'|',-1) AS service2
-							FROM tb_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-                                #AND product LIKE '|'
-							ORDER BY update_time DESC
-							LIMIT 0 , 1
-						) as service2,
-						(
-							SELECT is_cancel
-							FROM tb_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-							ORDER BY update_time DESC
-							LIMIT 0 , 1
-						) as is_cancel,
-						(
-							SELECT IFNULL(cancel_time, '')
-							FROM tb_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-							ORDER BY update_time DESC
-							LIMIT 0 , 1
-						) as cancel_time,
-						(
-							SELECT COUNT(*) as cnt
-							FROM tb_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-								AND is_cancel = 0
-								AND product_type = 'B'
-							LIMIT 0 , 1
-						) as cnt,
-						mp.type,
-						mp.pet_type,
-						(
-							SELECT IFNULL(ba_seq, '') as ba_seq
-							FROM tb_beauty_agree
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND pet_id = pl.pet_seq
-								AND doc_type = '0'
-							LIMIT 0 , 1
-						) as ba_seq,
-						'beauty' AS payment_type,
-						(
-							SELECT reserve
-							FROM tb_user_reserve
-							WHERE is_delete = '2'
-								AND artist_id = 'sally@peteasy.kr'
-								AND cellphone = pl.cellphone
-							LIMIT 0 , 1
-						) as user_reserve
-					FROM tb_payment_log AS pl
-						LEFT OUTER JOIN tb_artist_customer_list AS acl ON pl.pet_seq = acl.pet_seq
-						LEFT OUTER JOIN tb_mypet AS mp ON pl.pet_seq = mp.pet_seq
-					WHERE pl.artist_id = 'sally@peteasy.kr'
-						AND pl.cellphone != ''
-						AND (pl.pet_seq != '' OR pl.pet_seq != '0')
-						AND pl.data_delete = '0'
-					GROUP BY pl.cellphone
-					
-					UNION ALL
-
-					SELECT 
-						hpl.cellphone, 
-						IFNULL(SUM(hpl.add_price_card), '0') AS sum_local_price, 
-						IFNULL(SUM(hpl.add_price_cash), '0') AS sum_local_price_cash, 
-						hpl.pet_seq,
-						mp.pet_seq AS mypet_seq,
-						mp.name AS pet_name,
-						hpl.customer_id,
-						(
-							SELECT order_num
-							FROM tb_hotel_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = hpl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as payment_log_seq,
-						(
-							SELECT IFNULL(update_dt, reg_dt)
-							FROM tb_hotel_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = hpl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) AS update_time2,
-						(
-							SELECT concat(room_name,'/',TIMESTAMPDIFF(DAY, check_in_date, check_out_date),'박/~',weight,' Kg') AS service
-							FROM tb_hotel_reservation
-							WHERE order_num = hpl.order_num
-								AND cellphone = hpl.cellphone
-							ORDER BY reg_dt desc
-							LIMIT 0 , 1
-						) AS service,
-						(
-							SELECT concat(if(extra_price > 0, '시간추가', ''),if(neutral_price > 0, '중성화', ''),if(pickup_price > 0, '픽업', '')) AS service2
-							FROM tb_hotel_reservation
-							WHERE artist_id = hpl.order_num
-								AND cellphone = hpl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as service2,
-						(
-							SELECT is_delete
-							FROM tb_hotel_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = hpl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as is_cancel,
-						(
-							SELECT IFNULL(delete_dt, '')
-							FROM tb_hotel_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = hpl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as cancel_time,	
-						(
-							SELECT COUNT(*) as cnt
-							FROM tb_hotel_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = hpl.cellphone
-							LIMIT 0 , 1
-						) as cnt,
-						mp.type,
-						mp.pet_type,
-						(
-							SELECT IFNULL(ba_seq, '') as ba_seq
-							FROM tb_beauty_agree
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND pet_id = hpl.pet_seq
-								AND doc_type = '1'
-							LIMIT 0 , 1
-						) as ba_seq,
-						'hotel' AS payment_type,
-						(
-							SELECT reserve
-							FROM tb_user_reserve
-							WHERE is_delete = '2'
-								AND artist_id = 'sally@peteasy.kr'
-								AND cellphone = hpl.cellphone
-							LIMIT 0 , 1
-						) as user_reserve
-					FROM tb_hotel_payment_log AS hpl
-						INNER JOIN tb_mypet AS mp ON hpl.pet_seq = mp.pet_seq
-					WHERE hpl.artist_id = 'sally@peteasy.kr'
-						AND hpl.cellphone != ''
-						AND (hpl.pet_seq != '' OR hpl.pet_seq != '0')
-					GROUP BY hpl.cellphone
-					
-					UNION ALL
-
-					SELECT 
-						ppl.cellphone, 
-						IFNULL(SUM(ppl.add_price_card), '0') AS sum_local_price, 
-						IFNULL(SUM(ppl.add_price_cash), '0') AS sum_local_price_cash, 
-						ppl.pet_seq,
-						mp.pet_seq AS mypet_seq,
-						mp.name AS pet_name,
-						ppl.customer_id,
-						(
-							SELECT order_num
-							FROM tb_playroom_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = ppl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as payment_log_seq,
-						(
-							SELECT IFNULL(update_dt, reg_dt)
-							FROM tb_playroom_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = ppl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) AS update_time2,
-						(
-							SELECT if(service_type = 1, concat(allday_pass_name), if((room_name * count) <> 0, concat((room_name * count),'시간/~',weight,' Kg'), '')) AS service
-							FROM tb_playroom_reservation
-							WHERE order_num = ppl.order_num
-								AND cellphone = ppl.cellphone
-							ORDER BY reg_dt desc
-							LIMIT 0 , 1
-						) AS service,
-						(
-							SELECT concat(if(extra_price > 0, '시간추가', ''),if(neutral_price > 0, '중성화', ''),if(pickup_price > 0, '픽업', '')) AS service2
-							FROM tb_playroom_reservation
-							WHERE artist_id = ppl.order_num
-								AND cellphone = ppl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as service2,
-						(
-							SELECT is_delete
-							FROM tb_playroom_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = ppl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as is_cancel,
-						(
-							SELECT IFNULL(delete_dt, '')
-							FROM tb_playroom_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = ppl.cellphone
-							ORDER BY reg_dt DESC
-							LIMIT 0 , 1
-						) as cancel_time,	
-						(
-							SELECT COUNT(*) as cnt
-							FROM tb_playroom_payment_log
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND cellphone = ppl.cellphone
-							LIMIT 0 , 1
-						) as cnt,
-						mp.type,
-						mp.pet_type,
-						(
-							SELECT IFNULL(ba_seq, '') as ba_seq
-							FROM tb_beauty_agree
-							WHERE artist_id = 'sally@peteasy.kr'
-								AND pet_id = ppl.pet_seq
-								AND doc_type = '1'
-							LIMIT 0 , 1
-						) as ba_seq,
-						'playroom' AS payment_type,
-						(
-							SELECT reserve
-							FROM tb_user_reserve
-							WHERE is_delete = '2'
-								AND artist_id = 'sally@peteasy.kr'
-								AND cellphone = ppl.cellphone
-							LIMIT 0 , 1
-						) as user_reserve
-					FROM tb_playroom_payment_log AS ppl
-						INNER JOIN tb_mypet AS mp ON ppl.pet_seq = mp.pet_seq
-					WHERE ppl.artist_id = 'sally@peteasy.kr'
-						AND ppl.cellphone != ''
-						AND (ppl.pet_seq != '' OR ppl.pet_seq != '0')
-					GROUP BY ppl.cellphone
-				) AS a
-				 ORDER BY a.update_time2 DESC 
-			
+#==========================================================================
+call procPartnerPC_BeautyAgree_get('pettester@peteasy.kr', 178430);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_BeautyAgree_get $$
+CREATE PROCEDURE procPartnerPC_BeautyAgree_get(
+	dataPartnerId VARCHAR(64),
+    dataPetIdx INT
+)
+BEGIN
+	/**
+		샵 펫별 미용 동의서 
+   */
+	SELECT A.* , B.image
+    FROM tb_beauty_agree A LEFT JOIN tb_beauty_sign B ON A.bs_seq = B.bs_seq
+	WHERE artist_id = dataPartnerId AND pet_id = dataPetIdx
+	;
+END $$ 
+DELIMITER ;
 
 
-SELECT * #cellphone#, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) 
-FROM tb_payment_log 
-WHERE data_delete = 0 AND artist_id = 'pettester@peteasy.kr' AND
-	(cellphone, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)))
-IN 
-(
-	SELECT cellphone, MAX(CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0))) as y  
-	FROM tb_payment_log 
-    WHERE data_delete = 0 AND artist_id = 'pettester@peteasy.kr'
-	GROUP BY cellphone
-) 
 
-select *, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) 
-from tb_payment_log 
-where payment_log_seq = 571055
-;
-select payment_log_seq, CONCAT(year,LPAD(month,2,0),LPAD(day,2,0),LPAD(hour,2,0),LPAD(minute,2,0)) 
-from tb_payment_log 
-where cellphone = '01012350000'
-	and data_delete = 0 AND artist_id = 'pettester@peteasy.kr'
-order by payment_log_seq desc
-;
+							INSERT INTO tb_tmp_user (cellphone) VALUES
+							('0101010101010101010')
 
-where cellphone = '010581212222'
-;
-select * from A where (항목, date) in 
-(select 항목,max(date) from A group by 항목)
+							INSERT INTO tb_mypet (
+								tmp_seq, name, name_for_owner, type, pet_type, 
+								pet_type2, year, month, day, gender, 
+								neutral, weight, tmp_yn
+							) VALUES (
+								'150795','ttttttt','ttttttt','dog','골든리트리버',
+								'','2022','1','1','남아',
+								'1','5','Y'
+							)
+				
+								INSERT INTO tb_payment_log (
+									pet_seq, session_id, customer_id, order_id, artist_id,
+									cellphone, etc_memo, update_time, approval, product, product_type
+								) VALUES (
+									'191214', '0', '신규등록(150795)', '0', 'pettester@peteasy.kr', 
+									'0101010101010101010', 'dfdafdafdafd', NOW(), '0', 'ttttttt', 'A'
+								)
+							
+									SELECT *
+									FROM tb_artist_customer_list
+									WHERE artist_id = 'pettester@peteasy.kr'
+										AND pet_seq = '191214'
+											없으면 아래 인서트 , 있으면 업데트를 한다					
 
-
-A LEFT JOIN tb_mypet B ON A.pet_sea = B.pet_seq
-
-
+										INSERT INTO tb_artist_customer_list (pet_seq, artist_id, pet_name) VALUES
+										('191214', 'pettester@peteasy.kr', 'ttttttt')
+                                        UPDATE tb_artist_customer_list 
+                                        SET pet_name = 'ttttttt'
+                                        WHERE artist_id = 'pettester@peteasy.kr'
+                                                AND pet_seq = '191214'
+                                        
+                                        
+									
 
 loof: LOOP
 		FETCH cursorPhones
