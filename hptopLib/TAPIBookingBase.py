@@ -27,16 +27,36 @@ class TAPIBookingBase(TAPIBase):
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
-            self.errorInfo(e)
+            return self.errorInfo(e)
 
-
+    def post(self, request):
+        return self.modify(request)
 
     def put(self, request):
+        return self.modify(request)
+
+
+    # def put(self, request):
+    #     try:
+    #         dic = request.data
+    #         if dic is None:
+    #             return HttpResponse(self.json.dicToJson(self.message.errorNonePostData()))
+    #         err, msg, body = self.putInfo(dic)
+    #         if err == 0:
+    #             ret = self.message.successOk()
+    #             ret["body"] = body
+    #             return HttpResponse(self.json.dicToJson(ret))
+    #         else:
+    #             return HttpResponse(self.json.dicToJson(self.message.error(msg)))
+    #     except Exception as e:
+    #         self.errorInfo(e)
+    def modify(self, request):
         try:
-            dic = request.data
-            if dic is None:
+            dict = request.data
+            if dict is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorNonePostData()))
-            err, msg, body = self.putInfo(dic)
+
+            err, msg, body = self.modifyInfo(dict)
             if err == 0:
                 ret = self.message.successOk()
                 ret["body"] = body
@@ -44,8 +64,7 @@ class TAPIBookingBase(TAPIBase):
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
-            self.errorInfo(e)
-
+            return self.errorInfo(e)
 
     @abstractmethod
     def getInfo(self, payment_idx, *args):
