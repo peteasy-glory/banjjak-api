@@ -46,7 +46,7 @@ PROC_SETTING_ARTIST_PUT = "call procPartnerPC_Setting_The_Artist_put('%s', '%s',
                               "%s, '%s','%s', %s) "
 PROC_SETTING_ARTIST_OUT_PUT = "call procPartnerPC_Setting_Artist_Out_put('%s', '%s', '%s')"
 PROC_SETTING_ARTIST_VIEW_PUT = "call procPartnerPC_Setting_Artist_View_put('%s', '%s', '%s')"
-
+PROC_SETTING_ARTIST_ORD_PUT = "call procPartnerPC_Setting_Artist_Ord_put('%s', '%s', %s)"
 PROC_SETTING_ARTIST_WORKING_GET = "call procPartnerPC_Setting_Artist_Working_get('%s')"
 PROC_SETTING_SHOP_OPEN_CLOSE_GET = "call procPartnerPC_Setting_Shop_OpenClose_get('%s')"
 PROC_SETTING_REGULAR_HOLIDAY_GET = "call procPartnerPC_Setting_Regular_Holiday_get('%s')"
