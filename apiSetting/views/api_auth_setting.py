@@ -65,11 +65,33 @@ class TAuthSetting(TAPIBase):
             print(e)
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
 
-    def delete(self, request):
-        try:
-            pass
-        except Exception as e:
-            print(e)
-            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
 
+class TAuthView(TAPIBase):
+    """
+    권한미용사 리스트 불러오기
+    """
+
+    def get(self, request, partner_id):
+        try:
+
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_AUTHORITY_GET % (partner_id), QUERY_DB)
+            #ret = self.message.successOk()
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+            body = []
+            if value is not None:
+                for d in data:
+                    tmp = {}
+                    tmp["artist_id"] = d[0]
+                    tmp["customer_id"] = d[1]
+                    tmp["name"] = d[2]
+                    tmp["del"] = d[3]
+                body.append(tmp)
+
+            return HttpResponse(self.json.dicToJson(body))
+        except Exception as e:
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
 

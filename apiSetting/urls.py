@@ -21,5 +21,6 @@ urlpatterns = [
     path('setting/ord-artist', api_artist_setting.TArtistOrd.as_view()),
     path('setting/is-authority', api_auth_setting.TAuthSetting.as_view()),
     path('setting/authority', api_auth_setting.TAuthSetting.as_view()),
+    path('setting/authority/<str:partner_id>', api_auth_setting.TAuthView.as_view()),
 
 ]
