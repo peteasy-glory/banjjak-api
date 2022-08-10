@@ -43,9 +43,9 @@ PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_PUT = "call procPartnerPC_Booking_GradeCustom
 #CUSTOMER MGR
 PROC_CUSTOMER_TOTAL_COUNT_GET = "call procPartnerPC_CustomerTotalCount_get('%s')"
 PROC_ANIMAL_TOTAL_COUNT_GET = "call procPartnerPC_AnimalTotalCount_get('%s')"
-PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET = "call procPartnerPC_BeautyCutomerSearchTotal_get('%s')"
-PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET = "call procPartnerPC_HotelCutomerSearchTotal_get('%s')"
-PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET = "call procPartnerPC_KinderCutomerSearchTotal_get('%s')"
+PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET = "call procPartnerPC_BeautyCutomerSearchTotal_get('%s', %s)"
+PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET = "call procPartnerPC_HotelCutomerSearchTotal_get('%s', %s)"
+PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET = "call procPartnerPC_KinderCutomerSearchTotal_get('%s', %s)"
 PROC_CUSTOMER_BEAUTY_AGREE_GET = "call procPartnerPC_BeautyAgree_get('%s', %s)"
 
 #AUTH SETTING
