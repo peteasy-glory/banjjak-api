@@ -11,15 +11,12 @@ class TAuthSetting(TAPIBase):
     미용사 권한 부여.(기타 다른 customer_id에 해당 샵으로 접속할 수 있는 권한)
     """
 
-    def get(self, request):
+    def get(self, request, partner_id):
         try:
-            dic = request.data
-            if dic['artist_id'] is None or dic["customer_id"] is None:
+            if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
 
-            artist_id = dic["artist_id"].strip()
-            customer_id = dic["customer_id"].strip()
-            data, rows, columns = self.db.resultDBQuery(PROC_IS_EXIST_AUTHORITY_GET % (artist_id,customer_id), QUERY_DB)
+            data, rows, columns = self.db.resultDBQuery(PROC_IS_EXIST_AUTHORITY_GET % (partner_id), QUERY_DB)
             ret = self.message.successOk()
             body = {}
             if data is None or data[0] > 0:
@@ -85,10 +82,11 @@ class TAuthView(TAPIBase):
             if value is not None:
                 for d in data:
                     tmp = {}
-                    tmp["artist_id"] = d[0]
-                    tmp["customer_id"] = d[1]
-                    tmp["name"] = d[2]
-                    tmp["del"] = d[3]
+                    tmp["idx"] = d[0]
+                    tmp["artist_id"] = d[1]
+                    tmp["customer_id"] = d[2]
+                    tmp["name"] = d[3]
+                    tmp["del"] = d[5]
                 body.append(tmp)
 
             return HttpResponse(self.json.dicToJson(body))
