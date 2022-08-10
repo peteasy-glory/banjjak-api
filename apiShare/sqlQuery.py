@@ -61,7 +61,8 @@ PROC_SETTING_REGULAR_HOLIDAY_GET = "call procPartnerPC_Setting_Regular_Holiday_g
 PROC_SETTING_PERSONAL_VACATION_GET = "call procPartnerPC_Setting_Personal_Vacation_get('%s')"
 PROC_SETTING_TIME_LIMIT_GET = "call procPartnerPC_Setting_Time_Limit_get('%s')"
 PROC_SETTING_BREAK_TIME_GET = "call procPartnerPC_Setting_Break_Time_get('%s')"
-PROC_IS_EXIST_AUTHORITY_GET = "call procPartnerPC_Is_Exist_Authority_get('%s', '%s')"
+PROC_IS_EXIST_AUTHORITY_GET = "call procPartnerPC_Is_Exist_Authority_get('%s')"
 PROC_SETTING_AUTHORITY_PUT = "call procPartnerPC_Setting_Authority_put('%s', '%s', '%s', '%s')"
+PROC_SETTING_AUTHORITY_GET = "call procPartnerPC_Setting_Authority_get('%s')"
 
 
