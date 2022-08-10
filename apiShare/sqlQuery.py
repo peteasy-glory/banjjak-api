@@ -66,5 +66,7 @@ PROC_SETTING_AUTHORITY_PUT = "call procPartnerPC_Setting_Authority_put('%s', '%s
 PROC_SETTING_AUTHORITY_GET = "call procPartnerPC_Setting_Authority_get('%s')"
 PROC_SETTING_RESERVE_GET = "call procPartnerPC_Setting_reserve_get('%s')"
 PROC_SETTING_RESERVE_PUT = "call procPartnerPC_Setting_reserve_put('%s', '%s', '%s', %s, '%s')"
+PROC_SETTING_PAY_TYPE_GET = "call procPartnerPC_Setting_pay_type_get('%s')"
+PROC_SETTING_PAY_TYPE_PUT = "call procPartnerPC_Setting_pay_type_put('%s',%s)"
 
 
