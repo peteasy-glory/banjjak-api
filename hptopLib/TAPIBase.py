@@ -27,34 +27,44 @@ class TAPIBase(APIView):
     # def procQuery(self, **kwargs):
     #     pass
 
-    def queryDataToDic(self, data, rows, colums):
+    def queryDataToDic(self, data, rows, colums, ord = False):
+        if ord:
+            colums.append("ord_num")
         if rows < 2:
             body = {}
             i = 0
             for val in data:
-                if val is None:
-                    body[colums[i]] = ""
+                if colums[i] == "ord_num":
+                    val = 1
                 else:
-                    if type(val) is datetime:
-                        body[colums[i]] = val.strftime("%Y%m%d%H%M%S")
+                    if val is None:
+                        body[colums[i]] = ""
                     else:
-                        body[colums[i]] = val
+                        if type(val) is datetime:
+                            body[colums[i]] = val.strftime("%Y%m%d%H%M%S")
+                        else:
+                            body[colums[i]] = val
                 i += 1
         else:
+            ord_cnt = 1
             body = []
             for d in data:
                 k = {}
                 i = 0
                 for key in colums:
-                    if d[i] is None:
-                        k[key] = ""
+                    if key == "ord_num":
+                        k[key] = ord_cnt
                     else:
-                        if type(d[i]) is datetime:
-                            k[key] = d[i].strftime("%Y%m%d%H%M%S")
+                        if d[i] is None:
+                            k[key] = ""
                         else:
-                            k[key] = d[i]
+                            if type(d[i]) is datetime:
+                                k[key] = d[i].strftime("%Y%m%d%H%M%S")
+                            else:
+                                k[key] = d[i]
                     i += 1
                 body.append(k)
+                ord_cnt += 1
         return body
 
     def queryDataToSimpleDic(self, data, rows, keys):

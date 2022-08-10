@@ -84,23 +84,58 @@ END $$
 DELIMITER ;
 
 
-call procPartnerPC_BeautyCutomerSearchTotal_get('eaden@peteasy.kr');
+
+call procPartnerPC_GradeOrdAndName('pettester@peteasy.kr','saychanjin@naver.com',@grade_ord, @grade_name);
+select @grade_ord, @grade_name;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_GradeOrdAndName $$
+CREATE PROCEDURE procPartnerPC_GradeOrdAndName(
+	dataPartnerId VARCHAR(64),
+    dataCustomerId VARCHAR(64),
+    OUT outGradeOrd INT,
+	OUT outGradeName VARCHAR(64)
+)BEGIN
+	/**
+		샵내 고객 등급, 순위 
+   */
+
+	SET @grade_name = '';
+	SET @grade_ord = 0;
+	SELECT A.grade_name, A.grade_ord INTO @grade_name , @grade_ord
+    FROM tb_grade_of_shop A JOIN tb_grade_of_customer B
+		ON A.idx = B.grade_idx
+    WHERE A.artist_id = dataPartnerId AND A.is_delete = 0
+			AND B.customer_id = dataCustomerId;
+
+    SET outGradeOrd = @grade_ord;
+    SET outGradeName = @grade_name;
+   
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr', 2);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_BeautyCutomerSearchTotal_get $$
 CREATE PROCEDURE procPartnerPC_BeautyCutomerSearchTotal_get(
-	dataPartnerId VARCHAR(64)
+	dataPartnerId VARCHAR(64), 
+    dataOrdType INT #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
 )
 BEGIN
 	/**
 		샵별 전체 고객 조회 (미용)
    */
--- 	SET @total_animal = 0;
--- 	call procPartnerPC_AnimalTotalCount_get(dataPartnerId, @total_animal);
--- 	SET @total_customer = 0;
---     call procPartnerPC_CustomerTotalCount_get(dataPartnerId, @total_customer);
-    
-   	SELECT funcGradeOfCustomer(dataPartnerId, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, dataPartnerId) AS reserve
-	FROM (
+   SET @ORD_STR = '';
+   SET @partner_id = dataPartnerId;
+   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC';
+		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC';
+        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC';
+        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC';
+        ELSE SET @ORD_STR = 'ORDER BY AAA.ymdhm DESC';
+   END CASE;
+
+   SET @SQL_STR = CONCAT(" 
+   	SELECT funcGradeOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve  
+	FROM (SELECT @num:=0) NUM_T , (
 		SELECT AA.*, IF((LENGTH(BB.customer_id) > 0 ), BB.customer_id, funcTmpUserIndex(AA.cellphone)) AS id,
 		BB.pet_seq, BB.name, BB.pet_type, BB.type, BB.product
 		FROM (
@@ -109,32 +144,45 @@ BEGIN
 					, SUM(IFNULL(local_price,0)+IFNULL(total_price,0)) AS sum_card 
 					, SUM(IFNULL(local_price_cash, 0)) AS sum_cash 
 			FROM tb_payment_log 
-			WHERE data_delete = 0 AND artist_id = dataPartnerId
+			WHERE data_delete = 0 AND artist_id = ?
 			GROUP BY cellphone
 		) AA LEFT JOIN  
 		(
 			SELECT A.*, B.name, B.pet_type, B.type, CONCAT(A.year,LPAD(A.month,2,0),LPAD(A.day,2,0),LPAD(A.hour,2,0),LPAD(A.minute,2,0)) AS ymdhm
 			FROM tb_payment_log A JOIN tb_mypet B ON A.pet_seq = B.pet_seq  
-			WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId
+			WHERE A.data_delete = 0 AND A.artist_id = ?
 				AND A.is_cancel = 0 AND A.is_no_show = 0
 		) BB  ON AA.cellphone = BB.cellphone AND AA.ymdhm = BB.ymdhm
-	) AAA
-    ORDER BY AAA.ymdhm DESC;
-
+	) AAA ", @ORD_STR);
+    PREPARE stmt FROM @SQL_STR;
+    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id;
+    DEALLOCATE PREPARE stmt;    
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_HotelCutomerSearchTotal_get('pettester@peteasy.kr');
+
+call procPartnerPC_HotelCutomerSearchTotal_get('pettester@peteasy.kr', 2);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_HotelCutomerSearchTotal_get $$
 CREATE PROCEDURE procPartnerPC_HotelCutomerSearchTotal_get(
-	dataPartnerId VARCHAR(64)
+	dataPartnerId VARCHAR(64),
+     dataOrdType INT #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
 )
 BEGIN
 	/**
 		샵별 전체 고객 조회 (호텔)
    */
-	SELECT funcGradeOfCustomer(dataPartnerId, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, dataPartnerId) AS reserve
+   SET @ORD_STR = '';
+   SET @partner_id = dataPartnerId;
+   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC';
+		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC';
+        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC';
+        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC';
+        ELSE SET @ORD_STR = 'ORDER BY AAA.check_in_date DESC';
+   END CASE;
+
+   SET @SQL_STR = CONCAT("    
+	SELECT funcGradeOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve
 	FROM(
 		SELECT AA.cellphone, AA.use_count, AA.check_in_date, AA.sum_card, AA.sum_cash, BB.id, BB.pet_seq, BB.name, BB.type, BB.pet_type 
 		FROM (
@@ -143,7 +191,7 @@ BEGIN
 				, SUM(IFNULL(A.add_price_card, 0)) AS sum_card
 				, SUM(IFNULL(A.add_price_cash, 0)) AS sum_cash
 			FROM tb_hotel_payment_log A JOIN tb_hotel_reservation B ON A.order_num = B.order_num
-			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+			WHERE A.is_delete = 2 AND A.artist_id = ? AND B.is_delete = 2
 			GROUP BY A.cellphone
 		) AA LEFT JOIN (
 			SELECT A.cellphone, IF(LENGTH(A.customer_id) > 0, A.customer_id, A.tmp_seq) AS id 
@@ -151,25 +199,38 @@ BEGIN
 					, C.pet_seq, C.name, C.pet_type, C.type
 			FROM tb_hotel_payment_log A JOIN tb_hotel_reservation B ON A.order_num = B.order_num
 				JOIN tb_mypet C ON A.pet_seq = C.pet_seq
-			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+			WHERE A.is_delete = 2 AND A.artist_id = ? AND B.is_delete = 2
 		) BB ON AA.cellphone = BB.cellphone AND AA.check_in_date = BB.check_in_date
-	) AAA
-	ORDER BY AAA.check_in_date DESC;
+	) AAA ", @ORD_STR);
+    PREPARE stmt FROM @SQL_STR;
+    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id;
+    DEALLOCATE PREPARE stmt;    
 
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_KinderCutomerSearchTotal_get('pettester@peteasy.kr');
+call procPartnerPC_KinderCutomerSearchTotal_get('pettester@peteasy.kr', 4);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_KinderCutomerSearchTotal_get $$
 CREATE PROCEDURE procPartnerPC_KinderCutomerSearchTotal_get(
-	dataPartnerId VARCHAR(64)
+	dataPartnerId VARCHAR(64),
+     dataOrdType INT #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
 )
 BEGIN
 	/**
 		샵별 전체 고객 조회 (유치원)
    */
-	SELECT funcGradeOfCustomer(dataPartnerId, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, dataPartnerId) AS reserve
+   SET @ORD_STR = '';
+   SET @partner_id = dataPartnerId;
+   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC';
+		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC';
+        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC';
+        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC';
+        ELSE SET @ORD_STR = 'ORDER BY AAA.check_in_date DESC';
+   END CASE;
+
+   SET @SQL_STR = CONCAT("       
+	SELECT funcGradeOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve
 	FROM(
 		SELECT AA.cellphone, AA.use_count, AA.check_in_date, AA.sum_card, AA.sum_cash, BB.id, BB.pet_seq, BB.name, BB.type, BB.pet_type 
 		FROM (
@@ -178,7 +239,7 @@ BEGIN
 				, SUM(IFNULL(A.add_price_card, 0)) AS sum_card
 				, SUM(IFNULL(A.add_price_cash, 0)) AS sum_cash
 			FROM tb_playroom_payment_log A JOIN tb_playroom_reservation B ON A.order_num = B.order_num
-			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+			WHERE A.is_delete = 2 AND A.artist_id = ? AND B.is_delete = 2
 			GROUP BY A.cellphone
 		) AA LEFT JOIN (
 			SELECT A.cellphone, IF(LENGTH(A.customer_id) > 0, A.customer_id, A.tmp_seq) AS id 
@@ -186,17 +247,15 @@ BEGIN
 					, C.pet_seq, C.name, C.pet_type, C.type
 			FROM tb_playroom_payment_log A JOIN tb_playroom_reservation B ON A.order_num = B.order_num
 				JOIN tb_mypet C ON A.pet_seq = C.pet_seq
-			WHERE A.is_delete = 2 AND A.artist_id = dataPartnerId AND B.is_delete = 2
+			WHERE A.is_delete = 2 AND A.artist_id = ? AND B.is_delete = 2
 		) BB ON AA.cellphone = BB.cellphone AND AA.check_in_date = BB.check_in_date
-	) AAA
-	ORDER BY AAA.check_in_date DESC;
+	) AAA ", @ORD_STR);
+    PREPARE stmt FROM @SQL_STR;
+    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id;
+    DEALLOCATE PREPARE stmt;    
 
 END $$ 
 DELIMITER ;
-
-call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr');
-call procPartnerPC_HotelCutomerSearchTotal_get('pettester@peteasy.kr');
-call procPartnerPC_KinderCutomerSearchTotal_get('pettester@peteasy.kr');
 
 #==========================================================================
 call procPartnerPC_BeautyAgree_get('pettester@peteasy.kr', 178430);
@@ -216,45 +275,94 @@ BEGIN
 	;
 END $$ 
 DELIMITER ;
+select * from tb_mypet order by pet_seq desc;
+#=========================================================================
+call procPartnerPC_CustomerJoin_post('pettester@peteasy.kr', '1103202032020',
+'petName', 'dog', '골든리트리버', 2022, 1, 1, '남아', '0', '2.4','2회','1회','안해요','없음','0','0','0','0','it is memo');
+select * from tb_tmp_user order by tmp_seq desc;
+select * from tb_payment_log order by payment_log_seq desc;
+select * from tb_mypet order by  pet_seq desc;
+select * from  tb_artist_customer_list order by ac_seq desc;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_CustomerJoin_post $$
+CREATE PROCEDURE procPartnerPC_CustomerJoin_post(
+	dataPartnerId VARCHAR(64),    
+    dataCellphone VARCHAR(24),    
+    dataName VARCHAR(64),    
+    dataType VARCHAR(8),    
+    dataPetType VARCHAR(32),    
+    dataYear INT,    
+    dataMonth INT,    
+    dataDay INT,    
+    dataGender VARCHAR(10),    
+    dataWNeutral VARCHAR(1),    
+    dataWeight VARCHAR(10),    
+    dataBeautyExp VARCHAR(10),    
+    dataVaccination VARCHAR(10),    
+    dataBite VARCHAR(10),    
+    dataLuxation VARCHAR(10),    
+    dataDermatosis VARCHAR(1),    
+    dataHeartTrouble VARCHAR(1),    
+    dataMarking VARCHAR(1),    
+    dataMounting VARCHAR(1),    
+    dataMemo TEXT
+)
+BEGIN
+	/**
+		샵 신규 고객 등록
+   */
+	DECLARE aErr INT DEFAULT '0';
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
+	SET @tmp_idx = 0;
+    SET @pet_idx = 0;
+    
+	SELECT tmp_seq INTO @tmp_idx 
+    FROM tb_tmp_user 
+    WHERE cellphone = dataCellphone;
+        
+	START TRANSACTION;   
 
-							INSERT INTO tb_tmp_user (cellphone) VALUES
-							('0101010101010101010')
+    IF @tmp_idx < 1 THEN 
+    BEGIN
+		INSERT INTO tb_tmp_user (cellphone) VALUES (dataCellphone);
+        SET @tmp_idx = LAST_INSERT_ID();
+	END;
+    END IF;
 
-							INSERT INTO tb_mypet (
-								tmp_seq, name, name_for_owner, type, pet_type, 
+    INSERT INTO tb_mypet(tmp_seq, name, name_for_owner, type, pet_type, 
 								pet_type2, year, month, day, gender, 
-								neutral, weight, tmp_yn
-							) VALUES (
-								'150795','ttttttt','ttttttt','dog','골든리트리버',
-								'','2022','1','1','남아',
-								'1','5','Y'
-							)
-				
-								INSERT INTO tb_payment_log (
-									pet_seq, session_id, customer_id, order_id, artist_id,
-									cellphone, etc_memo, update_time, approval, product, product_type
-								) VALUES (
-									'191214', '0', '신규등록(150795)', '0', 'pettester@peteasy.kr', 
-									'0101010101010101010', 'dfdafdafdafd', NOW(), '0', 'ttttttt', 'A'
-								)
-							
-									SELECT *
-									FROM tb_artist_customer_list
-									WHERE artist_id = 'pettester@peteasy.kr'
-										AND pet_seq = '191214'
-											없으면 아래 인서트 , 있으면 업데트를 한다					
+								neutral, weight, tmp_yn, 
+                                beauty_exp, vaccination, bite, luxation, dermatosis, heart_trouble, marking, mounting)
+					values(@tmp_idx, dataName, dataName, dataType, dataPetType, '' , dataYear, dataMonth, dataDay, dataGender, dataWNeutral, dataWeight, 'Y',
+							dataBeautyExp, dataVaccination, dataBite, dataLuxation, dataDermatosis, dataHeartTrouble, dataMarking, dataMounting);
+	SET @pet_idx = LAST_INSERT_ID();
+    INSERT INTO tb_payment_log (pet_seq, session_id, customer_id, order_id, artist_id, cellphone, etc_memo, update_time, approval, product, product_type)
+				VALUES (@pet_idx, '0', CONCAT('신규등록(',@tmp_idx,')'), '0', dataPartnerId, dataCellphone, dataMemo, NOW(), '0', dataName, 'A');
+                 
+	SET @count = 0;
+   	SELECT COUNT(*) INTO @count
+	FROM tb_artist_customer_list
+	WHERE artist_id = dataPartnerId AND pet_seq = @pet_idx;
+    
+    IF @count > 0 THEN
+		UPDATE tb_artist_customer_list SET pet_name = dataName WHERE artist_id = dataPartnerId AND pet_seq = @pet_idx;
+    ELSE
+		INSERT tb_artist_customer_list (pet_seq, artist_id, pet_name) VALUES (@pet_idx, dataPartnerId, dataName);
+    END IF;
+                
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
 
-										INSERT INTO tb_artist_customer_list (pet_seq, artist_id, pet_name) VALUES
-										('191214', 'pettester@peteasy.kr', 'ttttttt')
-                                        UPDATE tb_artist_customer_list 
-                                        SET pet_name = 'ttttttt'
-                                        WHERE artist_id = 'pettester@peteasy.kr'
-                                                AND pet_seq = '191214'
-                                        
-                                        
-									
+	SELECT aErr AS err;
+
+END $$ 
+DELIMITER ;
+
 
 loof: LOOP
 		FETCH cursorPhones
