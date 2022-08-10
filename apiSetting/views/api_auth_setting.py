@@ -87,7 +87,7 @@ class TAuthView(TAPIBase):
                     tmp["customer_id"] = d[2]
                     tmp["name"] = d[3]
                     tmp["del"] = d[5]
-                body.append(tmp)
+                    body.append(tmp)
 
             return HttpResponse(self.json.dicToJson(body))
         except Exception as e:
