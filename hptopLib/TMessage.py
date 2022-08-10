@@ -29,6 +29,9 @@ class TMessage:
     def errorNonePostData(self):
         return {"head": {"code": 407, "message": "Post Data가 없습니다."}}
 
+    def errorNoEnoughPostData(self):
+        return {"head": {"code": 408, "message": "Post Data를 확인해 주세요."}}
+
     def error(self, message):
         return {"head": {"code": 999, "message": message}}
 

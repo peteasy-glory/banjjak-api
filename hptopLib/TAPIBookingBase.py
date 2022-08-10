@@ -61,6 +61,8 @@ class TAPIBookingBase(TAPIBase):
                 ret = self.message.successOk()
                 ret["body"] = body
                 return HttpResponse(self.json.dicToJson(ret))
+            elif err == 408:
+                return HttpResponse(self.json.dicToJson(self.message.errorNoEnoughPostData()))
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:

@@ -257,10 +257,6 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr');
-call procPartnerPC_HotelCutomerSearchTotal_get('pettester@peteasy.kr');
-call procPartnerPC_KinderCutomerSearchTotal_get('pettester@peteasy.kr');
-
 #==========================================================================
 call procPartnerPC_BeautyAgree_get('pettester@peteasy.kr', 178430);
 DELIMITER $$
@@ -279,45 +275,94 @@ BEGIN
 	;
 END $$ 
 DELIMITER ;
+select * from tb_mypet order by pet_seq desc;
+#=========================================================================
+call procPartnerPC_CustomerJoin_post('pettester@peteasy.kr', '1103202032020',
+'petName', 'dog', '골든리트리버', 2022, 1, 1, '남아', '0', '2.4','2회','1회','안해요','없음','0','0','0','0','it is memo');
+select * from tb_tmp_user order by tmp_seq desc;
+select * from tb_payment_log order by payment_log_seq desc;
+select * from tb_mypet order by  pet_seq desc;
+select * from  tb_artist_customer_list order by ac_seq desc;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_CustomerJoin_post $$
+CREATE PROCEDURE procPartnerPC_CustomerJoin_post(
+	dataPartnerId VARCHAR(64),    
+    dataCellphone VARCHAR(24),    
+    dataName VARCHAR(64),    
+    dataType VARCHAR(8),    
+    dataPetType VARCHAR(32),    
+    dataYear INT,    
+    dataMonth INT,    
+    dataDay INT,    
+    dataGender VARCHAR(10),    
+    dataWNeutral VARCHAR(1),    
+    dataWeight VARCHAR(10),    
+    dataBeautyExp VARCHAR(10),    
+    dataVaccination VARCHAR(10),    
+    dataBite VARCHAR(10),    
+    dataLuxation VARCHAR(10),    
+    dataDermatosis VARCHAR(1),    
+    dataHeartTrouble VARCHAR(1),    
+    dataMarking VARCHAR(1),    
+    dataMounting VARCHAR(1),    
+    dataMemo TEXT
+)
+BEGIN
+	/**
+		샵 신규 고객 등록
+   */
+	DECLARE aErr INT DEFAULT '0';
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
+	SET @tmp_idx = 0;
+    SET @pet_idx = 0;
+    
+	SELECT tmp_seq INTO @tmp_idx 
+    FROM tb_tmp_user 
+    WHERE cellphone = dataCellphone;
+        
+	START TRANSACTION;   
 
-							INSERT INTO tb_tmp_user (cellphone) VALUES
-							('0101010101010101010')
+    IF @tmp_idx < 1 THEN 
+    BEGIN
+		INSERT INTO tb_tmp_user (cellphone) VALUES (dataCellphone);
+        SET @tmp_idx = LAST_INSERT_ID();
+	END;
+    END IF;
 
-							INSERT INTO tb_mypet (
-								tmp_seq, name, name_for_owner, type, pet_type, 
+    INSERT INTO tb_mypet(tmp_seq, name, name_for_owner, type, pet_type, 
 								pet_type2, year, month, day, gender, 
-								neutral, weight, tmp_yn
-							) VALUES (
-								'150795','ttttttt','ttttttt','dog','골든리트리버',
-								'','2022','1','1','남아',
-								'1','5','Y'
-							)
-				
-								INSERT INTO tb_payment_log (
-									pet_seq, session_id, customer_id, order_id, artist_id,
-									cellphone, etc_memo, update_time, approval, product, product_type
-								) VALUES (
-									'191214', '0', '신규등록(150795)', '0', 'pettester@peteasy.kr', 
-									'0101010101010101010', 'dfdafdafdafd', NOW(), '0', 'ttttttt', 'A'
-								)
-							
-									SELECT *
-									FROM tb_artist_customer_list
-									WHERE artist_id = 'pettester@peteasy.kr'
-										AND pet_seq = '191214'
-											없으면 아래 인서트 , 있으면 업데트를 한다					
+								neutral, weight, tmp_yn, 
+                                beauty_exp, vaccination, bite, luxation, dermatosis, heart_trouble, marking, mounting)
+					values(@tmp_idx, dataName, dataName, dataType, dataPetType, '' , dataYear, dataMonth, dataDay, dataGender, dataWNeutral, dataWeight, 'Y',
+							dataBeautyExp, dataVaccination, dataBite, dataLuxation, dataDermatosis, dataHeartTrouble, dataMarking, dataMounting);
+	SET @pet_idx = LAST_INSERT_ID();
+    INSERT INTO tb_payment_log (pet_seq, session_id, customer_id, order_id, artist_id, cellphone, etc_memo, update_time, approval, product, product_type)
+				VALUES (@pet_idx, '0', CONCAT('신규등록(',@tmp_idx,')'), '0', dataPartnerId, dataCellphone, dataMemo, NOW(), '0', dataName, 'A');
+                 
+	SET @count = 0;
+   	SELECT COUNT(*) INTO @count
+	FROM tb_artist_customer_list
+	WHERE artist_id = dataPartnerId AND pet_seq = @pet_idx;
+    
+    IF @count > 0 THEN
+		UPDATE tb_artist_customer_list SET pet_name = dataName WHERE artist_id = dataPartnerId AND pet_seq = @pet_idx;
+    ELSE
+		INSERT tb_artist_customer_list (pet_seq, artist_id, pet_name) VALUES (@pet_idx, dataPartnerId, dataName);
+    END IF;
+                
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
 
-										INSERT INTO tb_artist_customer_list (pet_seq, artist_id, pet_name) VALUES
-										('191214', 'pettester@peteasy.kr', 'ttttttt')
-                                        UPDATE tb_artist_customer_list 
-                                        SET pet_name = 'ttttttt'
-                                        WHERE artist_id = 'pettester@peteasy.kr'
-                                                AND pet_seq = '191214'
-                                        
-                                        
-									
+	SELECT aErr AS err;
+
+END $$ 
+DELIMITER ;
+
 
 loof: LOOP
 		FETCH cursorPhones
