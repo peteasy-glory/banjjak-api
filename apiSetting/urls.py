@@ -2,7 +2,7 @@
 
 from django.urls import path
 from apiSetting.views import api_artist_work, api_open_close, api_regular_holiday, api_artist_vacation, api_part_time, \
-    api_break_time, api_artist_setting, api_schedule_artist, api_auth_setting, api_reserve, api_pay_type
+    api_break_time, api_artist_setting, api_schedule_artist, api_auth_setting, api_reserve, api_pay_type, api_beauty_product
 # from apiSetting.views import api_artist_work, api_schedule_artist
 
 
@@ -26,5 +26,6 @@ urlpatterns = [
     path('setting/reserve', api_reserve.TReserve.as_view()),
     path('setting/pay-type/<str:partner_id>', api_pay_type.TPayType.as_view()),
     path('setting/pay-type', api_pay_type.TPayType.as_view()),
+    path('setting/beauty-product/<str:partner_id>', api_beauty_product.TProduct.as_view()),
 
 ]
