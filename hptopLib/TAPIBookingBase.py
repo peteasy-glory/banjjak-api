@@ -36,20 +36,6 @@ class TAPIBookingBase(TAPIBase):
         return self.modify(request)
 
 
-    # def put(self, request):
-    #     try:
-    #         dic = request.data
-    #         if dic is None:
-    #             return HttpResponse(self.json.dicToJson(self.message.errorNonePostData()))
-    #         err, msg, body = self.putInfo(dic)
-    #         if err == 0:
-    #             ret = self.message.successOk()
-    #             ret["body"] = body
-    #             return HttpResponse(self.json.dicToJson(ret))
-    #         else:
-    #             return HttpResponse(self.json.dicToJson(self.message.error(msg)))
-    #     except Exception as e:
-    #         self.errorInfo(e)
     def modify(self, request):
         try:
             dict = request.data
@@ -81,6 +67,6 @@ class TAPIBookingBase(TAPIBase):
         msg = self.frameInfo(getframeinfo(currentframe()), err)
         return HttpResponse(self.json.dicToJson(self.message.error(msg)))
 
-    def frameInfo(self, f, err):
-        return "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (f.filename, f.lineno, f.function, err)
+    # def frameInfo(self, f, err):
+    #     return "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (f.filename, f.lineno, f.function, err)
 

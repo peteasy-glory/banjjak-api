@@ -7,6 +7,13 @@ from hptopLib.TAPIBookingBase import TAPIBookingBase
 
 
 class TAPICustomerBase(TAPIBookingBase):
+
+    def getInfo(self, payment_idx, *args):
+        pass
+
+    def modifyInfo(self, *args):
+        pass
+
     def get(self, request, partner_id):
         try:
             if partner_id is None:

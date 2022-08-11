@@ -23,11 +23,12 @@ class TAPISettingBase(TAPIBase):
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
-            frame_info = getframeinfo(currentframe())
-            msg = "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (frame_info.filename, frame_info.lineno, frame_info.function, e.args[0])
-            return HttpResponse(self.json.dicToJson(self.message.error(msg)))
+            return self.errorInfo(e)
 
     @abstractmethod
     def getInfo(self, partner_id):
         pass
 
+    def errorInfo(self, err):
+        msg = self.frameInfo(getframeinfo(currentframe()), err)
+        return HttpResponse(self.json.dicToJson(self.message.error(msg)))

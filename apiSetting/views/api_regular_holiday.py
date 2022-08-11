@@ -32,7 +32,6 @@ class TReqularHoliday(TAPISettingBase):
                     body.append(tmp)
             return 0, "success", body
         except Exception as e:
-            frame_info = getframeinfo(currentframe())
-            msg = "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (frame_info.filename, frame_info.lineno, frame_info.function, e.args[0])
+            msg = self.frameInfo(getframeinfo(currentframe()), e.args[0])
             return -1, msg, None
 

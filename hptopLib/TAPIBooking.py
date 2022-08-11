@@ -21,7 +21,7 @@ class TAPIBooking(TAPIBookingBase):
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
-            return  self.errorInfo(e)
+            return self.errorInfo(e)
 
 
 

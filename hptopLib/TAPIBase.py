@@ -219,7 +219,7 @@ class TAPIBase(APIView):
                     tmp["photo"] = d[13]
                     tmp["beauty_exp"] = d[14]
                     tmp["vaccination"] = d[15]
-                    tmp["bite"] = zeroToBool(d[16])
+                    tmp["bite"] = d[16]
                     tmp["heart_trouble"] = zeroToBool(d[17])
                     tmp["marking"] = zeroToBool(d[18])
                     tmp["mounting"] = zeroToBool(d[19])
@@ -601,3 +601,11 @@ class TAPIBase(APIView):
             data = value
 
         return body
+
+    def frameInfo(self, f, err):
+        return "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (f.filename, f.lineno, f.function, err)
+
+    @abstractmethod
+    def errorInfo(self, err):
+        pass
+

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from inspect import getframeinfo, currentframe
+
 from django.http import HttpResponse
 
 from apiShare.constVar import QUERY_DB
@@ -10,6 +12,10 @@ class TPayType(TAPIBase):
     """
     결제방식 설정
     """
+
+    def errorInfo(self, err):
+        msg = self.frameInfo(getframeinfo(currentframe()), err)
+        return HttpResponse(self.json.dicToJson(self.message.error(msg)))
 
     def get(self, request, partner_id):
         try:
@@ -36,7 +42,6 @@ class TPayType(TAPIBase):
 
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
-            print(e)
-            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
+            return self.errorInfo( e.args[0])
 
 

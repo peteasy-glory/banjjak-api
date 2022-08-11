@@ -47,21 +47,17 @@ class TArtistWork(TAPISettingBase):
                     body.append(tmp)
             return 0, "success", body
         except Exception as e:
-            frame_info = getframeinfo(currentframe())
-            msg = "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (
-                    frame_info.filename, frame_info.lineno, frame_info.function, e.args[0])
+            msg = self.frameInfo(getframeinfo(currentframe()), e.args[0])
             return -1, msg, None
 
     def post(self, request):
         try:
             pass
         except Exception as e:
-            print(e)
-            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
 
     def put(self, request):
         try:
             pass
         except Exception as e:
-            print(e)
-            return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))

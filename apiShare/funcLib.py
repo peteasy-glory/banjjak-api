@@ -25,6 +25,8 @@ def totalPrice(src):
 
 
 def zeroToBool(is_zero):
+    if is_zero == '' or is_zero is None:
+        return False
     return False if int(is_zero) == 0 else True
 
 

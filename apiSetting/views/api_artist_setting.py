@@ -26,7 +26,6 @@ class TAuthSetting(TAPIBase):
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
-            print(e)
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[1])))
 
     def post(self, request):

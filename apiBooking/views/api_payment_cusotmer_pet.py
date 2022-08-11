@@ -10,6 +10,7 @@ class TCustomerPetInfo(TAPIBookingBase):
 
 
 
+
     def getInfo(self, payment_idx, *args):
         try:
             if len(args) < 1:
@@ -33,11 +34,9 @@ class TCustomerPetInfo(TAPIBookingBase):
                             tmp = {"payment_idx": d[0], "pet_seq": d[1], "cutomer_id": d[3], "memo": d[58],  "booking_date": d[71]}
                         body.append(tmp)
             return 0, "success", body
-        except Exception as e:
-            frame_info = getframeinfo(currentframe())
-            msg = "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (
-            frame_info.filename, frame_info.lineno, frame_info.function, e.args[0])
+        except Exception as err:
+            msg = self.frameInfo(getframeinfo(currentframe()), err)
             return -1, msg, None
 
-    def putInfo(self, *args):
+    def modifyInfo(self, *args):
         pass
