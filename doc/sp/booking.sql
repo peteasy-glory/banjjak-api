@@ -375,3 +375,130 @@ BEGIN
 	SELECT aErr as err;
 END $$ 
 DELIMITER ;
+
+#=================
+call procPartnerPC_Booking_PetType_get('cat');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetType_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PetType_get(
+	dataType VARCHAR(10) # 0: 강아지, 1: 고양이
+)
+BEGIN
+	/**
+	동물 종류 가져오기
+   */
+
+	SELECT *
+	FROM tb_pet_type
+	WHERE type = dataType AND enable_flag=1 ORDER BY name ASC;
+   
+END $$ 
+DELIMITER ;
+call procPartnerPC_Booking_PreDataCommon_get('pettester@peteasy.kr');
+call procPartnerPC_Booking_PreDataStatic_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataStatic_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataStatic_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (동물 크기, 무게별 가격)
+   */
+
+	SELECT *, if(second_type = '소형견미용', 1, if(second_type = '중형견미용', 2, if(second_type = '대형견미용', 3, if(second_type = '특수견미용', 4, if(second_type = '기타공통', 5, 9))))) AS sort
+    FROM tb_product_dog_static 
+    WHERE customer_id = dataPartner
+		AND second_type != '기타공통'
+	ORDER BY sort ASC, update_time;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataCommon_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataCommon_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataCommon_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (털특징, 털길이 , 추가: 얼굴컷, 다리, 스파, 염색, 기타)
+   */
+
+	SELECT * 
+	FROM tb_product_dog_common
+	WHERE customer_id = dataPartner;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataWorktime_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataWorktime_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataWorktime_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (서비스)
+   */
+
+	SELECT * 
+	FROM tb_product_dog_worktime
+	WHERE artist_id = dataPartner;
+END $$ 
+DELIMITER ;
+
+#=====================
+SELECT * 
+FROM tb_product_common_option
+WHERE customer_id = 'pettester@peteasy.kr'
+;
+
+SELECT * 
+FROM tb_product_dog
+WHERE customer_id = 'pettester@peteasy.kr'
+;
+
+
+SELECT * 
+FROM tb_product_dog_etc
+WHERE customer_id = 'pettester@peteasy.kr'
+;
+
+SELECT * 
+FROM tb_product_dog_common
+WHERE customer_id = 'pettester@peteasy.kr'
+;
+
+SELECT * 
+FROM tb_product_dog_static
+WHERE customer_id = 'pettester@peteasy.kr'
+;
+
+SELECT * 
+FROM tb_product_dog_worktime
+WHERE artist_id = 'pettester@peteasy.kr'
+;
+
+SELECT * FROM tb_payment_log WHERE payment_log_seq = 
+'bath_price', 'part_price', 'bath_part_price', 'sanitation_price', 'sanitation_bath_price', 'all_price', 'spoting_price', 'scissors_price', 'summercut_price');
+"목욕", 			"부분미용", 		"부분+목욕", 			"위생", 				"위생+목욕",				"전체미용", 	"스포팅", 		"가위컷", 			"썸머컷");
+
+
+
+SELECT * FROM tb_product_dog_static 
+                    WHERE customer_id = 'pettester@peteasy.kr' AND first_type = '개' AND (second_type = '소형견미용' OR direct_title = '소형견미용')
+                    AND bath_price != ''
+                
+                ;
+                
+
+
+
+
+
+
+
+
+
+
