@@ -40,9 +40,12 @@ PROC_BEAUTY_BOOKING_GRADE_SHOP_IDX_GET = "call procPartnerPC_Booking_GRADE_SHOP_
 PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_POST = "call procPartnerPC_Booking_GradeCustomer_post(%s, %s,'%s')"
 PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_PUT = "call procPartnerPC_Booking_GradeCustomer_put(%s, %s, '%s')"
 
+PROC_BEAUTY_BOOKING_PET_TYPE_GET = "call procPartnerPC_Booking_PetType_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_STATIC_GET = "call procPartnerPC_Booking_PreDataStatic_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_COMMON_GET = "call procPartnerPC_Booking_PreDataCommon_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_WORKTIME_GET = "call procPartnerPC_Booking_PreDataWorktime_get('%s')"
+PROC_BEAUTY_BOOKING_PREDATA_COMMON_OPTION_GET = "call procPartnerPC_Booking_PreDataCommOption_get('%s')"
+PROC_BEAUTY_BOOKING_PREDATA_CAT_GET = "call procPartnerPC_Booking_PreDataCat_get('%s')"
 
 #CUSTOMER MGR
 PROC_CUSTOMER_TOTAL_COUNT_GET = "call procPartnerPC_CustomerTotalCount_get('%s')"

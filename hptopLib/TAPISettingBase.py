@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from abc import abstractmethod
-from inspect import getframeinfo, currentframe
 from django.http import HttpResponse
-
 from hptopLib.TAPIBase import TAPIBase
 
 
@@ -28,7 +26,3 @@ class TAPISettingBase(TAPIBase):
     @abstractmethod
     def getInfo(self, partner_id):
         pass
-
-    def errorInfo(self, err):
-        msg = self.frameInfo(getframeinfo(currentframe()), err)
-        return HttpResponse(self.json.dicToJson(self.message.error(msg)))

@@ -63,10 +63,6 @@ class TAPIBookingBase(TAPIBase):
         pass
 
 
-    def errorInfo(self, err):
-        msg = self.frameInfo(getframeinfo(currentframe()), err)
-        return HttpResponse(self.json.dicToJson(self.message.error(msg)))
-
     # def frameInfo(self, f, err):
     #     return "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (f.filename, f.lineno, f.function, err)
 

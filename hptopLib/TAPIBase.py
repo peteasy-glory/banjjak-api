@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import traceback
 from abc import abstractmethod
 from datetime import datetime
 
@@ -605,7 +606,6 @@ class TAPIBase(APIView):
     def frameInfo(self, f, err):
         return "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (f.filename, f.lineno, f.function, err)
 
-    @abstractmethod
     def errorInfo(self, err):
-        pass
+        return traceback.format_exc()
 

@@ -2,10 +2,11 @@
 
 from django.urls import path
 
-from apiBooking.views import api_beauty, api_payment_cusotmer_pet, api_noshow, api_payment_goods, api_grade
+from apiBooking.views import api_beauty, api_payment_cusotmer_pet, api_noshow, api_payment_goods, api_grade, api_pet
 from apiSetting.views import api_schedule_artist
 
 urlpatterns = [
+    path('booking/pettype', api_pet.TPetType.as_view()),
     path('booking/b/<str:partner_id>', api_beauty.TBooking.as_view()),
     path('booking/b/join/<str:partner_id>', api_beauty.TBookingJoin.as_view()),
 
@@ -15,7 +16,6 @@ urlpatterns = [
     path('booking/payment-goods/<int:payment_idx>', api_payment_goods.TPaymentGoods.as_view()),
     path('booking/noshow', api_noshow.TNoShow.as_view()),
     path('booking/noshow/<int:payment_idx>', api_noshow.TNoShow.as_view()),
-
     path('booking/grade-shop', api_grade.TShopGrade.as_view()),
     #path('booking/grade-customer/<int:customer_grade_idx>', api_grade.TCustomerGrade.as_view()),
 
