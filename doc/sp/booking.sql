@@ -444,11 +444,70 @@ BEGIN
 
 	SELECT * 
 	FROM tb_product_dog_worktime
-	WHERE artist_id = dataPartner;
+	WHERE is_delete = 2 
+		AND artist_id = dataPartner;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataCommOption_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataCommOption_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataCommOption_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (목욕 추가)
+   */
+
+	SELECT * 
+	FROM tb_product_common_option
+	WHERE customer_id = dataPartner;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataCat_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataCat_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataCat_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 
+   */
+
+	SELECT * 
+	FROM tb_product_cat
+	WHERE customer_id = dataPartner;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PetType_get('dog');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetType_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PetType_get(
+	dataAnimal VARCHAR(10)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 펫종류 가져오기
+   */
+	SELECT * 
+	FROM tb_pet_type
+	WHERE type=dataAnimal AND enable_flag = 1;
+    
 END $$ 
 DELIMITER ;
 
 #=====================
+
+SELECT * 
+FROM tb_pet_type
+WHERE type='dog' AND enable_flag = 1;
+
 SELECT * 
 FROM tb_product_common_option
 WHERE customer_id = 'pettester@peteasy.kr'
@@ -480,17 +539,15 @@ FROM tb_product_dog_worktime
 WHERE artist_id = 'pettester@peteasy.kr'
 ;
 
-SELECT * FROM tb_payment_log WHERE payment_log_seq = 
-'bath_price', 'part_price', 'bath_part_price', 'sanitation_price', 'sanitation_bath_price', 'all_price', 'spoting_price', 'scissors_price', 'summercut_price');
-"목욕", 			"부분미용", 		"부분+목욕", 			"위생", 				"위생+목욕",				"전체미용", 	"스포팅", 		"가위컷", 			"썸머컷");
+SELECT * 
+FROM tb_product_cat
+WHERE customer_id = 'pettester@peteasy.kr'
+;
 
-
-
-SELECT * FROM tb_product_dog_static 
-                    WHERE customer_id = 'pettester@peteasy.kr' AND first_type = '개' AND (second_type = '소형견미용' OR direct_title = '소형견미용')
-                    AND bath_price != ''
-                
-                ;
+SELECT * 
+FROM tb_product_cat_etc
+WHERE customer_id = 'pettester@peteasy.kr'
+;
                 
 
 
