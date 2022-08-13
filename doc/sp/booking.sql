@@ -53,7 +53,7 @@ DELIMITER ;
     FROM tb_customer_family 
 	WHERE to_cellphone = '01086331776'  AND artist_id = 'pettester@peteasy.kr' AND is_delete = 0;
     
-call procPartnerPC_Booking_CustomerPetInfo_get(568668);
+call procPartnerPC_Booking_CustomerPetInfo_get(568582);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerPetInfo_get $$
 CREATE PROCEDURE procPartnerPC_Booking_CustomerPetInfo_get(
@@ -76,11 +76,21 @@ BEGIN
     DECLARE aMemo TEXT DEFAULT '';
     DECLARE aPetMemo TEXT DEFAULT '';
     DECLARE aPetId TEXT DEFAULT '';
+    
+    SET @beauty_date = '';
+    SET @worker = '';
+    SET @is_noshow = '';
+    SET @noshow_count = 0;
         
      # 회원아이디 가져오기    
-    SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo
+    SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo, is_no_show, worker, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(hour,2,0),':',LPAD(minute,2,0)) 
+				INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date
     FROM tb_payment_log 
 	WHERE payment_log_seq = dataPaymentCode;
+
+	#노쇼 카운트
+	SELECT SUM(is_no_show) INTO @noshow_count FROM tb_payment_log
+	WHERE customer_id = aCustomerId AND artist_id=artist_id;
 
 	#보조연락처 가져오기
  	SELECT GROUP_CONCAT(CONCAT(family_seq,'|',from_cellphone,'|',from_customer_id,'|',from_nickname)) INTO aSubPhone 
@@ -117,14 +127,16 @@ BEGIN
 	SELECT aCustomerId AS customer_Id, aTmpId AS tmp_id, aPartnerId AS partner_id, 
 		   aPhone AS cell_phone, aSubPhone AS sub_phone, 
            aCustomerGradeIdx AS customer_grade_idx,  aShopGradeIdx AS shop_grade_idx, aGradeName AS grade_name, aGradeOrd AS grade_ord, 
-           aOwnerMemo AS owner_memo,
+           aOwnerMemo AS owner_memo, @noshow_count AS noshow_count, @is_noshow AS is_noshow, @worker AS worker, @beauty_date AS beauty_date,
 		#예약 펫 정보
 		pet_seq, name, name_for_owner, type, pet_type, gender, weight, photo, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0)) AS birth, neutral, etc,
-		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
+		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting, #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
+        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part
 	FROM tb_mypet WHERE pet_seq = aPetId;
 
 END $$ 
 DELIMITER ;
+
 
 call procPartnerPC_Booking_BeforePaymentInfo_get(518235, True, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(518235, false, 10);

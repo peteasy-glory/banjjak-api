@@ -227,6 +227,8 @@ class TAPIBase(APIView):
                     tmp["luxation"] = d[20]
                     tmp["dermatosis"] = zeroToBool(d[21])
                     tmp["photocounseling"] = d[22]
+                    tmp["memo"] = d[23]
+                    tmp['disliked_part'] = d[24]
                     photo = []
                     try:
                         if d[22] is not None and len(d[22]) > 0:
