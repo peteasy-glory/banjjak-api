@@ -13,7 +13,7 @@ BEGIN
 		미용 예약 현황 기간으로 검색 
    */
    
-	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve FROM 
+	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve, B.photo FROM 
 	(
 		SELECT * FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId
@@ -514,6 +514,27 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+
+call procPartnerPC_Booking_WaitingList_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_WaitingList_get $$
+CREATE PROCEDURE procPartnerPC_Booking_WaitingList_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 승인 대기 리스트
+   */
+	SELECT b.*, c.pet_seq, c.tmp_seq, c.name, c.type, c.pet_type, a.is_approve, c.photo
+	FROM tb_grade_reserve_approval_mgr a 
+		LEFT JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq 
+		LEFT JOIN tb_mypet c ON b.pet_seq = c.pet_seq 
+	WHERE a.is_approve = '0'
+	AND b.artist_id = dataPartnerId AND b.data_delete = 0
+	ORDER BY DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d') DESC;
+    
+END $$ 
+DELIMITER ;
 #=====================
 
 SELECT * 

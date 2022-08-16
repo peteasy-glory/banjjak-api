@@ -33,7 +33,7 @@ class TBooking(TAPIBase):
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
-            return self.errorInfo(e)
+            return HttpResponse(self.json.dicToJson(self.message.error(self.errorInfo(e))))
 
 
 class TBookingJoin(TAPIBase):

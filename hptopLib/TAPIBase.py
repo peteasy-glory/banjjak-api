@@ -456,38 +456,69 @@ class TAPIBase(APIView):
                         "price": subSplit(p_split[6], ":")[1]
                     },
                     "leg": {
-                        "nail": p_split[9],
-                        "rain_boots": p_split[10],
-                        "bell": p_split[11]
+
+                        "nail": {
+                            "unit": "네일",
+                            "price": p_split[9]
+                        },
+                        "rain_boots": {
+                            "unit": "장화",
+                            "price": p_split[10],
+                        },
+                        "bell": {
+                            "unit":"방울",
+                            "price": p_split[11]
+                        }
                     }
                 }
             }
-            pos = 15
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 스파 개수
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["add"]["spa"] = body
-                pos += count
+            pos = 14
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 스파 개수
+                if p_split[pos].isdigit():
+                    if int(p_split[pos]) == 1:
+                        products["add"]["leg"]["type1"] = {}
+                        products["add"]["leg"]["type1"]["unit"] = p_split[pos+1].split(":")[0]
+                        products["add"]["leg"]["type1"]["price"] = p_split[pos+1].split(":")[1]
+                        pos += 1
+                    elif int(p_split[pos]) == 2:
+                        products["add"]["leg"]["type1"] = {}
+                        products["add"]["leg"]["type1"]["unit"] = p_split[pos+1].split(":")[0]
+                        products["add"]["leg"]["type1"]["price"] = p_split[pos+1].split(":")[1]
+                        pos += 1
+                        products["add"]["leg"]["type2"] = {}
+                        products["add"]["leg"]["type2"]["unit"] = p_split[pos+1].split(":")[0]
+                        products["add"]["leg"]["type2"]["price"] = p_split[pos+1].split(":")[1]
             pos += 1
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 염색 개수
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["add"]["hair_color"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 스파 개수
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["add"]["spa"] = body
+                    pos += count
             pos += 1
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 기타
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["add"]["etc"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 염색 개수
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["add"]["hair_color"] = body
+                    pos += count
             pos += 1
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 쿠폰상품
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["coupon"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 기타
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["add"]["etc"] = body
+                    pos += count
+            pos += 1
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 쿠폰상품
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["coupon"] = body
+                    pos += count
             pos += 1
 
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 제품
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["goods"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 제품
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["goods"] = body
+                    pos += count
 
             return products
         except Exception as e:

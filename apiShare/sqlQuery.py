@@ -46,6 +46,7 @@ PROC_BEAUTY_BOOKING_PREDATA_COMMON_GET = "call procPartnerPC_Booking_PreDataComm
 PROC_BEAUTY_BOOKING_PREDATA_WORKTIME_GET = "call procPartnerPC_Booking_PreDataWorktime_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_COMMON_OPTION_GET = "call procPartnerPC_Booking_PreDataCommOption_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_CAT_GET = "call procPartnerPC_Booking_PreDataCat_get('%s')"
+PROC_BEAUTY_BOOKING_WAITING_LIST_GET = "call procPartnerPC_Booking_WaitingList_get('%s')"
 
 #CUSTOMER MGR
 PROC_CUSTOMER_TOTAL_COUNT_GET = "call procPartnerPC_CustomerTotalCount_get('%s')"
