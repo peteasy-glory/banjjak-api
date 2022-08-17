@@ -88,20 +88,25 @@ BEGIN
     FROM tb_payment_log 
 	WHERE payment_log_seq = dataPaymentCode;
 
-	#노쇼 카운트
-	SELECT SUM(is_no_show) INTO @noshow_count FROM tb_payment_log
-	WHERE customer_id = aCustomerId AND artist_id=artist_id;
-
-	#보조연락처 가져오기
- 	SELECT GROUP_CONCAT(CONCAT(family_seq,'|',from_cellphone,'|',from_customer_id,'|',from_nickname)) INTO aSubPhone 
-    FROM tb_customer_family 
-	WHERE to_cellphone = aPhone  AND artist_id = aPartnerId AND is_delete = 0;
-   
 	#가회원인경우 임시 아이디 가져오기
 	IF TRIM(aCustomerId) = '' OR aCustomerId IS NULL THEN
 		SELECT tmp_seq INTO aTmpId FROM tb_tmp_user
         WHERE cellphone = aPhone AND data_delete = 0;
     END IF;
+    
+	#노쇼 카운트
+	SELECT SUM(is_no_show)INTO @noshow_count FROM tb_payment_log
+	WHERE customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId) AND artist_id=artist_id;
+	IF @noshow_count IS NULL THEN
+		SET @noshow_count = 0;
+    END IF;
+    
+	#보조연락처 가져오기
+ 	SELECT GROUP_CONCAT(CONCAT(family_seq,'|',from_cellphone,'|',from_customer_id,'|',from_nickname)) INTO aSubPhone 
+    FROM tb_customer_family 
+	WHERE to_cellphone = aPhone  AND artist_id = aPartnerId AND is_delete = 0;
+   
+
     
     #등급 가져오기
 	SELECT a.idx, a.grade_idx, b.grade_name, b.grade_ord INTO aCustomerGradeIdx, aShopGradeIdx, aGradeName, aGradeOrd
@@ -138,7 +143,7 @@ END $$
 DELIMITER ;
 
 
-call procPartnerPC_Booking_BeforePaymentInfo_get(518235, True, 10);
+call procPartnerPC_Booking_BeforePaymentInfo_get(571239, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(518235, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(568668, true, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(568668, false, 10);
@@ -680,27 +685,11 @@ BEGIN
     START TRANSACTION;
 
     UPDATE tb_mypet 
-	SET name=dataName, type =, pet_type=, year=, month=, day=, gender=,neutral=
+	SET name=dataName, type=dataType, pet_type=dataPetType, year=dataYear, month=dataMonth, day=dataDay, 
+		gender=dataGender,neutral=dataNeutral,weight=dataWeight,beauty_exp=dataBeautyExp,
+        vaccination=dataVaccination,luxation=dataLuxation,bite=dataBite,dermatosis=dataDermatosis,
+        heart_trouble=dataHeartTrouble,marking=dataMarking,mounting=dataMounting,etc=dataEtc
 	WHERE pet_seq = dataIdx;
-    
-    dataName VARCHAR(50),
-    dataType VARCHAR(50),
-    dataPetType VARCHAR(20),
-    dataYear INT,
-    dataMonth INT,
-    dataDay INT,
-    dataGender VARCHAR(20),
-    dataNeutral INT,
-    dataWeight VARCHAR(20),
-    dataBeautyExp VARCHAR(45),
-    dataVaccination VARCHAR(45),
-    dataLuxation VARCHAR(45),
-    dataBite VARCHAR(45),
-    dataDermatosis INT,
-    dataHeartTrouble INT,
-    dataMarking INT,
-    dataMounting INT,
-    dataEtc TEXT
     
     IF aErr < 0 THEN
 		ROLLBACK;
