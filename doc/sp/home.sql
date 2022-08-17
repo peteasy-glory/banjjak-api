@@ -236,7 +236,7 @@ BEGIN
     END;
     END IF;
  
-	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve, B.photo AS pet_photo FROM 
+	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo AS pet_photo, C.idx, C.is_approve FROM 
 	(
 		SELECT * FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId

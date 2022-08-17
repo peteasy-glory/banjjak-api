@@ -13,7 +13,7 @@ BEGIN
 		미용 예약 현황 기간으로 검색 
    */
    
-	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve, B.photo FROM 
+	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo, C.idx, C.is_approve FROM 
 	(
 		SELECT * FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId
@@ -525,7 +525,7 @@ BEGIN
 	/**
 		예약 승인 대기 리스트
    */
-	SELECT b.*, c.pet_seq, c.tmp_seq, c.name, c.type, c.pet_type, a.is_approve, c.photo
+	SELECT b.*, c.pet_seq, c.tmp_seq, c.name, c.type, c.pet_type, c.photo, a.idx, a.is_approve
 	FROM tb_grade_reserve_approval_mgr a 
 		LEFT JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq 
 		LEFT JOIN tb_mypet c ON b.pet_seq = c.pet_seq 
@@ -535,52 +535,185 @@ BEGIN
     
 END $$ 
 DELIMITER ;
+
+
+call procPartnerPC_Booking_Decision_put(129, 0, 573038);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Decision_put $$
+CREATE PROCEDURE procPartnerPC_Booking_Decision_put(
+	dataApproveIdx INT,
+	dataDecisionCode INT,
+    dataPaymentIdx INT
+)
+BEGIN
+	/**
+		예약 승인 대기 확정/취소
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    UPDATE tb_grade_reserve_approval_mgr 
+	SET is_approve = dataDecisionCode, mod_date = NOW() 
+	WHERE idx = dataApproveIdx;
+   
+	IF dataDecisionCode = 3 THEN
+		UPDATE tb_payment_log 
+        SET is_cancel = 1,
+            cancel_time = NOW()
+		WHERE payment_log_seq = dataPaymentIdx;
+	END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_CustomerMemo_get('pettester@peteasy.kr','itseokbeom@gmail.com','','01086331776');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerMemo_get $$
+CREATE PROCEDURE procPartnerPC_Booking_CustomerMemo_get(
+	dataPartnerId VARCHAR(64),
+    dataCustomerID VARCHAR(64),
+    dataTmpSeq VARCHAR(20),
+    dataCellphone VARCHAR(20)
+)
+BEGIN
+	/**
+		견주 관련 메모
+   */
+	IF LENGTH(dataCustomerID) > 0 THEN
+		SELECT * FROM tb_shop_customer_memo 
+		WHERE customer_id = dataCustomerID AND cellphone = dataCellphone AND artist_id = dataPartnerId AND is_delete = 2;
+	ELSEIF LENGTH(dataTmpSeq) > 0 THEN
+		SELECT * FROM tb_shop_customer_memo 
+		WHERE tmp_seq = dataTmpSeq AND cellphone = dataCellphone AND artist_id = dataPartnerId AND is_delete = 2;
+	ELSE
+		SELECT * FROM tb_shop_customer_memo 
+		WHERE cellphone = dataCellphone AND artist_id = dataPartnerId AND is_delete = 2;
+    END IF;
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerMemo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_CustomerMemo_put(
+	dataIdx INT,
+    dataMemo TEXT
+)
+BEGIN
+	/**
+		견주 관련 메모 수정
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+
+    UPDATE tb_shop_customer_memo 
+	SET memo = dataMemo
+	WHERE scm_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PetInfo_get(96565);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetInfo_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PetInfo_get(
+	dataPetIdx INT
+)
+BEGIN
+	/**
+		견주 펫 정보
+   */
+	SELECT * FROM tb_mypet 
+	WHERE pet_seq = dataPetIdx;
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetInfo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_PetInfo_put(
+	dataIdx INT,
+    dataName VARCHAR(50),
+    dataType VARCHAR(50),
+    dataPetType VARCHAR(20),
+    dataYear INT,
+    dataMonth INT,
+    dataDay INT,
+    dataGender VARCHAR(20),
+    dataNeutral INT,
+    dataWeight VARCHAR(20),
+    dataBeautyExp VARCHAR(45),
+    dataVaccination VARCHAR(45),
+    dataLuxation VARCHAR(45),
+    dataBite VARCHAR(45),
+    dataDermatosis INT,
+    dataHeartTrouble INT,
+    dataMarking INT,
+    dataMounting INT,
+    dataEtc TEXT
+)
+BEGIN
+	/**
+		견주 펫 정보 수정
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+
+    UPDATE tb_mypet 
+	SET name=dataName, type =, pet_type=, year=, month=, day=, gender=,neutral=
+	WHERE pet_seq = dataIdx;
+    
+    dataName VARCHAR(50),
+    dataType VARCHAR(50),
+    dataPetType VARCHAR(20),
+    dataYear INT,
+    dataMonth INT,
+    dataDay INT,
+    dataGender VARCHAR(20),
+    dataNeutral INT,
+    dataWeight VARCHAR(20),
+    dataBeautyExp VARCHAR(45),
+    dataVaccination VARCHAR(45),
+    dataLuxation VARCHAR(45),
+    dataBite VARCHAR(45),
+    dataDermatosis INT,
+    dataHeartTrouble INT,
+    dataMarking INT,
+    dataMounting INT,
+    dataEtc TEXT
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
 #=====================
 
-SELECT * 
-FROM tb_pet_type
-WHERE type='dog' AND enable_flag = 1;
-
-SELECT * 
-FROM tb_product_common_option
-WHERE customer_id = 'pettester@peteasy.kr'
-;
-
-SELECT * 
-FROM tb_product_dog
-WHERE customer_id = 'pettester@peteasy.kr'
-;
-
-
-SELECT * 
-FROM tb_product_dog_etc
-WHERE customer_id = 'pettester@peteasy.kr'
-;
-
-SELECT * 
-FROM tb_product_dog_common
-WHERE customer_id = 'pettester@peteasy.kr'
-;
-
-SELECT * 
-FROM tb_product_dog_static
-WHERE customer_id = 'pettester@peteasy.kr'
-;
-
-SELECT * 
-FROM tb_product_dog_worktime
-WHERE artist_id = 'pettester@peteasy.kr'
-;
-
-SELECT * 
-FROM tb_product_cat
-WHERE customer_id = 'pettester@peteasy.kr'
-;
-
-SELECT * 
-FROM tb_product_cat_etc
-WHERE customer_id = 'pettester@peteasy.kr'
-;
                 
 
 

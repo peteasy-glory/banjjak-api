@@ -11,15 +11,15 @@ class TAPIBookingBase(TAPIBase):
     HTTP 전송 공통 클래스.
     """
 
-    def get(self, request, payment_idx):
+    def get(self, request, idx):
         try:
-            if payment_idx is None:
+            if idx is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
             dic = request.data
             if len(dic) < 1:
-                err, msg, body = self.getInfo(payment_idx)
+                err, msg, body = self.getInfo(idx)
             else:
-                err, msg, body = self.getInfo(payment_idx, dic)
+                err, msg, body = self.getInfo(idx, dic)
             if err == 0:
                 ret = self.message.successOk()
                 ret["body"] = body
@@ -42,7 +42,7 @@ class TAPIBookingBase(TAPIBase):
             if dict is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorNonePostData()))
 
-            err, msg, body = self.modifyInfo(dict)
+            err, msg, body = self.modifyInfo(dict, request.method)
             if err == 0:
                 ret = self.message.successOk()
                 ret["body"] = body

@@ -47,6 +47,14 @@ PROC_BEAUTY_BOOKING_PREDATA_WORKTIME_GET = "call procPartnerPC_Booking_PreDataWo
 PROC_BEAUTY_BOOKING_PREDATA_COMMON_OPTION_GET = "call procPartnerPC_Booking_PreDataCommOption_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_CAT_GET = "call procPartnerPC_Booking_PreDataCat_get('%s')"
 PROC_BEAUTY_BOOKING_WAITING_LIST_GET = "call procPartnerPC_Booking_WaitingList_get('%s')"
+PROC_BEAUTY_BOOKING_WAITING_DECISION_PUT = "call procPartnerPC_Booking_Decision_put(%d,%d,%d)"
+PROC_BEAUTY_BOOKING_CUSTOMER_MEMO_GET = "call procPartnerPC_Booking_CustomerMemo_get('%s','%s','%s','%s')"
+PROC_BEAUTY_BOOKING_CUSTOMER_MEMO_PUT = "call procPartnerPC_Booking_CustomerMemo_put(%d,'%s')"
+PROC_BEAUTY_BOOKING_PET_INFO_GET = "call procPartnerPC_Booking_PetInfo_get(%d)"
+PROC_BEAUTY_BOOKING_PET_INFO_PUT = "call procPartnerPC_Booking_PetInfo_put(%d,'%s','%s','%s',%d,%d,%d,'%s',%d,'%s'," \
+                                   "'%s','%s','%s','%s',%d,%d,%d,%d,'%s')"
+#PROC_BEAUTY_BOOKING_PET_INFO_PUT = "call procPartnerPC_Booking_PetInfo_put(%s,'%s','%s','%s',%s,%s,%s,'%s',%s,'%s'," \
+#                                   "'%s','%s','%s','%s',%s,%s,%s,%s,'%s')"
 
 #CUSTOMER MGR
 PROC_CUSTOMER_TOTAL_COUNT_GET = "call procPartnerPC_CustomerTotalCount_get('%s')"
