@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from abc import abstractmethod
-from inspect import getframeinfo, currentframe
 from django.http import HttpResponse
-
 from hptopLib.TAPIBase import TAPIBase
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import *
@@ -30,6 +28,7 @@ class TAPISettingBase(TAPIBase):
     @abstractmethod
     def getInfo(self, partner_id):
         pass
+<<<<<<< HEAD
 
     def errorInfo(self, err):
         msg = self.frameInfo(getframeinfo(currentframe()), err)
@@ -118,3 +117,5 @@ class TAPISettingBase(TAPIBase):
             return 0, body
         except Exception as e:
             return -1, e.args[0]
+=======
+>>>>>>> 6dc6a38b4e571c8966221fdd052406b750783ce1

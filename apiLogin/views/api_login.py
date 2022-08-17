@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from abc import ABC
-from datetime import datetime
-from inspect import getframeinfo, currentframe
 
 from django.http import HttpResponse
 
@@ -56,7 +53,7 @@ class TLogin(TAPIBase):
             return self.errorInfo(e)
 
     def errorInfo(self, err):
-        msg = self.frameInfo(getframeinfo(currentframe()), err)
+        msg = self.errorInfo(err)
         return HttpResponse(self.json.dicToJson(self.message.error(msg)))
 
 

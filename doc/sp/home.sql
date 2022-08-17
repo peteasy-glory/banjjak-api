@@ -120,7 +120,7 @@ BEGIN
 	SELECT A.approval, A.update_time, A.payment_log_seq, C.id, C.usr_name, A.cellphone, B.pet_seq, B.name, B.pet_type
 		, CONCAT(B.year,'-', LPAD(B.month,2,0),'-', LPAD(B.day,2,0)) AS birth,
         B.gender, B.neutral, B.weight, B.photo, B.beauty_exp, B.vaccination, B.bite, B.heart_trouble, B.marking, B.mounting, B.luxation, B.dermatosis
-        , B.photo_counseling
+        , B.photo_counseling, A.etc_memo, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part 
 	FROM tb_payment_log A, tb_mypet B, tb_customer C
 	WHERE A.pet_seq = B.pet_seq	AND A.customer_id = C.id AND 
 			A.artist_id = dataPartnerId AND A.data_delete = 0
@@ -150,12 +150,6 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-SET @s = 'SELECT SQRT(POW(?,2) + POW(?,2)) AS hypotenuse';
-mysql> PREPARE stmt2 FROM @s;
-mysql> SET @a = 6;
-mysql> SET @b = 8;
-mysql> EXECUTE stmt2 USING @a, @b;
-+------------+
 
 call procPartnerPC_Home_WaitingCount_get('pettester@peteasy.kr');
 DELIMITER $$
@@ -242,7 +236,7 @@ BEGIN
     END;
     END IF;
  
-	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve, B.photo AS pet_photo FROM 
+	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo AS pet_photo, C.idx, C.is_approve FROM 
 	(
 		SELECT * FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId
