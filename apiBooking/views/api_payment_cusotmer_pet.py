@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-
-from inspect import getframeinfo, currentframe
+import traceback
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import *
 from hptopLib.TAPIBookingBase import TAPIBookingBase
 
 
 class TCustomerPetInfo(TAPIBookingBase):
-
-
-
-
     def getInfo(self, payment_idx, *args):
         try:
             if len(args) < 1:
@@ -35,8 +30,7 @@ class TCustomerPetInfo(TAPIBookingBase):
                         body.append(tmp)
             return 0, "success", body
         except Exception as err:
-            msg = self.frameInfo(getframeinfo(currentframe()), err)
-            return -1, msg, None
+            return -1, traceback.format_exc(), None
 
     def modifyInfo(self, *args):
         pass

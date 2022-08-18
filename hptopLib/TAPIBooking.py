@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
-from abc import abstractmethod
-from inspect import getframeinfo, currentframe
+
 from django.http import HttpResponse
 
 from hptopLib.TAPIBookingBase import TAPIBookingBase
 
 
 class TAPIBooking(TAPIBookingBase):
+
+    def getInfo(self, payment_idx, *args):
+        pass
+
+    def modifyInfo(self, *args):
+        pass
 
     def get(self, request):
         try:

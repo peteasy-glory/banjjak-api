@@ -8,6 +8,16 @@ from hptopLib.TAPIBookingBase import TAPIBookingBase
 
 class TNoShow(TAPIBookingBase):
 
+    def modifyInfo(self, *args):
+        try:
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_NO_SHOW_PUT % (args[0]["payment_idx"],args[0]["is_no_show"]), QUERY_DB)
+            body = {}
+            if value is not None:
+                body = self.queryDataToDic(value, rows, columns)
+            return 0, "success", body
+        except Exception as e:
+            return -1, self.frameInfo(getframeinfo(currentframe()), e.args[0]), None
+
     def getInfo(self, payment_idx, *args):
         try:
             value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_PAYMENT_INFO_GET % (payment_idx,), QUERY_DB)
@@ -19,12 +29,3 @@ class TNoShow(TAPIBookingBase):
         except Exception as e:
             return -1, self.frameInfo(getframeinfo(currentframe()), e.args[0]), None
 
-    def putInfo(self, *args):
-        try:
-            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_NO_SHOW_PUT % (args[0]["payment_idx"],args[0]["is_no_show"]), QUERY_DB)
-            body = {}
-            if value is not None:
-                body = self.queryDataToDic(value, rows, columns)
-            return 0, "success", body
-        except Exception as e:
-            return -1, self.frameInfo(getframeinfo(currentframe()), e.args[0]), None

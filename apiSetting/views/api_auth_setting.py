@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from inspect import getframeinfo, currentframe
 
 from django.http import HttpResponse
 
@@ -13,9 +12,6 @@ class TAuthSetting(TAPIBase):
     미용사 권한 부여.(기타 다른 customer_id에 해당 샵으로 접속할 수 있는 권한)
     """
 
-    def errorInfo(self, err):
-        msg = self.frameInfo(getframeinfo(currentframe()), err)
-        return HttpResponse(self.json.dicToJson(self.message.error(msg)))
 
     def get(self, request, partner_id):
         try:
@@ -43,7 +39,7 @@ class TAuthSetting(TAPIBase):
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
-            return  self.errorInfo( e.args[0])
+            return self.errorInfo(e)
 
     def put(self, request):
         try:
