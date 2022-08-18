@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import traceback
 from abc import abstractmethod
 from datetime import datetime
 
@@ -109,7 +110,7 @@ class TAPIBase(APIView):
         #price = totalPrice(d[36])
 
         customer = {"customer_id": d[3], "phone": d[39]}
-        pet = {"idx": d[1], "animal": d[74], "type": d[75], "name": d[73], "photo":d[77]}  # 71~ 펫
+        pet = {"idx": d[1], "animal": d[74], "type": d[75], "name": d[73], "photo":d[76]}  # 71~ 펫
         product = {
             "payment_idx": d[0],
             "worker": d[18],
@@ -130,7 +131,8 @@ class TAPIBase(APIView):
                 , "booking_st": booking_st
                 , "booking_fi": booking_fi},
             "memo": d[58],
-            "is_approve": d[76],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
+            "approve_idx": d[77],
+            "is_approve": d[78],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
             "is_confirm": zeroToBool(d[67])   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
 
         }
@@ -226,6 +228,8 @@ class TAPIBase(APIView):
                     tmp["luxation"] = d[20]
                     tmp["dermatosis"] = zeroToBool(d[21])
                     tmp["photocounseling"] = d[22]
+                    tmp["memo"] = d[23]
+                    tmp['disliked_part'] = d[24]
                     photo = []
                     try:
                         if d[22] is not None and len(d[22]) > 0:
@@ -453,38 +457,69 @@ class TAPIBase(APIView):
                         "price": subSplit(p_split[6], ":")[1]
                     },
                     "leg": {
-                        "nail": p_split[9],
-                        "rain_boots": p_split[10],
-                        "bell": p_split[11]
+
+                        "nail": {
+                            "unit": "네일",
+                            "price": p_split[9]
+                        },
+                        "rain_boots": {
+                            "unit": "장화",
+                            "price": p_split[10],
+                        },
+                        "bell": {
+                            "unit":"방울",
+                            "price": p_split[11]
+                        }
                     }
                 }
             }
-            pos = 15
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 스파 개수
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["add"]["spa"] = body
-                pos += count
+            pos = 14
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 스파 개수
+                if p_split[pos].isdigit():
+                    if int(p_split[pos]) == 1:
+                        products["add"]["leg"]["type1"] = {}
+                        products["add"]["leg"]["type1"]["unit"] = p_split[pos+1].split(":")[0]
+                        products["add"]["leg"]["type1"]["price"] = p_split[pos+1].split(":")[1]
+                        pos += 1
+                    elif int(p_split[pos]) == 2:
+                        products["add"]["leg"]["type1"] = {}
+                        products["add"]["leg"]["type1"]["unit"] = p_split[pos+1].split(":")[0]
+                        products["add"]["leg"]["type1"]["price"] = p_split[pos+1].split(":")[1]
+                        pos += 1
+                        products["add"]["leg"]["type2"] = {}
+                        products["add"]["leg"]["type2"]["unit"] = p_split[pos+1].split(":")[0]
+                        products["add"]["leg"]["type2"]["price"] = p_split[pos+1].split(":")[1]
             pos += 1
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 염색 개수
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["add"]["hair_color"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 스파 개수
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["add"]["spa"] = body
+                    pos += count
             pos += 1
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 기타
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["add"]["etc"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 염색 개수
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["add"]["hair_color"] = body
+                    pos += count
             pos += 1
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 쿠폰상품
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["coupon"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 기타
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["add"]["etc"] = body
+                    pos += count
+            pos += 1
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 쿠폰상품
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["coupon"] = body
+                    pos += count
             pos += 1
 
-            if len(p_split) > pos and p_split[pos].strip() != "" and int(p_split[pos]) > 0:  # 제품
-                count, body = setOffSet(pos, int(p_split[pos]), p_split)
-                products["goods"] = body
-                pos += count
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 제품
+                if p_split[pos].isdigit():
+                    count, body = setOffSet(pos, int(p_split[pos]), p_split)
+                    products["goods"] = body
+                    pos += count
 
             return products
         except Exception as e:
@@ -605,7 +640,6 @@ class TAPIBase(APIView):
     def frameInfo(self, f, err):
         return "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (f.filename, f.lineno, f.function, err)
 
-    @abstractmethod
     def errorInfo(self, err):
-        pass
+        return traceback.format_exc()
 

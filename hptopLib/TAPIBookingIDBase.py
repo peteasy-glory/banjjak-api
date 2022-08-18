@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
-from abc import abstractmethod
-from inspect import getframeinfo, currentframe
-from django.http import HttpResponse
 
+from abc import abstractmethod
+from django.http import HttpResponse
 from hptopLib.TAPIBase import TAPIBase
 
-
-class TAPIBookingBase(TAPIBase):
+class TAPIBookingIDBase(TAPIBase):
     """
     HTTP 전송 공통 클래스.
     """
 
-    def get(self, request, idx):
+    def get(self, request, partner_id):
         try:
-            if idx is None:
+            if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
             dic = request.data
             if len(dic) < 1:
-                err, msg, body = self.getInfo(idx)
+                err, msg, body = self.getInfo(partner_id)
             else:
-                err, msg, body = self.getInfo(idx, dic)
+                err, msg, body = self.getInfo(partner_id, dic)
             if err == 0:
                 ret = self.message.successOk()
                 ret["body"] = body
@@ -42,7 +40,7 @@ class TAPIBookingBase(TAPIBase):
             if dict is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorNonePostData()))
 
-            err, msg, body = self.modifyInfo(dict, request.method)
+            err, msg, body = self.modifyInfo(request.method,dict)
             if err == 0:
                 ret = self.message.successOk()
                 ret["body"] = body
@@ -55,14 +53,9 @@ class TAPIBookingBase(TAPIBase):
             return HttpResponse(self.json.dicToJson(self.message.error(self.errorInfo(e))))
 
     @abstractmethod
-    def getInfo(self, payment_idx, *args):
+    def getInfo(self, partner_id, *args):
         pass
 
     @abstractmethod
     def modifyInfo(self, *args):
         pass
-
-
-    # def frameInfo(self, f, err):
-    #     return "[PATH: %s, LINE: %s, FUNC: %s, ERR: %s" % (f.filename, f.lineno, f.function, err)
-

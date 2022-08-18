@@ -13,7 +13,7 @@ BEGIN
 		미용 예약 현황 기간으로 검색 
    */
    
-	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, C.is_approve FROM 
+	SELECT A.*, B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo, C.idx, C.is_approve FROM 
 	(
 		SELECT * FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId
@@ -53,7 +53,7 @@ DELIMITER ;
     FROM tb_customer_family 
 	WHERE to_cellphone = '01086331776'  AND artist_id = 'pettester@peteasy.kr' AND is_delete = 0;
     
-call procPartnerPC_Booking_CustomerPetInfo_get(568668);
+call procPartnerPC_Booking_CustomerPetInfo_get(568582);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerPetInfo_get $$
 CREATE PROCEDURE procPartnerPC_Booking_CustomerPetInfo_get(
@@ -76,22 +76,37 @@ BEGIN
     DECLARE aMemo TEXT DEFAULT '';
     DECLARE aPetMemo TEXT DEFAULT '';
     DECLARE aPetId TEXT DEFAULT '';
+    
+    SET @beauty_date = '';
+    SET @worker = '';
+    SET @is_noshow = '';
+    SET @noshow_count = 0;
         
      # 회원아이디 가져오기    
-    SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo
+    SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo, is_no_show, worker, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(hour,2,0),':',LPAD(minute,2,0)) 
+				INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date
     FROM tb_payment_log 
 	WHERE payment_log_seq = dataPaymentCode;
 
-	#보조연락처 가져오기
- 	SELECT GROUP_CONCAT(CONCAT(family_seq,'|',from_cellphone,'|',from_customer_id,'|',from_nickname)) INTO aSubPhone 
-    FROM tb_customer_family 
-	WHERE to_cellphone = aPhone  AND artist_id = aPartnerId AND is_delete = 0;
-   
 	#가회원인경우 임시 아이디 가져오기
 	IF TRIM(aCustomerId) = '' OR aCustomerId IS NULL THEN
 		SELECT tmp_seq INTO aTmpId FROM tb_tmp_user
         WHERE cellphone = aPhone AND data_delete = 0;
     END IF;
+    
+	#노쇼 카운트
+	SELECT SUM(is_no_show)INTO @noshow_count FROM tb_payment_log
+	WHERE customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId) AND artist_id=artist_id;
+	IF @noshow_count IS NULL THEN
+		SET @noshow_count = 0;
+    END IF;
+    
+	#보조연락처 가져오기
+ 	SELECT GROUP_CONCAT(CONCAT(family_seq,'|',from_cellphone,'|',from_customer_id,'|',from_nickname)) INTO aSubPhone 
+    FROM tb_customer_family 
+	WHERE to_cellphone = aPhone  AND artist_id = aPartnerId AND is_delete = 0;
+   
+
     
     #등급 가져오기
 	SELECT a.idx, a.grade_idx, b.grade_name, b.grade_ord INTO aCustomerGradeIdx, aShopGradeIdx, aGradeName, aGradeOrd
@@ -117,16 +132,18 @@ BEGIN
 	SELECT aCustomerId AS customer_Id, aTmpId AS tmp_id, aPartnerId AS partner_id, 
 		   aPhone AS cell_phone, aSubPhone AS sub_phone, 
            aCustomerGradeIdx AS customer_grade_idx,  aShopGradeIdx AS shop_grade_idx, aGradeName AS grade_name, aGradeOrd AS grade_ord, 
-           aOwnerMemo AS owner_memo,
+           aOwnerMemo AS owner_memo, @noshow_count AS noshow_count, @is_noshow AS is_noshow, @worker AS worker, @beauty_date AS beauty_date,
 		#예약 펫 정보
 		pet_seq, name, name_for_owner, type, pet_type, gender, weight, photo, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0)) AS birth, neutral, etc,
-		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
+		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting, #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
+        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part
 	FROM tb_mypet WHERE pet_seq = aPetId;
 
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Booking_BeforePaymentInfo_get(518235, True, 10);
+
+call procPartnerPC_Booking_BeforePaymentInfo_get(571239, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(518235, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(568668, true, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(568668, false, 10);
@@ -375,3 +392,325 @@ BEGIN
 	SELECT aErr as err;
 END $$ 
 DELIMITER ;
+
+#=================
+call procPartnerPC_Booking_PetType_get('cat');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetType_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PetType_get(
+	dataType VARCHAR(10) # 0: 강아지, 1: 고양이
+)
+BEGIN
+	/**
+	동물 종류 가져오기
+   */
+
+	SELECT *
+	FROM tb_pet_type
+	WHERE type = dataType AND enable_flag=1 ORDER BY name ASC;
+   
+END $$ 
+DELIMITER ;
+call procPartnerPC_Booking_PreDataCommon_get('pettester@peteasy.kr');
+call procPartnerPC_Booking_PreDataStatic_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataStatic_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataStatic_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (동물 크기, 무게별 가격)
+   */
+
+	SELECT *, if(second_type = '소형견미용', 1, if(second_type = '중형견미용', 2, if(second_type = '대형견미용', 3, if(second_type = '특수견미용', 4, if(second_type = '기타공통', 5, 9))))) AS sort
+    FROM tb_product_dog_static 
+    WHERE customer_id = dataPartner
+		AND second_type != '기타공통'
+	ORDER BY sort ASC, update_time;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataCommon_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataCommon_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataCommon_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (털특징, 털길이 , 추가: 얼굴컷, 다리, 스파, 염색, 기타)
+   */
+
+	SELECT * 
+	FROM tb_product_dog_common
+	WHERE customer_id = dataPartner;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataWorktime_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataWorktime_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataWorktime_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (서비스)
+   */
+
+	SELECT * 
+	FROM tb_product_dog_worktime
+	WHERE is_delete = 2 
+		AND artist_id = dataPartner;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataCommOption_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataCommOption_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataCommOption_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 (목욕 추가)
+   */
+
+	SELECT * 
+	FROM tb_product_common_option
+	WHERE customer_id = dataPartner;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PreDataCat_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataCat_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PreDataCat_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 데이타 가져오기 
+   */
+
+	SELECT * 
+	FROM tb_product_cat
+	WHERE customer_id = dataPartner;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PetType_get('dog');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetType_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PetType_get(
+	dataAnimal VARCHAR(10)
+)
+BEGIN
+	/**
+		예약 접수하기 위한 펫종류 가져오기
+   */
+	SELECT * 
+	FROM tb_pet_type
+	WHERE type=dataAnimal AND enable_flag = 1;
+    
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Booking_WaitingList_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_WaitingList_get $$
+CREATE PROCEDURE procPartnerPC_Booking_WaitingList_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 승인 대기 리스트
+   */
+	SELECT b.*, c.pet_seq, c.tmp_seq, c.name, c.type, c.pet_type, c.photo, a.idx, a.is_approve
+	FROM tb_grade_reserve_approval_mgr a 
+		LEFT JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq 
+		LEFT JOIN tb_mypet c ON b.pet_seq = c.pet_seq 
+	WHERE a.is_approve = '0'
+	AND b.artist_id = dataPartnerId AND b.data_delete = 0
+	ORDER BY DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d') DESC;
+    
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Booking_Decision_put(129, 0, 573038);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Decision_put $$
+CREATE PROCEDURE procPartnerPC_Booking_Decision_put(
+	dataApproveIdx INT,
+	dataDecisionCode INT,
+    dataPaymentIdx INT
+)
+BEGIN
+	/**
+		예약 승인 대기 확정/취소
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    UPDATE tb_grade_reserve_approval_mgr 
+	SET is_approve = dataDecisionCode, mod_date = NOW() 
+	WHERE idx = dataApproveIdx;
+   
+	IF dataDecisionCode = 3 THEN
+		UPDATE tb_payment_log 
+        SET is_cancel = 1,
+            cancel_time = NOW()
+		WHERE payment_log_seq = dataPaymentIdx;
+	END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_CustomerMemo_get('pettester@peteasy.kr','itseokbeom@gmail.com','','01086331776');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerMemo_get $$
+CREATE PROCEDURE procPartnerPC_Booking_CustomerMemo_get(
+	dataPartnerId VARCHAR(64),
+    dataCustomerID VARCHAR(64),
+    dataTmpSeq VARCHAR(20),
+    dataCellphone VARCHAR(20)
+)
+BEGIN
+	/**
+		견주 관련 메모
+   */
+	IF LENGTH(dataCustomerID) > 0 THEN
+		SELECT * FROM tb_shop_customer_memo 
+		WHERE customer_id = dataCustomerID AND cellphone = dataCellphone AND artist_id = dataPartnerId AND is_delete = 2;
+	ELSEIF LENGTH(dataTmpSeq) > 0 THEN
+		SELECT * FROM tb_shop_customer_memo 
+		WHERE tmp_seq = dataTmpSeq AND cellphone = dataCellphone AND artist_id = dataPartnerId AND is_delete = 2;
+	ELSE
+		SELECT * FROM tb_shop_customer_memo 
+		WHERE cellphone = dataCellphone AND artist_id = dataPartnerId AND is_delete = 2;
+    END IF;
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerMemo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_CustomerMemo_put(
+	dataIdx INT,
+    dataMemo TEXT
+)
+BEGIN
+	/**
+		견주 관련 메모 수정
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+
+    UPDATE tb_shop_customer_memo 
+	SET memo = dataMemo
+	WHERE scm_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_PetInfo_get(96565);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetInfo_get $$
+CREATE PROCEDURE procPartnerPC_Booking_PetInfo_get(
+	dataPetIdx INT
+)
+BEGIN
+	/**
+		견주 펫 정보
+   */
+	SELECT * FROM tb_mypet 
+	WHERE pet_seq = dataPetIdx;
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PetInfo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_PetInfo_put(
+	dataIdx INT,
+    dataName VARCHAR(50),
+    dataType VARCHAR(50),
+    dataPetType VARCHAR(20),
+    dataYear INT,
+    dataMonth INT,
+    dataDay INT,
+    dataGender VARCHAR(20),
+    dataNeutral INT,
+    dataWeight VARCHAR(20),
+    dataBeautyExp VARCHAR(45),
+    dataVaccination VARCHAR(45),
+    dataLuxation VARCHAR(45),
+    dataBite VARCHAR(45),
+    dataDermatosis INT,
+    dataHeartTrouble INT,
+    dataMarking INT,
+    dataMounting INT,
+    dataEtc TEXT
+)
+BEGIN
+	/**
+		견주 펫 정보 수정
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+
+    UPDATE tb_mypet 
+	SET name=dataName, type=dataType, pet_type=dataPetType, year=dataYear, month=dataMonth, day=dataDay, 
+		gender=dataGender,neutral=dataNeutral,weight=dataWeight,beauty_exp=dataBeautyExp,
+        vaccination=dataVaccination,luxation=dataLuxation,bite=dataBite,dermatosis=dataDermatosis,
+        heart_trouble=dataHeartTrouble,marking=dataMarking,mounting=dataMounting,etc=dataEtc
+	WHERE pet_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+#=====================
+
+                
+
+
+
+
+
+
+
+
+
+
