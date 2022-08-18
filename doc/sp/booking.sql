@@ -700,12 +700,182 @@ BEGIN
     SELECT aErr AS err;    
 END $$ 
 DELIMITER ;
+#=====================
+
+	SET @st = CONCAT(2022,lpad(8,2,0),lpad(18,2,0), lpad(9,2,0), lpad(0,2,0));
+	SET @fi = CONCAT(2022,lpad(8,2,0),lpad(18,2,0), lpad(9,2,0), lpad(30,2,0));
+    
+    SELECT COUNT(*) as worker_count 
+    FROM tb_payment_log 
+    WHERE artist_id = 'pettester@peteasy.kr' AND worker = '부실장'
+		AND (
+			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) <= @st
+				AND @st < CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR
+			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) < @fi
+				AND @fi <= CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR
+			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) <= @st
+				AND @fi <= CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR 
+            (CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) > @st
+				AND @fi > CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))))
+        AND is_cancel = 0;
+
+        select @st, @fi;
+        select CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)),
+				CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0));
+
+call procPartnerPC_Booking_post('pettester@peteasy.kr','부실장','','01912387736',0,'dog','말티즈','펫명',2021, 1, 1,'남아',
+                           '1','10.0','1회','1회','없음','안해요','0','0','0','0',2022, 8, 18,9, 0,'session','order','15000','pos-card', 
+                           'POS','{}',17,30,'N','1','||||','N','N');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_post $$
+CREATE PROCEDURE procPartnerPC_Booking_post(
+	dataPartnerID VARCHAR(64),dataWorker VARCHAR(32),
+	dataCustomerID VARCHAR(64),dataCellPhone VARCHAR(20),
+    dataPetSeq INT,
+	dataAnimal VARCHAR(10),dataPetType VARCHAR(32),dataPetName VARCHAR(50),
+	dataPetYear INT, dataPetMonth INT, dataPetDay INT,
+	dataGender VARCHAR(10), 
+	dataNeutral VARCHAR(2),
+	dataWeight VARCHAR(10),
+	dataBeautyExp VARCHAR(20),
+	dataVaccination VARCHAR(20),
+	dataLuxation VARCHAR(10),
+	dataBite VARCHAR(20),
+	dataDermatosis VARCHAR(2),
+	dataHeartTrouble VARCHAR(2),
+	dataMarking VARCHAR(2),
+	dataMounting VARCHAR(2),
+  	dataYear INT, dataMonth INT, dataDay INT,
+    dataHour INT, dataMin INT,
+    dataSessionID VARCHAR(256),
+    dataOrderID VARCHAR(256),
+    dataLocalPrice VARCHAR(16),
+    dataPayType VARCHAR(20),
+    dataPayStatus VARCHAR(3),
+    dataPayData VARCHAR(4069),
+    dataToHour INT,
+    dataToMin INT,
+    dataUseCouponYN VARCHAR(2),
+    dataIsVat VARCHAR(2),
+    dataProduct VARCHAR(4096),
+    dataReserveYN VARCHAR(2),
+    dataADayAgoYN VARCHAR(2)
+)
+BODY : BEGIN
+	/**
+		샵  미용 예약하기
+   */
+	
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+    SET @worker_count = 0;
+    SET @st = CONCAT(dataYear,lpad(dataMonth,2,0),lpad(dataDay,2,0), lpad(dataHour,2,0), lpad(dataMin,2,0));
+	SET @fi = CONCAT(dataYear,lpad(dataMonth,2,0),lpad(dataDay,2,0), lpad(dataToHour,2,0), lpad(dataToMin,2,0));
+    
+    SELECT COUNT(*) INTO @worker_count 
+    FROM tb_payment_log 
+    WHERE artist_id = dataPartnerID AND worker = dataWorker
+		AND (
+			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) <= @st
+				AND @st < CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR
+			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) < @fi
+				AND @fi <= CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR
+			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) <= @st
+				AND @fi <= CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR 
+            (CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) > @st
+				AND @fi > CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))))
+        AND is_cancel = 0;
+	
+    IF @worker_count > 0 THEN
+    BEGIN
+		SELECT 401 AS err;
+		LEAVE BODY;
+	END;
+    END IF;
+
+	SET @customer_id = dataCustomerID;
+	IF LENGTH(@customer_id) < 1 THEN
+    BEGIN
+		SELECT id INTO @customer_id FROM tb_customer 
+		WHERE cellphone = dataCellPhone 
+			AND nickname not like 'cellp_%' 
+		ORDER BY last_login_time DESC LIMIT 1;
+
+		IF LENGTH(@customer_id) < 1 OR @customer_id IS NULL THEN
+        BEGIN
+			SELECT CAST(tmp_seq AS CHAR(12)) INTO @customer_id FROM tb_tmp_user WHERE cellphone = dataCellPhone;
+
+      		IF LENGTH(@customer_id) < 1 OR @customer_id IS NULL THEN
+            BEGIN
+                
+                START TRANSACTION;
+
+				INSERT INTO tb_tmp_user SET cellphone = dataCellPhone;
+                SET @new_tmp_id = LAST_INSERT_ID();
+                
+                INSERT INTO tb_mypet 
+				SET tmp_seq = @new_tmp_id, customer_id = NULLIF('',''), 
+				type = dataAnimal, pet_type = dataPetType, name = dataPetName, 
+				year = dataPetYear, month = dataPetMonth, day = dataPetDay, 
+				gender = dataGender, neutral = dataNeutral, 
+				weight = dataWeight, beauty_exp     = dataBeautyExp, 
+				vaccination = dataVaccination, luxation = dataLuxation, bite = dataBite, 
+				dermatosis = dataDermatosis, heart_trouble = dataHeartTrouble, 
+				marking = dataMarking, mounting = dataMounting;
+				SET @new_pet_id = LAST_INSERT_ID();
+                
+                IF aErr < 0 THEN
+                BEGIN
+					ROLLBACK;
+                    SELECT aErr AS err; 
+					LEAVE BODY;
+				END;
+				ELSE
+					COMMIT;
+				END IF;
+            END;    
+			END IF;
+        END;    
+		END IF;
+	END;
+    ELSE
+    BEGIN
+		UPDATE tb_mypet 
+        SET type = dataAnimal, pet_type = dataPetType, 
+		year = dataPetYear, month = dataPetMonth, day = dataPetDay, 
+		gender = dataGender, weight = dataWeight 
+		WHERE pet_seq = dataPetSeq;
+        SET @new_pet_id = dataPetSeq;
+    END;
+    END IF;
+
+    START TRANSACTION;
+    
+    INSERT INTO tb_payment_log
+	SET pet_seq= @new_pet_id, session_id = dataSessionID, 
+	customer_id = dataCustomerID, artist_id = dataPartnerID, 
+	order_id = dataOrderID, local_price = dataLocalPrice, cellphone = dataCellPhone, 
+	worker = dataWorker, year = dataYear, month = dataMonth, day = dataDay, pay_type = dataPayType, 
+	is_coupon = dataUseCouponYN, hour = dataHour, minute = dataMin, 
+	pay_data = dataPayData, to_hour = dataToHour, to_minute = dataToMin, product_type = 'B', approval = '1', 
+	is_vat = dataIsVat, product = dataProduct, reserve_yn = dataReserveYN, a_day_ago_yn = dataADayAgoYN, buy_time = NOW();
+        
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
 
 #=====================
 
                 
 
-
+#order id : strtohex(customer_id)+_+ randId(2*5)_date(ymdhis)
 
 
 

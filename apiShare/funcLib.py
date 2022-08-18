@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from curses.ascii import isdigit
+from datetime import datetime
 
 
 def totalPrice(src):
@@ -63,3 +64,22 @@ def setOffSet(st, count, list):
 
 def judgeStrOrInt(value):
     return isdigit(value);
+
+
+def strToHex(str):
+    return str.encode('UTF-8').hex()
+
+def hexToStr(hex):
+    return bytes.fromhex(hex).decode('utf-8')
+
+
+def nowdateFormat(format):
+    """
+    현재 날짜 포멧화.
+    :param str format: 포멧 규격 ex) %Y-%m-%d %H:%M:%S"
+    :return str : 포멧된 날짜
+    :raise error: 
+   """
+    now = datetime.now()
+    return now.strftime(format)
+
