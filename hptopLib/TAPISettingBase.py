@@ -106,12 +106,15 @@ class TAPISettingBase(TAPIBase):
                     tmp["direct_title"] = d[3]
                     tmp["in_shop"] = d[4]
                     tmp["out_shop"] = d[5]
-                    # kgs = d[35].split(',')
-                    # tmp["kgs"] = []
-                    # for i, k in kgs:
+                    tmp["kgs"] = d[35]
+                    kgs = d[35].split(',')
+                    tmp["kgs_len"] = len(kgs)
+                    tmp["test"] = []
+                    # for i, k in enumerate(kgs):
+                    #     kg = {}
                     #     print(d[6].split(',')[i])
-                    #     # kg["bath_price"] = d[6].split(',')[i]
-                    #     # tmp["kgs"].append(kg)
+                    #     kg["bath_price"] = d[6].split(',')[i]
+                    #     tmp["test"].append(kg)
                     body["dog"].append(tmp)
 
 
