@@ -110,7 +110,7 @@ class TAPIBase(APIView):
         #price = totalPrice(d[36])
 
         customer = {"customer_id": d[3], "phone": d[39]}
-        pet = {"idx": d[1], "animal": d[74], "type": d[75], "name": d[73], "photo":d[77]}  # 71~ 펫
+        pet = {"idx": d[1], "animal": d[74], "type": d[75], "name": d[73], "photo":d[76]}  # 71~ 펫
         product = {
             "payment_idx": d[0],
             "worker": d[18],
@@ -131,7 +131,8 @@ class TAPIBase(APIView):
                 , "booking_st": booking_st
                 , "booking_fi": booking_fi},
             "memo": d[58],
-            "is_approve": d[76],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
+            "approve_idx": d[77],
+            "is_approve": d[78],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
             "is_confirm": zeroToBool(d[67])   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
 
         }

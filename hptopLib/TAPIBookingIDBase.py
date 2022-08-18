@@ -40,7 +40,7 @@ class TAPIBookingIDBase(TAPIBase):
             if dict is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorNonePostData()))
 
-            err, msg, body = self.modifyInfo(dict)
+            err, msg, body = self.modifyInfo(request.method,dict)
             if err == 0:
                 ret = self.message.successOk()
                 ret["body"] = body
