@@ -53,8 +53,13 @@ PROC_BEAUTY_BOOKING_CUSTOMER_MEMO_PUT = "call procPartnerPC_Booking_CustomerMemo
 PROC_BEAUTY_BOOKING_PET_INFO_GET = "call procPartnerPC_Booking_PetInfo_get(%d)"
 PROC_BEAUTY_BOOKING_PET_INFO_PUT = "call procPartnerPC_Booking_PetInfo_put(%d,'%s','%s','%s',%d,%d,%d,'%s',%d,'%s'," \
                                    "'%s','%s','%s','%s',%d,%d,%d,%d,'%s')"
-#PROC_BEAUTY_BOOKING_PET_INFO_PUT = "call procPartnerPC_Booking_PetInfo_put(%s,'%s','%s','%s',%s,%s,%s,'%s',%s,'%s'," \
-#                                   "'%s','%s','%s','%s',%s,%s,%s,%s,'%s')"
+
+PROC_BEAUTY_BOOKING_POST = "call procPartnerPC_Booking_post('%s','%s','%s','%s',%d,'%s','%s','%s',%d, %d, %d,'%s'," \
+                           "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',%d, %d, %d,%d, %d,'%s','%s','%s','%s'," \
+                           "'%s','%s',%d,%d,'%s','%s','%s','%s','%s')"
+
+
+
 
 #CUSTOMER MGR
 PROC_CUSTOMER_TOTAL_COUNT_GET = "call procPartnerPC_CustomerTotalCount_get('%s')"
