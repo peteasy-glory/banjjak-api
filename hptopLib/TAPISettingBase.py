@@ -33,6 +33,114 @@ class TAPISettingBase(TAPIBase):
         msg = self.frameInfo(getframeinfo(currentframe()), err)
         return HttpResponse(self.json.dicToJson(self.message.error(msg)))
 
+    def getOptionProduct(self, partner_id):
+        try:
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_VAT_GET % (partner_id), QUERY_DB)
+            #          ret = self.message.successOk()
+            body = {}
+            if value is not None:
+                body["is_vat"] = value[0]
+
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_OPTION_PRODUCT_GET % (partner_id), QUERY_DB)
+            body["option"] = {}
+            if value is not None:
+                tmp = body["option"]
+                tmp["in_shop"] = value[4]
+                tmp["out_shop"] = value[5]
+
+                tmp["face"] = {}
+                sub = tmp["face"]
+                sub["basic"] = value[6]
+                sub["broccoli"] = value[7]
+                sub["highba"] = value[8]
+                sub["bear"] = value[9]
+                if value[38] is not None and value[38] != "":
+                    face_etc = value[38].split(',')
+                    for i, f in enumerate(face_etc):
+                        sub[f.split(':')[0]] = f.split(':')[1]
+
+                tmp["hair_len"] = {}
+                sub = tmp["hair_len"]
+                if value[10] is not None and value[10] != "":
+                    sub[value[10]] = value[11]
+                if value[12] is not None and value[12] != "":
+                    sub[value[12]] = value[13]
+                if value[14] is not None and value[14] != "":
+                    sub[value[14]] = value[15]
+                if value[16] is not None and value[16] != "":
+                    sub[value[16]] = value[17]
+                if value[18] is not None and value[18] != "":
+                    sub[value[18]] = value[19]
+
+                tmp["plus"] = {}
+                sub = tmp["plus"]
+                if value[20] is not None and value[20] != "":
+                    sub['short_bath'] = value[20]
+                if value[21] is not None and value[21] != "":
+                    sub['long_bath'] = value[21]
+                if value[22] is not None and value[22] != "":
+                    sub['double_bath'] = value[22]
+
+                tmp["place_plus"] = {}
+                sub = tmp["place_plus"]
+                if value[30] is not None and value[30] != "":
+                    sub['hair_clot'] = value[30]
+                if value[31] is not None and value[31] != "":
+                    sub['ferocity'] = value[31]
+                if value[32] is not None and value[32] != "":
+                    sub['tick'] = value[32]
+
+                tmp["etc"] = {}
+                sub = tmp["etc"]
+                sub["leg"] = {}
+                small = sub["leg"]
+                if value[23] is not None and value[23] != "":
+                    small['toenail'] = value[23]
+                if value[24] is not None and value[24] != "":
+                    small['boots'] = value[24]
+                if value[37] is not None and value[37] != "":
+                    small['bell'] = value[37]
+                if value[26] is not None and value[26] != "":
+                    leg_etc = value[26].split(',')
+                    for i, l in enumerate(leg_etc):
+                        small[l.split(':')[0]] = l.split(':')[1]
+
+                sub["spa"] = {}
+                small = sub["spa"]
+                if value[27] is not None and value[27] != "":
+                    spa = value[27].split(',')
+                    for i, s in enumerate(spa):
+                        small[s.split(':')[0]] = s.split(':')[1]
+
+                sub["dyeing"] = {}
+                small = sub["dyeing"]
+                if value[28] is not None and value[28] != "":
+                    dyeing = value[28].split(',')
+                    for i, d in enumerate(dyeing):
+                        small[d.split(':')[0]] = d.split(':')[1]
+
+                sub["etc_etc"] = {}
+                small = sub["etc_etc"]
+                if value[29] is not None and value[29] != "":
+                    etc_etc = value[29].split(',')
+                    for i, e in enumerate(etc_etc):
+                        small[e.split(':')[0]] = e.split(':')[1]
+
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_PLUS_OPTION_PRODUCT_GET % (partner_id), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+
+            if value is not None:
+                for d in data:
+                    sub = tmp["plus"]
+                    sub[d[3]] = d[4]
+
+            return 0, body
+        except Exception as e:
+            return -1, e.args[0]
 
     def getBodyProduct(self, partner_id):
         try:

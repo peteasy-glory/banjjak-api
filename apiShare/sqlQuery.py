@@ -95,4 +95,6 @@ PROC_SETTING_VAT_GET = "call procPartnerPC_Setting_vat_get('%s')"
 PROC_SETTING_WORKTIME_GET = "call procPartnerPC_Setting_worktime_get('%s')"
 PROC_SETTING_DOG_PRODUCT_GET = "call procPartnerPC_Setting_dog_product_get('%s')"
 PROC_SETTING_CAT_PRODUCT_GET = "call procPartnerPC_Setting_cat_product_get('%s')"
+PROC_SETTING_OPTION_PRODUCT_GET = "call procPartnerPC_Setting_option_product_get('%s')"
+PROC_SETTING_PLUS_OPTION_PRODUCT_GET = "call procPartnerPC_Setting_plus_option_product_get('%s')"
 

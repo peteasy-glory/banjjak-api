@@ -10,7 +10,7 @@ from hptopLib.TAPISettingBase import TAPISettingBase
 
 class TProduct(TAPISettingBase):
     """
-    미용 상품 첫페이지 불러오기
+    미용 추가옵션 불러오기
     """
 
     def errorInfo(self, err):
@@ -22,7 +22,7 @@ class TProduct(TAPISettingBase):
             if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
             else:
-                err, body = self.getBodyProduct(partner_id)
+                err, body = self.getOptionProduct(partner_id)
             if err < 0:
                 return HttpResponse(self.json.dicToJson(self.message.errorDBSelect()))
             ret = self.message.successOk()
