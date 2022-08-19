@@ -33,6 +33,8 @@ class TAPIBookingIDBase(TAPIBase):
     def put(self, request):
         return self.modify(request)
 
+    def delete(self, request):
+        return self.modify(request)
 
     def modify(self, request):
         try:

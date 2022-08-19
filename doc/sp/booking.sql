@@ -700,28 +700,6 @@ BEGIN
     SELECT aErr AS err;    
 END $$ 
 DELIMITER ;
-#=====================
-
-	SET @st = CONCAT(2022,lpad(8,2,0),lpad(18,2,0), lpad(9,2,0), lpad(0,2,0));
-	SET @fi = CONCAT(2022,lpad(8,2,0),lpad(18,2,0), lpad(9,2,0), lpad(30,2,0));
-    
-    SELECT COUNT(*) as worker_count 
-    FROM tb_payment_log 
-    WHERE artist_id = 'pettester@peteasy.kr' AND worker = '부실장'
-		AND (
-			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) <= @st
-				AND @st < CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR
-			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) < @fi
-				AND @fi <= CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR
-			(CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) <= @st
-				AND @fi <= CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))) OR 
-            (CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)) > @st
-				AND @fi > CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0))))
-        AND is_cancel = 0;
-
-        select @st, @fi;
-        select CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(hour,2,0), lpad(minute,2,0)),
-				CONCAT(year,lpad(month,2,0),lpad(day,2,0), lpad(to_hour,2,0), lpad(to_minute,2,0));
 
 call procPartnerPC_Booking_post('pettester@peteasy.kr','부실장','','01912387736',0,'dog','말티즈','펫명',2021, 1, 1,'남아',
                            '1','10.0','1회','1회','없음','안해요','0','0','0','0',2022, 8, 18,9, 0,'session','order','15000','pos-card', 
@@ -872,14 +850,126 @@ END $$
 DELIMITER ;
 
 #=====================
+ 
+call procPartnerPC_Booking_Prohibition_get('pettester@peteasy.kr', '20220801', '20220829');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Prohibition_get $$
+CREATE PROCEDURE procPartnerPC_Booking_Prohibition_get(
+	dataPartnerID VARCHAR(64),
+    dataStDate VARCHAR(13), #yyyymmddHHMMSS
+    dataFiDate VARCHAR(13)
+)
+BEGIN
+	/**
+		예약 금지 리스트
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+	SELECT ph_seq, worker, type, 
+		CONCAT( start_year,'-',LPAD(start_month,2,0),'-',LPAD(start_day,2,0),' ',LPAD(start_hour,2,0),':',LPAD(start_minute,2,0)) as st_date,
+		CONCAT( end_year,'-',LPAD(end_month,2,0),'-',LPAD(end_day,2,0),' ',LPAD(end_hour,2,0),':',LPAD(end_minute,2,0)) as fi_date, update_time
+    FROM tb_private_holiday
+    WHERE customer_id = dataPartnerID
+        AND DATE_FORMAT( CONCAT( start_year,'-',start_month,'-',start_day,' ',start_hour,':',IFNULL(start_minute,'00'),':00' ), '%Y-%m-%d %H:%i' ) >= DATE_FORMAT( funcYMDHHMMToDash(dataStDate) , '%Y-%m-%d %H:%i' )
+        AND DATE_FORMAT( CONCAT( end_year,'-',end_month,'-',end_day,' ',end_hour,':',IFNULL(end_minute,'00'),':00' ), '%Y-%m-%d %H:%i' ) <= DATE_FORMAT( funcYMDHHMMToDash(dataFiDate) , '%Y-%m-%d %H:%i' );
+          
+END $$ 
+DELIMITER ;
 
-                
 
-#order id : strtohex(customer_id)+_+ randId(2*5)_date(ymdhis)
+select * from tb_private_holiday where customer_id = 'pettester@peteasy.kr' order by update_time desc;
+-- call procPartnerPC_Booking_Prohibition_post('pettester@peteasy.kr', 'pettester@peteasy.kr', 'notall', '202208061330', '202208061430');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Prohibition_post $$
+CREATE PROCEDURE procPartnerPC_Booking_Prohibition_post(
+	dataPartnerID VARCHAR(64),
+    dataWorker VARCHAR(64),
+    dataType VARCHAR(32),
+    dataStDate VARCHAR(13), #yyyymmddHHMMSS
+    dataFiDate VARCHAR(13)
+)
+BODY: BEGIN
+	/**
+		예약 금지 설정
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    # 현재 일시에 작업 내용이 있는지?
+	SELECT COUNT(*) INTO @exist_work  
+    FROM tb_payment_log
+    WHERE data_delete = 0 AND artist_id = dataPartnerID AND worker = dataWorker
+        AND DATE_FORMAT( CONCAT( year,'-',month,'-',day,' ',hour,':',IFNULL(minute,'00'),':00' ), '%Y-%m-%d %H:%i' ) >= DATE_FORMAT( funcYMDHHMMToDash(dataStDate) , '%Y-%m-%d %H:%i' )
+        AND DATE_FORMAT( CONCAT( year,'-',month,'-',day,' ',to_hour,':',IFNULL(to_minute,'00'),':00' ), '%Y-%m-%d %H:%i' ) <= DATE_FORMAT( funcYMDHHMMToDash(dataFiDate) , '%Y-%m-%d %H:%i' );
+
+	# 현재 일시가 개인 휴일인지 체크한다.
+	SELECT COUNT(*) INTO @exist_holiday
+    FROM tb_private_holiday
+    WHERE customer_id = dataPartnerID AND worker = dataWorker
+        AND DATE_FORMAT( CONCAT( start_year,'-',start_month,'-',start_day,' ',start_hour,':',IFNULL(start_minute,'00'),':00' ), '%Y-%m-%d %H:%i' ) >= DATE_FORMAT( funcYMDHHMMToDash(dataStDate) , '%Y-%m-%d %H:%i' )
+        AND DATE_FORMAT( CONCAT( end_year,'-',end_month,'-',end_day,' ',end_hour,':',IFNULL(end_minute,'00'),':00' ), '%Y-%m-%d %H:%i' ) <= DATE_FORMAT( funcYMDHHMMToDash(dataFiDate) , '%Y-%m-%d %H:%i' );
+        
+    IF @exist_work > 0 THEN
+    BEGIN
+		SELECT 902 AS err;
+		LEAVE BODY;
+	END;
+    ELSEIF @exist_holiday > 0 THEN
+    BEGIN
+		SELECT 903 AS err;
+		LEAVE BODY;
+    END;
+    END IF;
+    
+    START TRANSACTION;
+
+	INSERT INTO tb_private_holiday (customer_id, worker, type, start_year, start_month, start_day, start_hour, start_minute, 
+									end_year, end_month, end_day, end_hour, end_minute, update_time) 
+	VALUES (dataPartnerID, dataWorker, dataType,
+			CAST(SUBSTRING(dataStDate,1,4) AS SIGNED),  CAST(SUBSTRING(dataStDate,5,2) AS SIGNED), CAST(SUBSTRING(dataStDate,7,2) AS SIGNED), 
+            CAST(SUBSTRING(dataStDate,9,2) AS SIGNED), CAST(SUBSTRING(dataStDate,11,2) AS SIGNED),
+			CAST(SUBSTRING(dataFiDate,1,4) AS SIGNED), CAST(SUBSTRING(dataFiDate,5,2) AS SIGNED),  CAST(SUBSTRING(dataFiDate,7,2) AS SIGNED), 
+            CAST(SUBSTRING(dataFiDate,9,2) AS SIGNED), CAST(SUBSTRING(dataFiDate,11,2) AS SIGNED), NOW());
+
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
 
 
+select * from tb_private_holiday where customer_id = 'pettester@peteasy.kr' order by update_time desc;
+call procPartnerPC_Booking_Prohibition_delete(46674);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Prohibition_delete $$
+CREATE PROCEDURE procPartnerPC_Booking_Prohibition_delete(
+	dataIdx INT
+)
+BEGIN
+	/**
+		예약 금지 설정
+   */
+  	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
 
+	DELETE FROM tb_private_holiday WHERE ph_seq = dataIdx;
 
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
 
 
 
