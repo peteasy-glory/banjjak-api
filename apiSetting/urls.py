@@ -3,7 +3,7 @@
 from django.urls import path
 from apiSetting.views import api_artist_work, api_open_close, api_regular_holiday, api_artist_vacation, api_part_time, \
     api_break_time, api_artist_setting, api_schedule_artist, api_auth_setting, api_reserve, api_pay_type, api_beauty_product, \
-    api_beauty_option, api_beauty_coupon
+    api_beauty_option, api_beauty_coupon, api_etc_product
 # from apiSetting.views import api_artist_work, api_schedule_artist
 
 
@@ -30,5 +30,6 @@ urlpatterns = [
     path('setting/beauty-product/<str:partner_id>', api_beauty_product.TProduct.as_view()),
     path('setting/option-product/<str:partner_id>', api_beauty_option.TProduct.as_view()),
     path('setting/beauty-coupon/<str:partner_id>', api_beauty_coupon.TCoupon.as_view()),
+    path('setting/etc-product/<str:partner_id>', api_etc_product.TProduct.as_view()),
 
 ]

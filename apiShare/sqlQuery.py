@@ -100,4 +100,5 @@ PROC_SETTING_CAT_PRODUCT_GET = "call procPartnerPC_Setting_Cat_Product_get('%s')
 PROC_SETTING_OPTION_PRODUCT_GET = "call procPartnerPC_Setting_Option_Product_get('%s')"
 PROC_SETTING_PLUS_OPTION_PRODUCT_GET = "call procPartnerPC_Setting_Plus_Option_Product_get('%s')"
 PROC_SETTING_BEAUTY_COUPON_GET = "call procPartnerPC_Setting_Beauty_Coupon_get('%s')"
+PROC_SETTING_ETC_PRODUCT_GET = "call procPartnerPC_Setting_Etc_Product_get('%s')"
 
