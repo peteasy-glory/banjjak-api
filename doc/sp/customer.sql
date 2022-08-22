@@ -134,7 +134,7 @@ BEGIN
    END CASE;
 
    SET @SQL_STR = CONCAT(" 
-   	SELECT funcGradeOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve  
+   	SELECT funcGradeInfoOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve  
 	FROM (SELECT @num:=0) NUM_T , (
 		SELECT AA.*, IF((LENGTH(BB.customer_id) > 0 ), BB.customer_id, funcTmpUserIndex(AA.cellphone)) AS id,
 		BB.pet_seq, BB.name, BB.pet_type, BB.type, BB.product
@@ -182,7 +182,7 @@ BEGIN
    END CASE;
 
    SET @SQL_STR = CONCAT("    
-	SELECT funcGradeOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve
+	SELECT funcGradeInfoOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve
 	FROM(
 		SELECT AA.cellphone, AA.use_count, AA.check_in_date, AA.sum_card, AA.sum_cash, BB.id, BB.pet_seq, BB.name, BB.type, BB.pet_type 
 		FROM (
@@ -230,7 +230,7 @@ BEGIN
    END CASE;
 
    SET @SQL_STR = CONCAT("       
-	SELECT funcGradeOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve
+	SELECT funcGradeInfoOfCustomer(?, id) AS grade, AAA.* , funcUserReserve(AAA.cellphone, ?) AS reserve
 	FROM(
 		SELECT AA.cellphone, AA.use_count, AA.check_in_date, AA.sum_card, AA.sum_cash, BB.id, BB.pet_seq, BB.name, BB.type, BB.pet_type 
 		FROM (
