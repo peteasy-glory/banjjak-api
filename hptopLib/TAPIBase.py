@@ -425,7 +425,11 @@ class TAPIBase(APIView):
             return -1, e.args[0]
 
     def productToDic(self, product):
+        if product == "" or product.find("|") < 0:
+            return product
         p_split = product.split("|")
+        if not p_split[1].strip() in ("개", "고양이"):
+            return product
         if p_split[1].strip() == "개":
             return self.typeDog(product)
         else:

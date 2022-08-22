@@ -113,12 +113,14 @@ CREATE PROCEDURE procPartnerPC_GradeOrdAndName(
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr', 2);
+call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr', 0, 10, 10);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_BeautyCutomerSearchTotal_get $$
 CREATE PROCEDURE procPartnerPC_BeautyCutomerSearchTotal_get(
 	dataPartnerId VARCHAR(64), 
-    dataOrdType INT #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
+    dataOrdType INT, #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
+    dataStart INT,
+    dataNum INT
 )
 BEGIN
 	/**
@@ -126,11 +128,13 @@ BEGIN
    */
    SET @ORD_STR = '';
    SET @partner_id = dataPartnerId;
-   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC';
-		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC';
-        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC';
-        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC';
-        ELSE SET @ORD_STR = 'ORDER BY AAA.ymdhm DESC';
+   SET @data_start = dataStart-1;
+   SET @data_num = dataNum;
+   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC LIMIT ?, ?';
+		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC LIMIT ?, ?';
+        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC LIMIT ?, ?';
+        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC LIMIT ?, ?';
+        ELSE SET @ORD_STR = 'ORDER BY AAA.ymdhm DESC  LIMIT ?, ?';
    END CASE;
 
    SET @SQL_STR = CONCAT(" 
@@ -155,7 +159,7 @@ BEGIN
 		) BB  ON AA.cellphone = BB.cellphone AND AA.ymdhm = BB.ymdhm
 	) AAA ", @ORD_STR);
     PREPARE stmt FROM @SQL_STR;
-    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id;
+    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id, @data_start, @data_num;
     DEALLOCATE PREPARE stmt;    
 END $$ 
 DELIMITER ;
@@ -166,7 +170,9 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_HotelCutomerSearchTotal_get $$
 CREATE PROCEDURE procPartnerPC_HotelCutomerSearchTotal_get(
 	dataPartnerId VARCHAR(64),
-     dataOrdType INT #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
+    dataOrdType INT, #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
+    dataStart INT,
+    dataNum INT
 )
 BEGIN
 	/**
@@ -174,11 +180,13 @@ BEGIN
    */
    SET @ORD_STR = '';
    SET @partner_id = dataPartnerId;
-   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC';
-		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC';
-        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC';
-        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC';
-        ELSE SET @ORD_STR = 'ORDER BY AAA.check_in_date DESC';
+   SET @data_start = dataStart-1;
+   SET @data_num = dataNum;
+   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC LIMIT ?, ?';
+		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC LIMIT ?, ?';
+        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC LIMIT ?, ?';
+        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC LIMIT ?, ?';
+        ELSE SET @ORD_STR = 'ORDER BY AAA.check_in_date DESC LIMIT ?, ?';
    END CASE;
 
    SET @SQL_STR = CONCAT("    
@@ -203,7 +211,7 @@ BEGIN
 		) BB ON AA.cellphone = BB.cellphone AND AA.check_in_date = BB.check_in_date
 	) AAA ", @ORD_STR);
     PREPARE stmt FROM @SQL_STR;
-    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id;
+    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id, @data_start, @data_num;
     DEALLOCATE PREPARE stmt;    
 
 END $$ 
@@ -214,7 +222,9 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_KinderCutomerSearchTotal_get $$
 CREATE PROCEDURE procPartnerPC_KinderCutomerSearchTotal_get(
 	dataPartnerId VARCHAR(64),
-     dataOrdType INT #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
+     dataOrdType INT, #(0: 최신순, 1: 가나다순, 2: 이용횟수별, 3:견종별, 4: 등급별)
+    dataStart INT,
+    dataNum INT
 )
 BEGIN
 	/**
@@ -222,11 +232,13 @@ BEGIN
    */
    SET @ORD_STR = '';
    SET @partner_id = dataPartnerId;
-   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC';
-		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC';
-        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC';
-        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC';
-        ELSE SET @ORD_STR = 'ORDER BY AAA.check_in_date DESC';
+   SET @data_start = dataStart-1;
+   SET @data_num = dataNum;
+   CASE WHEN dataOrdType = 1 THEN SET @ORD_STR = 'ORDER BY name ASC LIMIT ?, ?';
+		WHEN dataOrdType = 2 THEN SET @ORD_STR = 'ORDER BY use_count ASC LIMIT ?, ?';
+        WHEN dataOrdType = 3 THEN SET @ORD_STR = 'ORDER BY pet_type ASC LIMIT ?, ?';
+        WHEN dataOrdType = 4 THEN SET @ORD_STR = 'ORDER BY grade DESC LIMIT ?, ?';
+        ELSE SET @ORD_STR = 'ORDER BY AAA.check_in_date DESC LIMIT ?, ?';
    END CASE;
 
    SET @SQL_STR = CONCAT("       
@@ -251,7 +263,7 @@ BEGIN
 		) BB ON AA.cellphone = BB.cellphone AND AA.check_in_date = BB.check_in_date
 	) AAA ", @ORD_STR);
     PREPARE stmt FROM @SQL_STR;
-    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id;
+    EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id, @data_start, @data_num;
     DEALLOCATE PREPARE stmt;    
 
 END $$ 

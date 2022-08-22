@@ -61,14 +61,16 @@ PROC_BEAUTY_BOOKING_PROHIBITION_GET = "call procPartnerPC_Booking_Prohibition_ge
 PROC_BEAUTY_BOOKING_PROHIBITION_POST = "call procPartnerPC_Booking_Prohibition_post('%s','%s','%s','%s','%s');"
 PROC_BEAUTY_BOOKING_PROHIBITION_DELETE = "call procPartnerPC_Booking_Prohibition_delete(%d);"
 
+PROC_BEAUTY_BOOKING_SHOP_WORKING_TIME_GET = "call procPartnerPC_Booking_ShopWorkingTime_get('%s')"
+PROC_BEAUTY_BOOKING_STATUTORY_HOLIDAYS_GET = "call procPartnerPC_Booking_StatutoryHolidays_get(%d, %d)"
 
 
 #CUSTOMER MGR
 PROC_CUSTOMER_TOTAL_COUNT_GET = "call procPartnerPC_CustomerTotalCount_get('%s')"
 PROC_ANIMAL_TOTAL_COUNT_GET = "call procPartnerPC_AnimalTotalCount_get('%s')"
-PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET = "call procPartnerPC_BeautyCutomerSearchTotal_get('%s', %s)"
-PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET = "call procPartnerPC_HotelCutomerSearchTotal_get('%s', %s)"
-PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET = "call procPartnerPC_KinderCutomerSearchTotal_get('%s', %s)"
+PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET = "call procPartnerPC_BeautyCutomerSearchTotal_get('%s', %s, %s, %s)"
+PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET = "call procPartnerPC_HotelCutomerSearchTotal_get('%s', %s, %s, %s)"
+PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET = "call procPartnerPC_KinderCutomerSearchTotal_get('%s', %s, %s, %s)"
 PROC_CUSTOMER_BEAUTY_AGREE_GET = "call procPartnerPC_BeautyAgree_get('%s', %s)"
 PROC_CUSTOMER_JOIN_POST = "call procPartnerPC_CustomerJoin_post('%s','%s','%s','%s','%s',%s,%s,%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
 
