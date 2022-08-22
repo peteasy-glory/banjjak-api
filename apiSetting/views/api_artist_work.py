@@ -22,7 +22,7 @@ class TArtistWork(TAPISettingBase):
 
     def getInfo(self, partner_id):
         try:
-            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id,), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id), QUERY_DB)
             data = []
             if rows < 2:
                 data.append(value)
