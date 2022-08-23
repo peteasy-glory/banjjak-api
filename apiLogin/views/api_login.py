@@ -39,14 +39,17 @@ class TLogin(TAPIBase):
                 return HttpResponse(self.json.dicToJson(self.message.loginFail()))
             if data[1] == 2: #일반 고객
                 return HttpResponse(self.json.dicToJson(self.message.loginAuthFail()))
+            body = {}
             if data[1] == 3: #작업 미용사: 예약 화면을 보여줌
+                data, rows, columns = self.db.resultDBQuery(PROC_WORKER_TO_CEO_GET % (dic["id"].strip(),), QUERY_DB)
+                if data is not None:
+                    dic["id"] = data[1]
                 err, body = self.getBodyBooking(dic["id"])
-                if body["shop_name"] == "":
-                    body["shop_name"] = self.db.resultDBQuery(PROC_SHOP_NAME_GET % (dic["id"].strip(),), QUERY_DB)[0][0]
+                body["shop_name"] = self.db.resultDBQuery(PROC_SHOP_NAME_GET % (dic["id"].strip(),), QUERY_DB)[0][0]
             else:
                 err, body = self.getBodyHome(dic["id"])
             if err < 0:
-                return HttpResponse(self.json.dicToJson(self.message.error(body)))
+                return HttpResponse(self.json.dicToJson(self.message.errorDBSelect()))
             ret["body"] = body
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:

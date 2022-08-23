@@ -7,6 +7,7 @@ PROC_LOGIN_ARTIST_GET = "call procPartnerPC_LogIn_Artist_get('%s')"
 PROC_IS_EXIST_ID_GET = "call procPartnerPC_Is_Exist_Id_get('%s')"
 PROC_JOIN_POST = "call procPartnerPC_Join_post('%s','%s','%s','%s')"
 PROC_IS_EXIST_PHONE_GET = "call procPartnerPC_Is_Exist_Phone_get('%s')"
+PROC_WORKER_TO_CEO_GET = "call procPartnerPC_Login_Ceo_get('%s')"
 
 #Home
 PROC_SHOP_NAME_GET = "call procPartnerPC_ShopName_get('%s')"
@@ -74,9 +75,17 @@ PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET = "call procPartnerPC_KinderCutomerSearchT
 PROC_CUSTOMER_BEAUTY_AGREE_GET = "call procPartnerPC_BeautyAgree_get('%s', %s)"
 PROC_CUSTOMER_JOIN_POST = "call procPartnerPC_CustomerJoin_post('%s','%s','%s','%s','%s',%s,%s,%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
 
+#SHOP MGE
+PROC_SHOP_FRONT_IMAGE_GET = "call procPartnerPC_Shop_Front_get('%s')"
+PROC_SHOP_FRONT_IMAGE_POST = "call procPartnerPC_Shop_Front_post('%s', '%s')"
+PROC_SHOP_FRONT_IMAGE_PUT = "call procPartnerPC_Shop_Front_put('%s', '%s')"
+PROC_SHOP_FRONT_IMAGE_DELETE = "call procPartnerPC_Shop_Front_delete('%s', '%s')"
+
+PROC_SHOP_INFO_BASE_GET = "call procPartnerPC_Shop_InfoBase_get('%s')"
+PROC_SHOP_INFO_SALES_AREA_GET = "call procPartnerPC_Shop_InfoSalesArea_get('%s')"
+PROC_SHOP_INFO_LICENSE_AWARD_GET = "call procPartnerPC_Shop_InfoLicenseAward_get('%s',%d)"
 
 #AUTH SETTING
-
 PROC_SETTING_ARTIST_PUT = "call procPartnerPC_Setting_The_Artist_put('%s', '%s', '%s', '%s', '%s', '%s', '%s', " \
                               "%s, '%s','%s', %s) "
 PROC_SETTING_ARTIST_OUT_PUT = "call procPartnerPC_Setting_Artist_Out_put('%s', '%s', '%s')"
