@@ -3,7 +3,7 @@
 from django.urls import path
 
 from apiBooking.views import api_beauty, api_payment_cusotmer_pet, api_noshow, api_payment_goods, api_grade, api_pet, \
-    api_waiting, api_customer_memo, api_join, api_prohibition
+    api_waiting, api_customer_memo, api_join, api_prohibition, api_working_time, api_statutory_holidays
 from apiSetting.views import api_schedule_artist
 
 urlpatterns = [
@@ -28,5 +28,7 @@ urlpatterns = [
     #path('booking/grade-customer/<int:customer_grade_idx>', api_grade.TCustomerGrade.as_view()),
     path('booking/prohibition', api_prohibition.TProhibition.as_view()),
     path('booking/prohibition/<str:partner_id>', api_prohibition.TProhibition.as_view()),
+    path('booking/working-time/<str:partner_id>', api_working_time.TWorkingTime.as_view()),
+    path('booking/statutory-holidays/<str:partner_id>', api_statutory_holidays.TStatutoryHolidays.as_view()),
 
 ]

@@ -18,6 +18,23 @@ BEGIN
 	RETURN aTmp;
 END $$ 
 DELIMITER ;
+
+                   
+SELECT funcYMDHHMMToDash('202208182213') as t;
+DELIMITER $$ 
+DROP FUNCTION IF EXISTS funcYMDHHMMToDash$$ 
+CREATE FUNCTION funcYMDHHMMToDash (
+	dataDate VARCHAR(13)
+) RETURNS VARCHAR(18)  #yyyy-mm-dd HH:MM
+BEGIN
+	RETURN CONCAT(SUBSTRING(dataDate ,1,4),'-',
+					SUBSTRING(dataDate ,5,2),'-',
+					SUBSTRING(dataDate ,7,2),' ',
+					SUBSTRING(dataDate ,9,2),':',
+					SUBSTRING(dataDate ,11,2));
+END $$ 
+DELIMITER ;
+
 #select funcYMDToDate(2002, 12, 2);
 DELIMITER $$ 
 DROP FUNCTION IF EXISTS funcYMDToDate$$ 
@@ -65,6 +82,28 @@ BEGIN
 		ON A.idx = B.grade_idx
     WHERE A.artist_id = dataPartnerId AND A.is_delete = 0
 			AND B.customer_id = dataCustomerId;
+	IF @grade_ord  < 1 THEN
+		RETURN "";
+	ELSE
+		RETURN CONCAT(@grade_name,'|',@grade_ord);
+	END IF;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$ 
+DROP FUNCTION IF EXISTS funcSplitGrade$$ 
+CREATE FUNCTION funcSplitGrade (
+	dataString VARCHAR(64),
+    dataDelimeter VARCHAR(10)
+) RETURNS varchar(64) CHARSET utf8
+BEGIN
+	
+    IF dataNum = 1 THEN
+		SET @ret = SUBSTRING_INDEX(dataString, dataDelimeter, 1);
+	ELSE
+		SET @ret = SUBSTRING_INDEX(dataString, dataDelimeter, -1);
+    END IF;
+    
 	IF @grade_ord  < 1 THEN
 		RETURN "";
 	ELSE

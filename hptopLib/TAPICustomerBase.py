@@ -26,7 +26,8 @@ class TAPICustomerBase(TAPIBookingBase):
                     elif request.GET.get('pet') is not None:
                         err, msg, body = self.getInfo(partner_id, request.GET.get('type'), request.GET.get('pet'))
                     elif request.GET.get('ord_type') is not None:
-                        err, msg, body = self.getInfo(partner_id, request.GET.get('type'), request.GET.get('ord_type'))
+                        err, msg, body = self.getInfo(partner_id, request.GET.get('type'), request.GET.get('ord_type'),
+                                                      request.GET.get('offset'), request.GET.get('number'))
                     else:
                         HttpResponse(self.json.dicToJson(self.message.errorParametaRequst()))
                     if err == 0:

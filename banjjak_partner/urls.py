@@ -27,6 +27,7 @@ urlpatterns = [
     path('partner/', include('apiLogin.urls')),
     path('partner/', include('apiHome.urls')),
     path('partner/', include('apiBooking.urls')),
+    path('partner/', include('apiShop.urls')),
     path('partner/', include('apiCustomer.urls')),
     path('partner/', include('apiSetting.urls')),
 
