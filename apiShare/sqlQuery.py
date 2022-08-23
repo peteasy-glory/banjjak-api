@@ -83,7 +83,14 @@ PROC_SHOP_FRONT_IMAGE_DELETE = "call procPartnerPC_Shop_Front_delete('%s', '%s')
 
 PROC_SHOP_INFO_BASE_GET = "call procPartnerPC_Shop_InfoBase_get('%s')"
 PROC_SHOP_INFO_SALES_AREA_GET = "call procPartnerPC_Shop_InfoSalesArea_get('%s')"
+PROC_SHOP_INFO_SALES_AREA_POST = "call procPartnerPC_Shop_InfoSalesArea_post('%s', %d)"
+PROC_SHOP_INFO_SALES_AREA_DELETE = "call procPartnerPC_Shop_InfoSalesArea_delete('%s', %d)"
+PROC_SHOP_INFO_AREA_ADDR_GET = "call procPartnerPC_Shop_AreaAddr_get('%s', '%s')"
 PROC_SHOP_INFO_LICENSE_AWARD_GET = "call procPartnerPC_Shop_InfoLicenseAward_get('%s',%d)"
+PROC_SHOP_INFO_LICENSE_AWARD_POST = "call procPartnerPC_Shop_InfoLicenseAward_get_post('%s',%d,'%s','%s','%s','%s')"
+PROC_SHOP_INFO_LICENSE_AWARD_DELETE = "call procPartnerPC_Shop_InfoLicenseAward_get_delete('%s',%d,'%s')"
+
+
 
 #AUTH SETTING
 PROC_SETTING_ARTIST_PUT = "call procPartnerPC_Setting_The_Artist_put('%s', '%s', '%s', '%s', '%s', '%s', '%s', " \
