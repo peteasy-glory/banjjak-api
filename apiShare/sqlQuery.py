@@ -10,6 +10,7 @@ PROC_IS_EXIST_PHONE_GET = "call procPartnerPC_Is_Exist_Phone_get('%s')"
 PROC_WORKER_TO_CEO_GET = "call procPartnerPC_Login_Ceo_get('%s')"
 
 #Home
+PROC_NAVIGATION_INFO_GET= "call procPartnerPC_Navigation_Info_get('%s')"
 PROC_SHOP_NAME_GET = "call procPartnerPC_ShopName_get('%s')"
 PROC_TOP_INFO_GET= "call procPartnerPC_Home_TopInfo_get('%s', %s, %s, %s)"
 PROC_SPETIAL_MALL_GET= "call procPartnerPC_Home_SpetialMall_get()"
