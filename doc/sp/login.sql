@@ -202,7 +202,23 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Login_Ceo_get('tmp_test@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Login_Ceo_get $$
+CREATE PROCEDURE procPartnerPC_Login_Ceo_get(
+	dataWorkerID VARCHAR(64)
+)
+BEGIN
+	/**
+		대표 아이디 찾기. 
+  */
 
+	SELECT * FROM gobeautypet.tb_shop_artist
+	where artist_id = dataWorkerID
+		AND del_yn = 'N';
+    
+END $$ 
+DELIMITER ;
 
 select * from tb_payment_log where buy_time > '2022-05-01' payment_log_seq = 571053;
 select * from tb_payment_log where payment_log_seq = 550457;571053

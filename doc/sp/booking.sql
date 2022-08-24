@@ -943,7 +943,7 @@ END $$
 DELIMITER ;
 
 
-select * from tb_private_holiday where customer_id = 'pettester@peteasy.kr' order by update_time desc;
+
 call procPartnerPC_Booking_Prohibition_delete(46674);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Prohibition_delete $$
@@ -970,6 +970,62 @@ BEGIN
     SELECT aErr AS err;    
 END $$ 
 DELIMITER ;
+	
+call procPartnerPC_Booking_ShopWorkingTime_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_ShopWorkingTime_get $$
+CREATE PROCEDURE procPartnerPC_Booking_ShopWorkingTime_get(
+	dataPartnerID VARCHAR(64)
+)
+BEGIN
+	/**
+		샵 오픈/클로즈시간, 주간 근무일
+   */
+   
+	#샵 오픈/클로즈 시간
+	SELECT working_start, working_end, rest_public_holiday INTO @shop_open, @shop_close, @is_rest_holiday
+    FROM tb_working_schedule 
+    WHERE customer_id = dataPartnerID;
+
+	#근무일 
+	SELECT is_sunday, is_monday, is_tuesday, is_wednesday, is_thursday, is_friday, is_saturday, week_type
+		INTO @sun, @mon, @tue, @wed, @thu, @fri, @sat, @week_type
+    FROM tb_regular_holiday 
+    WHERE customer_id = dataPartnerID;
+
+	SELECT @shop_open AS shop_open, @shop_close AS shop_close, @is_rest_holiday AS is_rest_holiday, 
+		   @sun AS sun, @mon AS mon, @tue AS tue, @wed AS wed, @thu AS thu, @fri AS fri, @sat AS sat, @week_type AS week_type;
+
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_StatutoryHolidays_get(2023, 0);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_StatutoryHolidays_get $$
+CREATE PROCEDURE procPartnerPC_Booking_StatutoryHolidays_get(
+	dataYear INT,
+    dataMonth INT
+)
+BODY: BEGIN
+	/**
+		법정공휴일 
+   */
+   
+	IF dataYear < 2000 OR dataMonth > 12 THEN
+	BEGIN
+        SELECT 904 AS err;
+		LEAVE BODY;
+    END;
+    END IF;
+   
+	IF dataYear > 0 AND dataMonth > 0 AND dataMonth < 13 THEN
+		SELECT * FROM tb_public_holiday WHERE year = dataYear and month = dataMonth ORDER BY year, month, day; 
+	ELSE
+		SELECT * FROM tb_public_holiday WHERE year = dataYear ORDER BY year, month, day; 
+	END IF;
+END $$ 
+DELIMITER ;
+
 
 
 

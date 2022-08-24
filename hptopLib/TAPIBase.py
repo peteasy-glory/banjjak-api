@@ -151,6 +151,8 @@ class TAPIBase(APIView):
             #          ret = self.message.successOk()
             body = {}
             if data is not None:
+                body["partner"] = True
+                body["partner_id"] = partner_id
                 body["shop_name"] = data[0]
                 body["front_image"] = data[1]
                 body["nick"] = data[2]
@@ -415,17 +417,34 @@ class TAPIBase(APIView):
             yy = datetime.today().strftime("%Y")
             mm = datetime.today().strftime("%m")
             dd = datetime.today().strftime("%d")
-            data, rows, columns = self.db.resultDBQuery(PROC_TOP_INFO_GET % (partner_id, yy, mm, dd), QUERY_DB)
-            #          ret = self.message.successOk()
-            body = {}
-            if data is not None:
-                body["shop_name"] = data[0]
+            # data, rows, columns = self.db.resultDBQuery(PROC_TOP_INFO_GET % (partner_id, yy, mm, dd), QUERY_DB)
+            # #          ret = self.message.successOk()
+            # body = {}
+            # if data is not None:
+            #     body["shop_name"] = data[0]
+            # return 0, body
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            data = []
+            body = {"partner": False, "partner_id": partner_id, "beauty": []}
+
+            if rows == 1:
+                data.append(value)
+            elif rows > 1:
+                data = value
+            if value is not None:
+                for d in data:
+                    body["beauty"].append(self.setBeautyData(d))
             return 0, body
         except Exception as e:
             return -1, e.args[0]
 
+
     def productToDic(self, product):
+        if product == "" or product.find("|") < 0:
+            return product
         p_split = product.split("|")
+        if not p_split[1].strip() in ("개", "고양이"):
+            return product
         if p_split[1].strip() == "개":
             return self.typeDog(product)
         else:

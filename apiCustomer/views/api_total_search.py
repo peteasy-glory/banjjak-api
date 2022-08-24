@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-from inspect import getframeinfo, currentframe
-
-from django.http import HttpResponse
-
+import traceback
 from apiShare.constVar import QUERY_DB
-from apiShare.funcLib import zeroToBool
 from apiShare.sqlQuery import PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET, PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET, \
     PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET, PROC_CUSTOMER_TOTAL_COUNT_GET, PROC_ANIMAL_TOTAL_COUNT_GET, \
     PROC_CUSTOMER_JOIN_POST
@@ -16,11 +12,11 @@ class TTotalSearch(TAPICustomerBase):
     def getInfo(self, payment_id, *args):
         try:
             if args[0] == "beauty":
-                value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET % (payment_id, args[1]), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_BEAUTY_TOTAL_SEARCH_GET % (payment_id, args[1], args[2], args[3]), QUERY_DB)
             elif args[0] == "hotel":
-                value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET % (payment_id, args[1]),QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_HOTEL_TOTAL_SEARCH_GET % (payment_id, args[1], args[2], args[3]),QUERY_DB)
             elif args[0] == "kinder":
-                value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET % (payment_id, args[1]),QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET % (payment_id, args[1], args[2], args[3]),QUERY_DB)
             elif args[0] == "people":
                 value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_TOTAL_COUNT_GET % (payment_id), QUERY_DB)
             elif args[0] == "animal":
@@ -31,9 +27,17 @@ class TTotalSearch(TAPICustomerBase):
                     body = self.queryDataToDic(value, rows, columns, ord = True)
                 else:
                     body = self.queryDataToDic(value, rows, columns)
+                if rows < 2:
+                    if "product" in body:
+                        body["product_parsing"] = self.productToDic(body["product"])
+                else:
+                    for b in body:
+                        if "product" in b:
+                            if b["product"] is not None:
+                                b["product_parsing"] = self.productToDic(b["product"])
             return 0, "success", body
         except Exception as e:
-            return -1, self.frameInfo(getframeinfo(currentframe()), e.args[0]), None
+            return -1, traceback.format_exc(), None
 
     def modifyInfo(self, *args):
         try:
@@ -53,7 +57,7 @@ class TTotalSearch(TAPICustomerBase):
                 body = self.queryDataToDic(value, rows, columns)
             return 0, "success", body
         except Exception as e:
-            return -1, self.frameInfo(getframeinfo(currentframe()), e.args[0]), None
+            return -1, traceback.format_exc(), None
 
 
 
