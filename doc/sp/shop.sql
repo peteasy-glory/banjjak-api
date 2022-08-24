@@ -475,3 +475,283 @@ BEGIN
     
 END $$ 
 DELIMITER ;
+###############
+
+call procPartnerPC_Shop_Gallery_get('dew@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Gallery_get $$
+CREATE PROCEDURE procPartnerPC_Shop_Gallery_get(
+	dataPartnerID VARCHAR(64)
+)
+BEGIN
+	/**
+		샵 포트폴리오 조회
+  */
+	SELECT idx, sort_number, is_tag, image, update_time FROM tb_portfolio 
+	WHERE customer_id = dataPartnerID AND enable_flag = 1
+	ORDER BY sort_number asc;
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Gallery_post $$
+CREATE PROCEDURE procPartnerPC_Shop_Gallery_post(
+	dataPartnerID VARChAR(64),
+	dataImage VARChAR(256)
+)
+BEGIN
+	/**
+		샵 갤러리 추가 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+	INSERT INTO tb_portfolio (customer_id, image)
+	VALUES (dataPartnerID, dataImage);
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Shop_Gallery_delete(9608);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Gallery_delete $$
+CREATE PROCEDURE procPartnerPC_Shop_Gallery_delete(
+	dataIdx INT
+)
+BEGIN
+	/**
+		샵 갤러리 삭제 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+	DELETE from tb_portfolio 
+    WHERE idx = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+#####################
+
+call procPartnerPC_Shop_Review_get('dew@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Review_get $$
+CREATE PROCEDURE procPartnerPC_Shop_Review_get(
+	dataPartnerID VARCHAR(64)
+)
+BEGIN
+	/**
+		샵 리뷰 조회
+  */
+
+	SELECT A.review_seq, A.payment_log_seq, A.customer_id, A.nickname, 
+			A.rating, A.review, A.review_images, A.reg_time, is_blind, 
+			A.artist_reply, A.photo, A.reply_time, A.is_artist_blind,
+			B.name, B.front_image
+	FROM tb_usage_reviews A
+	INNER JOIN tb_shop B ON A.artist_id = B.customer_id
+	WHERE A.artist_id = dataPartnerID
+		AND A.is_delete = 0
+	ORDER BY A.reg_time DESC;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Shop_Review_put('761','aaaaaaaaaaaaaa')
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Review_put $$
+CREATE PROCEDURE procPartnerPC_Shop_Review_put(
+	dataIdx INT,
+    dataReply TEXT
+)
+BEGIN
+	/**
+		샵 리뷰 댓글 추가 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+    UPDATE tb_usage_reviews 
+    SET artist_reply = dataReply 
+	WHERE review_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Review_delete $$
+CREATE PROCEDURE procPartnerPC_Shop_Review_delete(
+	dataIdx INT
+)
+BEGIN
+	/**
+		샵 리뷰 댓글 삭제 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+    UPDATE tb_usage_reviews 
+    SET artist_reply = '' 
+	WHERE review_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Shop_Blog_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Blog_get $$
+CREATE PROCEDURE procPartnerPC_Shop_Blog_get(
+	dataPartnerID VARCHAR(64)
+)
+BEGIN
+	/**
+		샵 blog 조회
+  */
+
+	SELECT * FROM tb_blog 
+	WHERE customer_id = dataPartnerID AND del_yn = 'N';
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Blog_post $$
+CREATE PROCEDURE procPartnerPC_Shop_Blog_post(
+	dataPartnerID VARCHAR(64),
+    dataLink VARCHAR(200),
+    dataTitle VARCHAR(200),
+    dataDesc TEXT,
+    dataThumb TEXT,
+    dataPostDate VARCHAR(20),
+    dataBlogger VARCHAR(200)
+)
+BEGIN
+	/**
+		샵 리뷰 댓글 추가 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+	INSERT INTO tb_blog(customer_id, link, title, tb_blog.desc, thumbnail, post_date, blogger_name) 
+    VALUES(dataPartnerID, dataLink, dataTitle, dataDesc, dataThumb, dataPostDate, dataBlogger);
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Blog_put $$
+CREATE PROCEDURE procPartnerPC_Shop_Blog_put(
+	dataIdx INT,
+    dataLink VARCHAR(200),
+    dataTitle VARCHAR(200),
+    dataDesc TEXT,
+    dataThumb TEXT,
+    dataPostDate VARCHAR(20),
+    dataBlogger VARCHAR(200)
+)
+BEGIN
+	/**
+		샵 리뷰 댓글 추가 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+    UPDATE tb_blog 
+    SET del_yn = 'N', link = dataLink, title = dataTitle, tb_blog.desc = dataDesc,
+		thumbnail = dataThumb, post_date = dataPostDate, blogger_name = dataBlogger, update_date = CURRENT_TIMESTAMP
+	WHERE blog_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Blog_delete $$
+CREATE PROCEDURE procPartnerPC_Shop_Blog_delete(
+	dataIdx INT
+)
+BEGIN
+	/**
+		샵 리뷰 댓글 추가 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+    UPDATE tb_blog 
+    SET del_yn = 'Y', update_date = CURRENT_TIMESTAMP
+	WHERE blog_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;

@@ -84,7 +84,6 @@ PROC_SHOP_FRONT_IMAGE_DELETE = "call procPartnerPC_Shop_Front_delete('%s', '%s')
 PROC_SHOP_INFO_BASE_GET = "call procPartnerPC_Shop_InfoBase_get('%s')"
 PROC_SHOP_INFO_PUT = "call procPartnerPC_Shop_Info_put('%s',%d,'%s','%s','%s','%s','%s')"
 PROC_SHOP_INFO_PHOTO_PUT = "call procPartnerPC_Shop_InfoPhoto_put('%s','%s')"
-
 PROC_SHOP_INFO_SALES_AREA_GET = "call procPartnerPC_Shop_InfoSalesArea_get('%s')"
 PROC_SHOP_INFO_SALES_AREA_POST = "call procPartnerPC_Shop_InfoSalesArea_post('%s', %d)"
 PROC_SHOP_INFO_SALES_AREA_DELETE = "call procPartnerPC_Shop_InfoSalesArea_delete('%s', %d)"
@@ -93,6 +92,18 @@ PROC_SHOP_INFO_LICENSE_AWARD_GET = "call procPartnerPC_Shop_InfoLicenseAward_get
 PROC_SHOP_INFO_LICENSE_AWARD_POST = "call procPartnerPC_Shop_InfoLicenseAward_get_post('%s',%d,'%s','%s','%s','%s')"
 PROC_SHOP_INFO_LICENSE_AWARD_DELETE = "call procPartnerPC_Shop_InfoLicenseAward_get_delete('%s',%d,'%s')"
 
+PROC_SHOP_GALLERY_GET = "call procPartnerPC_Shop_Gallery_get('%s')"
+PROC_SHOP_GALLERY_POST = "call procPartnerPC_Shop_Gallery_post('%s','%s')"
+PROC_SHOP_GALLERY_DELETE = "call procPartnerPC_Shop_Gallery_delete(%d)"
+
+PROC_SHOP_REVIEW_GET = "call procPartnerPC_Shop_Review_get('%s')"
+PROC_SHOP_REVIEW_PUT = "call procPartnerPC_Shop_Review_put(%d,'%s')"
+PROC_SHOP_REVIEW_DELETE = "call procPartnerPC_Shop_Review_delete(%d)"
+
+PROC_SHOP_BLOG_GET = "call procPartnerPC_Shop_Blog_get('%s')"
+PROC_SHOP_BLOG_POST = "call procPartnerPC_Shop_Blog_post('%s','%s','%s','%s','%s','%s','%s')"
+PROC_SHOP_BLOG_PUT = "call procPartnerPC_Shop_Blog_put(%d,'%s','%s','%s','%s','%s','%s')"
+PROC_SHOP_BLOG_DELETE = "call procPartnerPC_Shop_Blog_delete(%d)"
 
 
 #AUTH SETTING

@@ -25,7 +25,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Home_TopInfo_get('pettester@peteasy.kr', 2022, 7, 28);
+call procPartnerPC_Home_TopInfo_get('pettester@peteasy.kr', 2022, 8, 24);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_TopInfo_get $$
 CREATE PROCEDURE procPartnerPC_Home_TopInfo_get(
@@ -46,14 +46,13 @@ BEGIN
 	DECLARE aNickName VARCHAR(128) DEFAULT '';
 	DECLARE aFrontImage VARCHAR(128) DEFAULT '';
     DECLARE aMinus DATETIME;
-    
-    
-    
+
     #상담 대기 건수
 	SET aMinus = DATE_SUB(NOW(), INTERVAL 12 HOUR);
     SELECT COUNT(*) INTO aConsulting  
-	FROM tb_payment_log 
-	WHERE data_delete = 0 AND artist_id = dataPartnerId AND approval = 0 AND is_cancel = 0 AND is_no_show = 0 AND update_time > aMinus;
+	FROM tb_payment_log A JOIN tb_customer B ON A.customer_id = B.id
+	WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND A.approval = 0 AND A.is_cancel = 0 AND A.is_no_show = 0 AND A.update_time > @aMinus;
+    
     
     #오늘 일정
 	SELECT COUNT(*) INTO aTodaySchedule  
