@@ -26,7 +26,7 @@ class TFront(TAPIBookingIDBase):
         try:
             if args[0] == 'POST':
                 date = TDate()
-                fName = "artist_front_image_"+date.customDateTime(format_date="%Y%m%d%H%M%S%f")+"."+args[1]["mine"]
+                fName = "artist_front_image_"+date.customDateTime(format_date="%Y%m%d%H%M%S%f")+"."+args[1]["mime"]
                 s3 = TS3()
                 err, msg = s3.frontUpload(args[1]["partner_id"], file_name=fName, origin_file=args[1]["image"])
                 body = {}

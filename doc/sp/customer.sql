@@ -156,8 +156,8 @@ BEGIN
 			FROM tb_payment_log A JOIN tb_mypet B ON A.pet_seq = B.pet_seq  
 			WHERE A.data_delete = 0 AND A.artist_id = ?
 				AND A.is_cancel = 0 AND A.is_no_show = 0
-		) BB  ON AA.cellphone = BB.cellphone AND AA.ymdhm = BB.ymdhm
-	) AAA ", @ORD_STR);
+		) BB  ON AA.cellphone = BB.cellphone 
+	) AAA ", @ORD_STR);#AND AA.ymdhm = BB.ymdhm
     PREPARE stmt FROM @SQL_STR;
     EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id, @data_start, @data_num;
     DEALLOCATE PREPARE stmt;    
