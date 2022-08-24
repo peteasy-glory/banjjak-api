@@ -3,7 +3,7 @@ import traceback
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import PROC_SHOP_INFO_BASE_GET, PROC_SHOP_INFO_LICENSE_AWARD_GET, PROC_SHOP_INFO_SALES_AREA_GET, \
     PROC_SHOP_INFO_AREA_ADDR_GET, PROC_SHOP_INFO_SALES_AREA_DELETE, PROC_SHOP_INFO_SALES_AREA_POST, \
-    PROC_SHOP_INFO_LICENSE_AWARD_DELETE, PROC_SHOP_INFO_LICENSE_AWARD_POST
+    PROC_SHOP_INFO_LICENSE_AWARD_DELETE, PROC_SHOP_INFO_LICENSE_AWARD_POST, PROC_SHOP_INFO_PUT, PROC_SHOP_INFO_PHOTO_PUT
 from hptopLib.TAPIBookingIDBase import TAPIBookingIDBase
 from hptopLib.TDate import TDate
 from hptopLib.TS3 import TS3
@@ -24,10 +24,41 @@ class TInfo(TAPIBookingIDBase):
 
     def modifyInfo(self, *args):
         try:
-            pass
+            if args[0] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_SHOP_INFO_PUT %
+                                                             (args[1]["partner_id"], args[1]["working_years"],
+                                                             args[1]["introduction"], args[1]["career"],
+                                                             args[1]["kakao_channel"], args[1]["instagram"],
+                                                             args[1]["kakao_id"]), QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                else:
+                    body = {"err": -1}
+                return 0, "success", body
+            return -1, "undefined method", {}
         except Exception as err:
             return -1, traceback.format_exc(), None
 
+class TInfoPhoto(TAPIBookingIDBase):
+    def modifyInfo(self, *args):
+        try:
+            if args[0] == 'PUT':
+                date = TDate()
+                fName = "artist_photo_" + date.customDateTime(format_date="%Y%m%d%H%M%S%f") + "." + args[1]["mime"]
+                s3 = TS3()
+                err, msg = s3.frontUpload(args[1]["partner_id"], file_name=fName, origin_file=args[1]["image"])
+                if err == -1:
+                    return -1, "Fail image uplad", {}
+                value, rows, columns = self.db.resultDBQuery(PROC_SHOP_INFO_PHOTO_PUT %
+                                                             (args[1]["partner_id"], msg), QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                else:
+                    body = {"err": -1}
+                return 0, "success", body
+            return -1, "undefined method", {}
+        except Exception as err:
+            return -1, traceback.format_exc(), None
 
 class TSalesArea(TAPIBookingIDBase):
 
@@ -55,7 +86,8 @@ class TSalesArea(TAPIBookingIDBase):
                 value, rows, columns = self.db.resultDBQuery(PROC_SHOP_INFO_SALES_AREA_POST % (args[1]["partner_id"],
                                                                                                  args[1]["region_id"]),
                                                              QUERY_DB)
-            body = {}
+            else:
+                return -1, "undefined method", {}
             if value is not None:
                 body = self.queryDataToDic(value, rows, columns)
             else:
@@ -107,7 +139,7 @@ class TLicenseAward(TAPIBookingIDBase):
                                                              QUERY_DB)
             elif args[0] == 'POST':
                 date = TDate()
-                fName = "customer_photo_" + date.customDateTime(format_date="%Y%m%d%H%M%S%f") + "." + args[1]["mine"]
+                fName = "customer_photo_" + date.customDateTime(format_date="%Y%m%d%H%M%S%f") + "." + args[1]["mime"]
                 s3 = TS3()
                 err, msg = s3.frontUpload(args[1]["partner_id"], file_name=fName, origin_file=args[1]["image"])
                 body = {}

@@ -389,5 +389,89 @@ END $$
 DELIMITER ;
 
 
-SELECT id, bottom FROM tb_region WHERE top = '서울' AND middle = '은평구';
-select * from tb_working_region where customer_id = 'pettester@peteasy.kr' and region_id = 16;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_Info_put $$
+CREATE PROCEDURE procPartnerPC_Shop_Info_put(
+	dataPartnerID VARCHAR(64),
+	dataWorkingYears INT,
+    dataIntroduction VARCHAR(4096),
+    dataCareer TEXT,
+    dataKakaoChannel VARCHAR(50),
+    dataInstagram VARCHAR(50),
+    dataKakaoID VARCHAR(50)
+)
+BEGIN
+	/**
+		샵 정보 저장. 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+	UPDATE tb_shop
+	SET working_years = dataWorkingYears,
+		self_introduction = dataIntroduction,
+		career = dataCareer, update_time = NOW()
+	WHERE customer_id = dataPartnerID;
+	
+	SELECT COUNT(*) INTO @exist_sns FROM tb_shop_sns WHERE artist_id = dataPartnerID;
+	
+	IF @exist_sns > 0 THEN
+	BEGIN
+		SET @shop_enable = IF(dataKakaoChannel = '' AND 
+								dataInstagram = '' AND 
+								dataKakaoID = '', 0, 1);
+		UPDATE tb_shop_sns SET
+			kakao_channel = dataKakaoChannel,
+			instagram = dataInstagram,
+			kakao_id = dataKakaoID,
+			enable_flag = @shop_enable,
+			update_time = NOW()
+		WHERE artist_id = dataPartnerID;
+	END;
+	ELSE
+		INSERT INTO tb_shop_sns (artist_id, kakao_channel, instagram, kakao_id, update_time)
+		VALUES (dataPartnerID, dataKakaoChannel, dataInstagram, dataKakaoID, NOW());
+	END IF;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Shop_InfoPhoto_put $$
+CREATE PROCEDURE procPartnerPC_Shop_InfoPhoto_put(
+	dataPartnerID VARCHAR(64),
+	dataImage VARCHAR(512)
+)
+BEGIN
+	/**
+		샵 정보 저장. 
+  */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+
+	UPDATE tb_shop 
+    SET photo = dataImage 
+    WHERE customer_id = dataPartnerID;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;

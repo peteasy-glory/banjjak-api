@@ -82,6 +82,9 @@ PROC_SHOP_FRONT_IMAGE_PUT = "call procPartnerPC_Shop_Front_put('%s', '%s')"
 PROC_SHOP_FRONT_IMAGE_DELETE = "call procPartnerPC_Shop_Front_delete('%s', '%s')"
 
 PROC_SHOP_INFO_BASE_GET = "call procPartnerPC_Shop_InfoBase_get('%s')"
+PROC_SHOP_INFO_PUT = "call procPartnerPC_Shop_Info_put('%s',%d,'%s','%s','%s','%s','%s')"
+PROC_SHOP_INFO_PHOTO_PUT = "call procPartnerPC_Shop_InfoPhoto_put('%s','%s')"
+
 PROC_SHOP_INFO_SALES_AREA_GET = "call procPartnerPC_Shop_InfoSalesArea_get('%s')"
 PROC_SHOP_INFO_SALES_AREA_POST = "call procPartnerPC_Shop_InfoSalesArea_post('%s', %d)"
 PROC_SHOP_INFO_SALES_AREA_DELETE = "call procPartnerPC_Shop_InfoSalesArea_delete('%s', %d)"
