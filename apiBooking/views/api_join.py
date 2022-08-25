@@ -85,7 +85,8 @@ class TBookingJoin(TAPIBase):
         for a in add:
             s = a.split(":")
             body["add_opt"].append({"type" :s[0], "price" :s[1]})
-        return  body
+        ret["body"] = body
+        return ret
 
 
     def setPreData(self, static, common, worktime, partner_id):
