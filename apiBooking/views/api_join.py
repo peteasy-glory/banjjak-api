@@ -145,7 +145,7 @@ class TBookingJoin(TAPIBase):
             unit = add.split(":")
             body["add_opt"].append({"type": unit[0], "price": unit[1]})
         for i in range(len(lenth_type)):
-            body["hair_length"].append({"type": lenth_type[i], "price" :common[0][ i +10]})
+            body["hair_length"].append({"type": common[0][(i*2) +10]+"mm", "price" :common[0][(i*2) +11]})
         sub_hair = common[0][34].split(",")
         for h in sub_hair:
             unit = h.split(":")

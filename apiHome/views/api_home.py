@@ -157,12 +157,6 @@ class TNavigation(TAPIBase):
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
 
-class TTest(TAPIBase):
-    def get(self, request):
-        try:
-            key = request.GET.get("apikey")
-        except Exception as e:
-            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
 
 
 

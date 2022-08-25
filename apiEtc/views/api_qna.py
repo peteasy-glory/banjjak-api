@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
-import json
 import traceback
-import requests
 
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_SHOP_BLOG_GET, PROC_SHOP_BLOG_POST, PROC_SHOP_BLOG_PUT, PROC_SHOP_BLOG_DELETE
+from apiShare.sqlQuery import PROC_ETC_ONE_ON_ONE_INQUIRY_GET
 from hptopLib.TAPIBookingIDBase import TAPIBookingIDBase
 
 
-class TBlog(TAPIBookingIDBase):
+class TQna(TAPIBookingIDBase):
 
     def getInfo(self, partner_id, *args):
         try:
             body = {}
-            if not args[0]["naver"]:
-                value, rows, columns = self.db.resultDBQuery(PROC_SHOP_BLOG_GET % (partner_id,),QUERY_DB)
-                if value is not None:
-                    body = self.queryDataToDic(value, rows, columns)
-            else:
-                body = self.getNaverBlog(clientID="UJ2SBwYTjhQSTvsZF8TO", clientSecret="3gFya4za76", query=args[0]["query"]
-                                         , display=args[0]["display"], start=args[0]["start"])
+            value, rows, columns = self.db.resultDBQuery(PROC_ETC_ONE_ON_ONE_INQUIRY_GET % (partner_id,),QUERY_DB)
+
+            if value is not None:
+                data = []
+                if rows < 2:
+                    data.append(value)
+                else:
+                    data = value
+                for d in data:
+                    tmp = {"q_idx":d[0], "q_id":d[1]}
+                body = self.queryDataToDic(value, rows, columns)
             return 0, "success", body
         except Exception as err:
             return -1, traceback.format_exc(), None
@@ -43,14 +45,3 @@ class TBlog(TAPIBookingIDBase):
             return 0, "success", body
         except Exception as e:
             return -1, traceback.format_exc(), None
-
-
-    def getNaverBlog(self, clientID, clientSecret, query, display, start):
-        url = "https://openapi.naver.com/v1/search/blog.json?query=%s&display=%d&start=%d" % (query, display, start)
-        header = {
-            "X-Naver-Client-Id": clientID,
-            "X-naver-Client-secret": clientSecret
-        }
-
-        r = requests.get(url, headers=header)
-        return json.loads(r.text)

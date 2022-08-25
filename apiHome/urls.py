@@ -13,7 +13,5 @@ urlpatterns = [
     path('home/waiting/<str:partner_id>', api_home.TConsultBookingWaiting.as_view()),
     path('home/navigation/<str:partner_id>', api_home.TNavigation.as_view()),
 
-    #test
-    path('home/', api_home.TTest.as_view()),
 
 ]

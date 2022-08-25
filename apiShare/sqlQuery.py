@@ -135,3 +135,6 @@ PROC_SETTING_PLUS_OPTION_PRODUCT_GET = "call procPartnerPC_Setting_Plus_Option_P
 PROC_SETTING_BEAUTY_COUPON_GET = "call procPartnerPC_Setting_Beauty_Coupon_get('%s')"
 PROC_SETTING_ETC_PRODUCT_GET = "call procPartnerPC_Setting_Etc_Product_get('%s')"
 
+#ETC
+PROC_ETC_ONE_ON_ONE_INQUIRY_GET = "procPartnerPC_Etc_OneOnOneInquiry_get('%s')"
+PROC_ETC_ONE_ON_ONE_INQUIRY_POST= "procPartnerPC_Etc_OneOnOneInquiry_post('%s','%s','%s','%s','%s')"
