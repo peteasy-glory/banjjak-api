@@ -136,5 +136,9 @@ PROC_SETTING_BEAUTY_COUPON_GET = "call procPartnerPC_Setting_Beauty_Coupon_get('
 PROC_SETTING_ETC_PRODUCT_GET = "call procPartnerPC_Setting_Etc_Product_get('%s')"
 
 #ETC
-PROC_ETC_ONE_ON_ONE_INQUIRY_GET = "procPartnerPC_Etc_OneOnOneInquiry_get('%s')"
-PROC_ETC_ONE_ON_ONE_INQUIRY_POST= "procPartnerPC_Etc_OneOnOneInquiry_post('%s','%s','%s','%s','%s')"
+PROC_ETC_ONE_ON_ONE_INQUIRY_GET = "call procPartnerPC_Etc_OneOnOneInquiry_get('%s')"
+PROC_ETC_ONE_ON_ONE_INQUIRY_POST= "call procPartnerPC_Etc_OneOnOneInquiry_post('%s','%s','%s','%s','%s','%s')"
+PROC_ETC_NOTICE_GET= "call procPartnerPC_Etc_Notice_get()"
+PROC_ETC_RESIGN_PUT = "call procPartnerPC_Etc_Resign_put('%s')"
+PROC_ETC_PASSWORD_GET = "call procPartnerPC_Etc_Password_get('%s')"
+PROC_ETC_PASSWORD_PUT = "call procPartnerPC_Etc_Password_put('%s', '%s')"
