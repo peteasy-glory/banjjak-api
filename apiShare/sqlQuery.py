@@ -142,3 +142,5 @@ PROC_ETC_NOTICE_GET= "call procPartnerPC_Etc_Notice_get()"
 PROC_ETC_RESIGN_PUT = "call procPartnerPC_Etc_Resign_put('%s')"
 PROC_ETC_PASSWORD_GET = "call procPartnerPC_Etc_Password_get('%s')"
 PROC_ETC_PASSWORD_PUT = "call procPartnerPC_Etc_Password_put('%s', '%s')"
+
+PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s','%s','%s','%s')"

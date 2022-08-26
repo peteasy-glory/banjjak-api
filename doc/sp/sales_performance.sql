@@ -2,7 +2,7 @@ SET @id = 'pettester@peteasy.kr';
 select * from tb_customer
 where id = @id;
 
-call procPartnerPC_Sales_Performance_get('pettester@peteasy.kr', '2022-08-01','2022-08-26','artist', 'pettester@peteasy.kr');
+call procPartnerPC_Sales_Performance_get('pettester@peteasy.kr', '2022-05-01','2022-08-26','date', '');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Sales_Performance_get $$
 CREATE PROCEDURE procPartnerPC_Sales_Performance_get(
@@ -68,7 +68,7 @@ BEGIN
    
    
     SET @SQL_STR = CONCAT(" 
-   	SELECT *
+   	SELECT * , (SELECT IF(customer_id IS NULL OR customer_id = '', tmp_seq, customer_id) AS clientID FROM tb_mypet WHERE pet_seq = b_pet_seq) AS client_id 
 		FROM (
 			SELECT 
 				  SUBSTRING_INDEX(product,'|',1) AS name			    
@@ -77,8 +77,6 @@ BEGIN
 				, DATE_FORMAT(cancel_time, '%Y-%m-%d %H:%i' ) AS cancel_dt
 				, SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(product,'|',5),'|',-1), ':', 1) AS service
 				, product AS extra_service
-			    , payment_log_seq AS pls
-			    , pl.pet_seq AS b_pet_seq
 				, if(worker = ?, '대표', worker) AS worker
 				, (
 					case
@@ -105,6 +103,8 @@ BEGIN
 						AND service_type = 'B'
 						AND type = 'R'
 				) AS use_reserve				
+			    , payment_log_seq AS pls
+			    , pl.pet_seq AS b_pet_seq
 			FROM tb_payment_log AS pl
 			WHERE is_cancel = 0
 				AND is_no_show = 0
@@ -199,15 +199,15 @@ END $$
 DELIMITER ;
 
 
-call procPartnerPC_Sales_Performance_get('pettester@peteasy.kr', '2022-08-01','2022-08-26','artist', 'pettester@peteasy.kr');
+call procPartnerPC_Sales_PerformanceCustomer_get('pettester@peteasy.kr', '2022-08-01','2022-08-26','artist', 'pettester@peteasy.kr');
 DELIMITER $$
-DROP PROCEDURE IF EXISTS procPartnerPC_Sales_Performance_get $$
-CREATE PROCEDURE procPartnerPC_Sales_Performance_get(
+DROP PROCEDURE IF EXISTS procPartnerPC_Sales_PerformanceCustomer_get $$
+CREATE PROCEDURE procPartnerPC_Sales_PerformanceCustomer_get(
 	dataPets TEXT
 )
 BEGIN
 	/**
-		판매 실적 고객/동물 수
+		판매 실적 고객 수
    */
    
 	SELECT DISTINCT(IF(customer_id IS NULL OR customer_id = '', tmp_seq, customer_id)) AS clientID  

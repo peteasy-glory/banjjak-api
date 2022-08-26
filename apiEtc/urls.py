@@ -2,6 +2,7 @@
 
 from django.urls import path
 from apiEtc.views import api_qna, api_notice, api_account
+from apiPerformance.views import api_performance
 
 urlpatterns = [
 
@@ -12,6 +13,5 @@ urlpatterns = [
     path('etc/pw', api_account.TPassword.as_view()),
     path('etc/pw/<str:partner_id>', api_account.TPassword.as_view()),
     path('etc/passwd', api_account.TNewPassword.as_view()),
-
 
 ]

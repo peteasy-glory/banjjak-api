@@ -21,7 +21,8 @@ class TAPIBookingIDBase(TAPIBase):
             if err == 0:
                 ret = self.message.successOk()
                 ret["body"] = body
-                return HttpResponse(self.json.dicToJson(ret))
+                s =self.json.dicToJson(ret)
+                return HttpResponse(s)
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
