@@ -11,6 +11,7 @@ urlpatterns = [
     path('etc/resign', api_account.TResign.as_view()),
     path('etc/pw', api_account.TPassword.as_view()),
     path('etc/pw/<str:partner_id>', api_account.TPassword.as_view()),
+    path('etc/passwd', api_account.TNewPassword.as_view()),
 
 
 ]

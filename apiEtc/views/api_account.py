@@ -40,6 +40,35 @@ class TPassword(TAPIBookingIDBase):
         except Exception as e:
             return -1, traceback.format_exc(), None
 
+class TNewPassword(TAPIBookingIDBase):
+
+    def getInfo(self, partner_id, *args):
+        pass
+
+    def modifyInfo(self, *args):
+        try:
+            if args[0] == 'PUT':
+                body = {}
+                sha256 = TSha256()
+                pw = sha256.strToShaDigestBase64Encode(args[1]["old_pw"].strip())
+                value, rows, columns = self.db.resultDBQuery(PROC_ETC_PASSWORD_GET % (args[1]["partner_id"],), QUERY_DB)
+                if value is not None:
+                    if value[0] == pw:
+                        pw = sha256.strToShaDigestBase64Encode(args[1]["new_pw"].strip())
+                        value, rows, columns = self.db.resultDBQuery(
+                            PROC_ETC_PASSWORD_PUT % (args[1]["partner_id"], pw), QUERY_DB)
+                        if value is not None:
+                            body = self.queryDataToDic(value, rows, columns)
+                        else:
+                            body = {"err": -1}
+                        return 0, "success", body
+                    else:
+                        body = {"is_same": False}
+                return 0, "success", body
+            return -1, "undefined method", {}
+        except Exception as e:
+            return -1, traceback.format_exc(), None
+
 
 class TResign(TAPIBookingIDBase):
 
