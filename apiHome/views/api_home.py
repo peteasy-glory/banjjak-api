@@ -145,13 +145,18 @@ class TConsultBookingWaiting(TAPIBase):
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
 
-
-class TTest(TAPIBase):
-    def get(self, request):
+class TNavigation(TAPIBase):
+    def get(self, request, partner_id):
         try:
-            key = request.GET.get("apikey")
+            if partner_id is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
+            value, rows, columns = self.db.resultDBQuery(PROC_NAVIGATION_INFO_GET % (partner_id.strip()), QUERY_DB)
+            ret = self.message.successOk()
+            ret["body"] = self.queryDataToDic(value, rows, columns)
+            return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
+
 
 
 

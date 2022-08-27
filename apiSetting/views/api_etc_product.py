@@ -35,6 +35,7 @@ class TProduct(TAPISettingBase):
             if value is not None:
                 for d in data:
                     tmp = {}
+                    tmp["idx"] = d[0]
                     tmp["type"] = d[5]
                     tmp["name"] = d[6]
                     tmp["price"] = d[8]

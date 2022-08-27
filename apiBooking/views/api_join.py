@@ -85,7 +85,8 @@ class TBookingJoin(TAPIBase):
         for a in add:
             s = a.split(":")
             body["add_opt"].append({"type" :s[0], "price" :s[1]})
-        return  body
+        ret["body"] = body
+        return ret
 
 
     def setPreData(self, static, common, worktime, partner_id):
@@ -118,38 +119,46 @@ class TBookingJoin(TAPIBase):
         sub_face = common[0][38].split(",")
         for face in sub_face:
             unit = face.split(":")
-            body["face"].append({"type": unit[0], "price": unit[1]})
+            if unit[0].strip() != '':
+                body["face"].append({"type": unit[0], "price": unit[1]})
         for i in range(len(leg_type)):
             body["leg"].append({"type": leg_type[i], "price": common[0][23 + i]})
         body["leg"].append({"type": "방울", "price": common[0][37]})
         sub_leg = common[0][26].split(",")
         for leg in sub_leg:
             unit = leg.split(":")
-            body["leg"].append({"type": unit[0], "price": unit[1]})
+            if unit[0].strip() != '':
+                body["leg"].append({"type": unit[0], "price": unit[1]})
         sub_spa = common[0][27].split(",")
         for spa in sub_spa:
             unit = spa.split(":")
-            body["spa"].append({"type": unit[0], "price": unit[1]})
+            if unit[0].strip() != '':
+                body["spa"].append({"type": unit[0], "price": unit[1]})
         sub_dyeing = common[0][28].split(",")
         for dyeing in sub_dyeing:
             unit = dyeing.split(":")
-            body["dyeing"].append({"type": unit[0], "price": unit[1]})
+            if unit[0].strip() != '':
+                body["dyeing"].append({"type": unit[0], "price": unit[1]})
         sub_etc = common[0][29].split(",")
         for etc in sub_etc:
             unit = etc.split(":")
-            body["etc"].append({"type": unit[0], "price": unit[1]})
+            if unit[0].strip() != '':
+                body["etc"].append({"type": unit[0], "price": unit[1]})
         for i in range(len(add_opt)):
-            body["add_opt"].append({"type": add_opt[i], "price": common[0][30 + i]})
+                body["add_opt"].append({"type": add_opt[i], "price": common[0][30 + i]})
         sub_add_opt = common[0][33].split(",")
         for add in sub_add_opt:
             unit = add.split(":")
-            body["add_opt"].append({"type": unit[0], "price": unit[1]})
+            if unit[0].strip() != '':
+                body["add_opt"].append({"type": unit[0], "price": unit[1]})
         for i in range(len(lenth_type)):
-            body["hair_length"].append({"type": lenth_type[i], "price" :common[0][ i +10]})
-        sub_hair = common[0][34].split(",")
-        for h in sub_hair:
-            unit = h.split(":")
-            body["hair_length"].append({"type": unit[0 ] +"mm", "price": unit[1]})
+            body["hair_length"].append({"type": common[0][(i*2) +10]+"mm", "price" :common[0][(i*2) +11]})
+        if common[0][34] is not None:
+            sub_hair = common[0][34].split(",")
+            for h in sub_hair:
+                unit = h.split(":")
+                if unit[0].strip() != '':
+                    body["hair_length"].append({"type": unit[0 ] +"mm", "price": unit[1]})
 
         for s in static:
             tmp = {"size": s[2], "in_shop": s[4], "out_shop": s[5],

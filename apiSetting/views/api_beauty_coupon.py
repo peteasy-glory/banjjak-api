@@ -35,6 +35,7 @@ class TCoupon(TAPISettingBase):
             if value is not None:
                 for d in data:
                     tmp = {}
+                    tmp["idx"] = d[0]
                     tmp["type"] = d[3]
                     tmp["name"] = d[4]
                     tmp["given"] = d[5]

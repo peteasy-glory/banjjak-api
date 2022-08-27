@@ -10,6 +10,7 @@ PROC_IS_EXIST_PHONE_GET = "call procPartnerPC_Is_Exist_Phone_get('%s')"
 PROC_WORKER_TO_CEO_GET = "call procPartnerPC_Login_Ceo_get('%s')"
 
 #Home
+PROC_NAVIGATION_INFO_GET= "call procPartnerPC_Navigation_Info_get('%s')"
 PROC_SHOP_NAME_GET = "call procPartnerPC_ShopName_get('%s')"
 PROC_TOP_INFO_GET= "call procPartnerPC_Home_TopInfo_get('%s', %s, %s, %s)"
 PROC_SPETIAL_MALL_GET= "call procPartnerPC_Home_SpetialMall_get()"
@@ -134,3 +135,12 @@ PROC_SETTING_PLUS_OPTION_PRODUCT_GET = "call procPartnerPC_Setting_Plus_Option_P
 PROC_SETTING_BEAUTY_COUPON_GET = "call procPartnerPC_Setting_Beauty_Coupon_get('%s')"
 PROC_SETTING_ETC_PRODUCT_GET = "call procPartnerPC_Setting_Etc_Product_get('%s')"
 
+#ETC
+PROC_ETC_ONE_ON_ONE_INQUIRY_GET = "call procPartnerPC_Etc_OneOnOneInquiry_get('%s')"
+PROC_ETC_ONE_ON_ONE_INQUIRY_POST= "call procPartnerPC_Etc_OneOnOneInquiry_post('%s','%s','%s','%s','%s','%s')"
+PROC_ETC_NOTICE_GET= "call procPartnerPC_Etc_Notice_get()"
+PROC_ETC_RESIGN_PUT = "call procPartnerPC_Etc_Resign_put('%s')"
+PROC_ETC_PASSWORD_GET = "call procPartnerPC_Etc_Password_get('%s')"
+PROC_ETC_PASSWORD_PUT = "call procPartnerPC_Etc_Password_put('%s', '%s')"
+
+PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s','%s','%s','%s')"

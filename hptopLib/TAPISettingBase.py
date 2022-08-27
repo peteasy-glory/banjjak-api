@@ -270,6 +270,7 @@ class TAPISettingBase(TAPIBase):
                             sub = tmp['shop_option']
                             sub[o.split(':')[0]] = o.split(':')[1]
 
+                    tmp["is_use_weight"] = d[17]
                     if d[17] == "1":
                         kgs = d[8].split(',')
                         tmp["service"] = []
@@ -299,6 +300,7 @@ class TAPISettingBase(TAPIBase):
             body["option"] = {}
             if value is not None:
                 tmp = body["option"]
+                tmp["idx"] = value[0]
                 tmp["in_shop"] = value[4]
                 tmp["out_shop"] = value[5]
 

@@ -4,7 +4,7 @@ import traceback
 import requests
 
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_SHOP_BLOG_GET
+from apiShare.sqlQuery import PROC_SHOP_BLOG_GET, PROC_SHOP_BLOG_POST, PROC_SHOP_BLOG_PUT, PROC_SHOP_BLOG_DELETE
 from hptopLib.TAPIBookingIDBase import TAPIBookingIDBase
 
 
