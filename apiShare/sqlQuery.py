@@ -117,6 +117,9 @@ PROC_SETTING_ARTIST_VIEW_PUT = "call procPartnerPC_Setting_Artist_View_put('%s',
 PROC_SETTING_ARTIST_ORD_PUT = "call procPartnerPC_Setting_Artist_Ord_put('%s', '%s', %s)"
 PROC_SETTING_ARTIST_WORKING_GET = "call procPartnerPC_Setting_Artist_Working_get('%s')"
 PROC_SETTING_SHOP_OPEN_CLOSE_GET = "call procPartnerPC_Setting_Shop_OpenClose_get('%s')"
+PROC_SETTING_SHOP_OPEN_CLOSE_POST = "call procPartnerPC_Setting_Shop_OpenClose_post('%s')"
+PROC_SETTING_SHOP_OPEN_CLOSE_PUT = "call procPartnerPC_Setting_Shop_OpenClose_putt('%s')"
+
 PROC_SETTING_REGULAR_HOLIDAY_GET = "call procPartnerPC_Setting_Regular_Holiday_get('%s')"
 PROC_SETTING_PERSONAL_VACATION_GET = "call procPartnerPC_Setting_Personal_Vacation_get('%s')"
 PROC_SETTING_PERSONAL_VACATION_POST = "call procPartnerPC_Setting_Personal_Vacation_post('%s','%s','%s','%s','%s')"
