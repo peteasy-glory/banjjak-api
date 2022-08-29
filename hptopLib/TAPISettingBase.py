@@ -29,10 +29,6 @@ class TAPISettingBase(TAPIBase):
     def getInfo(self, partner_id):
         pass
 
-    def errorInfo(self, err):
-        msg = self.frameInfo(getframeinfo(currentframe()), err)
-        return HttpResponse(self.json.dicToJson(self.message.error(msg)))
-
     def getBodyProduct(self, partner_id):
         try:
             value, rows, columns = self.db.resultDBQuery(PROC_SETTING_VAT_GET % (partner_id), QUERY_DB)

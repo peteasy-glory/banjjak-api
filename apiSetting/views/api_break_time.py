@@ -2,15 +2,15 @@
 
 from inspect import getframeinfo, currentframe
 
-from hptopLib.TAPISettingBase import TAPISettingBase
+from hptopLib.TAPIIDBase import TAPIIDBase
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import *
 
 
-class TBreakTime(TAPISettingBase):
+class TBreakTime(TAPIIDBase):
 
 
-    def getInfo(self, partner_id):
+    def getInfo(self, partner_id, *args):
         try:
             value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BREAK_TIME_GET % (partner_id,), QUERY_DB)
             data = []
@@ -30,7 +30,18 @@ class TBreakTime(TAPISettingBase):
                     tmp["res_time_off"] = res_time_off
                     body.append(tmp)
             return 0, "success", body
-        except Exception as e:
-            msg = self.frameInfo(getframeinfo(currentframe()), e.args[0])
-            return -1, msg, None
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
+    def modifyInfo(self, *args):
+        try:
+            body = {}
+            if args[0] == 'POST' or args[0] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BREAK_TIME_MODIFY % (args[1]["partner_id"]
+                                                            , args[1]["break_time"]),QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None

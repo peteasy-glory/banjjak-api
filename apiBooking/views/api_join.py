@@ -69,7 +69,7 @@ class TBookingJoin(TAPIBase):
             data.append(value)
         else:
             data = value
-        body = {"in_shop": data[0][3], "out_shop": data[0][4], "is_use_weight": data[0][17],
+        body = {"in_shop": data[0][3], "out_shop": data[0][4], "is_vat":"", "is_use_weight": data[0][17],
                 "beauty": [{"type" :"단모_미용", "price": data[0][5]} ,{"type" :"장모_미용", "price": data[0][6]}],
                 "bath": [{"type": "단모", "price": data[0][9]} ,{"type" :"장모", "price": data[0][10]}],
                 "add_svc": [{"type" :"발톱", "price": data[0][11]}],
@@ -77,6 +77,13 @@ class TBookingJoin(TAPIBase):
                             ,{"type" :"진드기", "price": data[0][15]}],
                 "comment": data[0][18]
                 }
+        value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_SOHP_INFO_GET % (partner_id,),
+                                                     QUERY_DB)
+        if value is not None:
+            body["is_vat"] = value[16]
+
+        if value is not None:
+            body["is_vat"] = value[16]
         add = data[0][12].split(",")
         for a in add:
             s = a.split(":")
@@ -96,7 +103,7 @@ class TBookingJoin(TAPIBase):
         leg_type = ["발톱", "장화"]
         add_opt = ["털엉킴", "사나움", "진드기"]
 
-        body = {"in_shop": common[0][4], "out_shop": common[0][5],
+        body = {"in_shop": common[0][4], "out_shop": common[0][5], "is_vat":"",
                 "face": [], "leg": [], "spa": [], "dyeing": [], "etc": [], "add_opt": [], "comment": common[0][39],
                 "hair_feature": [{"type": "단모_목욕", "price": common[0][20]},
                                  {"type": "장모_목욕", "price": common[0][21]},
@@ -104,6 +111,11 @@ class TBookingJoin(TAPIBase):
                 "hair_length": [],
                 "base_svc": []
                 }
+
+        value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_SOHP_INFO_GET % (partner_id,),
+                                                     QUERY_DB)
+        if value is not None:
+            body["is_vat"] = value[16]
 
         value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_PREDATA_COMMON_OPTION_GET % (partner_id,), QUERY_DB)
         data = []

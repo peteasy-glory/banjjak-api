@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from inspect import getframeinfo, currentframe
-from hptopLib.TAPISettingBase import TAPISettingBase
+from hptopLib.TAPIIDBase import TAPIIDBase
 from apiShare.constVar import QUERY_DB
 from apiShare.funcLib import zeroToBool
 from apiShare.sqlQuery import *
 
 
-class TOpenClose(TAPISettingBase):
+class TOpenClose(TAPIIDBase):
 
-    def getInfo(self, partner_id):
+    def getInfo(self, partner_id, *args):
         try:
             value, rows, columns = self.db.resultDBQuery(PROC_SETTING_SHOP_OPEN_CLOSE_GET % (partner_id,), QUERY_DB)
             data = []
@@ -24,6 +23,19 @@ class TOpenClose(TAPISettingBase):
                            "is_work_on_holiday": zeroToBool(d[3]), "update_date": str(d[4])}
                     body.append(tmp)
             return 0, "success", body
-        except Exception as e:
-            msg = self.frameInfo(getframeinfo(currentframe()), e.args[0])
-            return -1, msg, None
+        except Exception as err:
+            return -1, self.errorInfo(err), None
+
+    def modifyInfo(self, *args):
+        try:
+            body = {}
+            if args[0] == 'POST' or args[0] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_SETTING_SHOP_OPEN_CLOSE_MODIFY % (args[1]["partner_id"]
+                                                            , args[1]["open_time"],args[1]["close_time"],args[1]["is_work_on_holiday"]),
+                                                             QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None

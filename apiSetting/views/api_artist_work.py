@@ -1,26 +1,17 @@
 # -*- coding: utf-8 -*-
-from inspect import getframeinfo, currentframe
-
-from django.http import HttpResponse
 
 from apiShare.constVar import QUERY_DB
 from apiShare.funcLib import zeroToBool
 from apiShare.sqlQuery import *
-from hptopLib.TAPISettingBase import TAPISettingBase
+from hptopLib.TAPIIDBase import TAPIIDBase
 
 
-class TArtistWork(TAPISettingBase):
+class TArtistWork(TAPIIDBase):
     """
     미용사 근무 정보.
     """
 
-    def __init__(self):
-        pass
-
-    def __del__(self):
-        pass
-
-    def getInfo(self, partner_id):
+    def getInfo(self, partner_id, *args):
         try:
             value, rows, columns = self.db.resultDBQuery(PROC_SETTING_ARTIST_WORKING_GET % (partner_id), QUERY_DB)
             data = []
@@ -46,18 +37,12 @@ class TArtistWork(TAPISettingBase):
                     tmp["work"] = artist
                     body.append(tmp)
             return 0, "success", body
-        except Exception as e:
-            msg = self.frameInfo(getframeinfo(currentframe()), e.args[0])
-            return -1, msg, None
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
-    def post(self, request):
+    def modifyInfo(self, *args):
         try:
             pass
-        except Exception as e:
-            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
-    def put(self, request):
-        try:
-            pass
-        except Exception as e:
-            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
