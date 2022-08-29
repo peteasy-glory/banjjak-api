@@ -47,6 +47,8 @@ PROC_BEAUTY_BOOKING_PREDATA_STATIC_GET = "call procPartnerPC_Booking_PreDataStat
 PROC_BEAUTY_BOOKING_PREDATA_COMMON_GET = "call procPartnerPC_Booking_PreDataCommon_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_WORKTIME_GET = "call procPartnerPC_Booking_PreDataWorktime_get('%s')"
 PROC_BEAUTY_BOOKING_PREDATA_COMMON_OPTION_GET = "call procPartnerPC_Booking_PreDataCommOption_get('%s')"
+PROC_BEAUTY_BOOKING_SOHP_INFO_GET = "call procPartnerPC_Booking_ShopInFo_get('%s')"
+
 PROC_BEAUTY_BOOKING_PREDATA_CAT_GET = "call procPartnerPC_Booking_PreDataCat_get('%s')"
 PROC_BEAUTY_BOOKING_WAITING_LIST_GET = "call procPartnerPC_Booking_WaitingList_get('%s')"
 PROC_BEAUTY_BOOKING_WAITING_DECISION_PUT = "call procPartnerPC_Booking_Decision_put(%d,%d,%d)"

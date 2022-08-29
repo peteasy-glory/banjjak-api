@@ -484,6 +484,26 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Booking_ShopInFo_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_ShopInFo_get $$
+CREATE PROCEDURE procPartnerPC_Booking_ShopInFo_get(
+	dataPartner VARCHAR(64)
+)
+BEGIN
+	/**
+		펫샵 부가세 여부
+   */
+
+	SELECT * 
+	FROM tb_shop
+    WHERE customer_id = dataPartner;
+    
+END $$ 
+DELIMITER ;
+
+
+
 call procPartnerPC_Booking_PreDataCat_get('pettester@peteasy.kr');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PreDataCat_get $$
