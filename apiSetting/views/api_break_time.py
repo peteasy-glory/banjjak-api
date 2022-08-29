@@ -35,6 +35,13 @@ class TBreakTime(TAPIIDBase):
 
     def modifyInfo(self, *args):
         try:
-            pass
+            body = {}
+            if args[0] == 'POST' or args[0] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BREAK_TIME_MODIFY % (args[1]["partner_id"]
+                                                            , args[1]["break_time"]),QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
         except Exception as err:
             return -1, self.errorInfo(err), None

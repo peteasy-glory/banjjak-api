@@ -28,6 +28,14 @@ class TOpenClose(TAPIIDBase):
 
     def modifyInfo(self, *args):
         try:
-            pass
+            body = {}
+            if args[0] == 'POST' or args[0] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_SETTING_SHOP_OPEN_CLOSE_MODIFY % (args[1]["partner_id"]
+                                                            , args[1]["open_time"],args[1]["close_time"],args[1]["is_work_on_holiday"]),
+                                                             QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
         except Exception as err:
             return -1, self.errorInfo(err), None
