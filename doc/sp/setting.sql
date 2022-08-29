@@ -90,6 +90,84 @@ BEGIN
     FROM tb_private_holiday
     WHERE customer_id = dataPartnerId
     GROUP BY worker;
+    
+END $$ 
+DELIMITER ;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Personal_Vacation_post $$
+CREATE PROCEDURE procPartnerPC_Setting_Personal_Vacation_post(
+	dataPartnerID VARCHAR(64),
+    dataWorker VARCHAR(64),
+    dataType VARCHAR(20),
+    dataStDate VARCHAR(20), 
+    dataFiDate VARCHAR(20)
+)
+BODY: BEGIN
+	/**
+		미용사 휴가 추가 하기  
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	SELECT COUNT(*) INTO @row_num 
+    FROM tb_private_holiday 
+    WHERE CONCAT(start_year, LPAD(start_month,2,0), LPAD(start_day,2,0), LPAD(start_hour,2,0), LPAD(start_minute,2,0)) = dataStDate
+		AND CONCAT(end_year, LPAD(end_month,2,0), LPAD(end_day,2,0), LPAD(end_hour,2,0), LPAD(end_minute,2,0)) = dataFiDate
+        AND customer_id = dataPartnerID AND worker = dataWorker;
+    IF @row_num > 0 THEN
+    BEGIN
+		SELECT 401 AS err;
+		LEAVE BODY;
+    END;
+    END IF;
+    
+    START TRANSACTION;
+
+	INSERT INTO tb_private_holiday
+	(customer_id, worker, type, start_year, start_month, start_day, start_hour, start_minute,
+								end_year, end_month, end_day, end_hour, end_minute)
+	VALUES (dataPartnerID, dataWorker, dataType, 
+			CAST(SUBSTRING(dataStDate,1,4) AS SIGNED), CAST(SUBSTRING(dataStDate,5,2) AS SIGNED), CAST(SUBSTRING(dataStDate,7,2) AS SIGNED), 
+            CAST(SUBSTRING(dataStDate,9,2) AS SIGNED), CAST(SUBSTRING(dataStDate,11,2) AS SIGNED), 
+			CAST(SUBSTRING(dataFiDate,1,4) AS SIGNED), CAST(SUBSTRING(dataFiDate,5,2) AS SIGNED), CAST(SUBSTRING(dataFiDate,7,2) AS SIGNED), 
+            CAST(SUBSTRING(dataFiDate,9,2) AS SIGNED), CAST(SUBSTRING(dataFiDate,11,2) AS SIGNED));    
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Personal_Vacation_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_Personal_Vacation_delete(
+	dataIdx INT
+)
+BODY: BEGIN
+	/**
+		미용사 휴가 삭제 하기  
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	
+    START TRANSACTION;
+
+	DELETE FROM tb_private_holiday WHERE ph_seq = dataIdx; 
+	
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
 END $$ 
 DELIMITER ;
 
@@ -104,7 +182,7 @@ BEGIN
 		타임제 설정 조회   
    */
 	SELECT A.*, B.nicname, B.is_main, B.is_out, B.is_view FROM tb_time_schedule A LEFT JOIN 
-    (SELECT artist_id, name, nicname, is_main, is_out, is_view FROM  tb_artist_list where artist_id = 'pettester@peteasy.kr' GROUP BY name) B 
+    (SELECT artist_id, name, nicname, is_main, is_out, is_view FROM  tb_artist_list where artist_id = dataPartnerId GROUP BY name) B 
 		ON (A.artist_id = B.artist_id AND A.artist_name = B.name)
     WHERE A.artist_id = dataPartnerId;
 END $$ 
@@ -125,3 +203,34 @@ BEGIN
     WHERE customer_id = dataPartnerId;
 END $$ 
 DELIMITER ;
+
+call procPartnerPC_Setting_Vat_put('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Vat_put $$
+CREATE PROCEDURE procPartnerPC_Setting_Vat_put(
+	dataPartnerId VARCHAR(64),
+    dataIsVat INT
+)
+BEGIN
+	/**
+		부가세 설정 변경  
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+    
+	UPDATE tb_shop
+	SET is_vat = dataIsVat
+	WHERE customer_id = dataPartnerId;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+END $$ 
+DELIMITER ;
+

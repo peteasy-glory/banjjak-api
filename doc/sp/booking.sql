@@ -393,6 +393,34 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_ShopGrade_put $$
+CREATE PROCEDURE procPartnerPC_Booking_ShopGrade_put(
+	dataIdx INT UNSIGNED,
+	dataNewName VARCHAR(40)
+)
+BEGIN
+	/**
+		고객 샵 등급명 변경
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+
+	UPDATE tb_grade_of_shop SET grade_name = dataNewName WHERE idx = dataIdx;
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
 #=================
 call procPartnerPC_Booking_PetType_get('cat');
 DELIMITER $$
