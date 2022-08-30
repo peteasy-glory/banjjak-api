@@ -95,8 +95,11 @@ BEGIN
     END IF;
     
 	#노쇼 카운트
-	SELECT SUM(is_no_show)INTO @noshow_count FROM tb_payment_log
-	WHERE customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId) AND artist_id=artist_id;
+-- 	SELECT SUM(is_no_show)INTO @noshow_count FROM tb_payment_log
+-- 	WHERE customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId) AND artist_id=artist_id;
+	SELECT SUM(is_no_show) INTO @noshow_count FROM tb_payment_log
+	WHERE cellphone = aPhone AND artist_id=artist_id
+		AND data_delete = 0;
 	IF @noshow_count IS NULL THEN
 		SET @noshow_count = 0;
     END IF;
@@ -142,7 +145,67 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PaymentInfoEtcMemo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_PaymentInfoEtcMemo_put(
+	dataPaymentCode INT,
+    dataEtcMemo TEXT
+)
+BEGIN
+	/**
+	  작업 결제관리 특이사항 수정
+   */
+   
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
+    START TRANSACTION;
+
+	UPDATE tb_payment_log 
+    SET etc_memo = dataEtcMemo
+    WHERE payment_log_seq = dataPaymentCode;         
+        
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err; 
+
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PaymentInfoEtcMemo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_PaymentInfoEtcMemo_put(
+	dataPaymentCode INT,
+    dataEtcMemo TEXT
+)
+BEGIN
+	/**
+	  작업 결제관리 예약시간 수정
+   */
+   
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+    START TRANSACTION;
+
+	UPDATE tb_payment_log 
+    SET etc_memo = dataEtcMemo
+    WHERE payment_log_seq = dataPaymentCode;         
+        
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err; 
+
+END $$ 
+DELIMITER ;
 call procPartnerPC_Booking_BeforePaymentInfo_get(571239, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(518235, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(568668, true, 10);
@@ -219,27 +282,111 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-
 DELIMITER $$
-DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_put $$
-CREATE PROCEDURE procPartnerPC_Booking_NoShow_put(
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Time_put $$
+CREATE PROCEDURE procPartnerPC_Booking_Time_put(
 	dataPaymentIdx INT,
-    dataNoShow BOOL 
+    dataStTime VARCHAR(4),
+    dataFiTime VARCHAR(4)
 )
 BEGIN
 	/**
-		노쇼 수정
+		예약 시간 변경
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    SET @hour_int = CAST(SUBSTRING(dataStTime, 1, 2) AS SIGNED);
+    SET @min_int = CAST(SUBSTRING(dataStTime, 3, 2) AS SIGNED);
+    SET @to_hour_int = CAST(SUBSTRING(dataFiTime, 1, 2) AS SIGNED);
+    SET @to_min_int = CAST(SUBSTRING(dataFiTime, 3, 2) AS SIGNED);
+    
+
+	START TRANSACTION;
+    
+	UPDATE tb_payment_log SET hour = @hour_int, minute = @min_int, to_hour = @to_hour_int, to_minute = @to_min_int, update_time = NOW() 
+	WHERE payment_log_seq = dataPaymentIdx;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_DateWorker_put $$
+CREATE PROCEDURE procPartnerPC_Booking_DateWorker_put(
+	dataPaymentIdx INT,
+    dataStDate VARCHAR(8), #yyyymmdd
+    dataFiDate VARCHAR(8),
+    dataWorker VARCHAR(36)
+)
+BODY:BEGIN
+	/**
+		예약 날짜/미용사 변경
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    SELECT IF(COUNT(name) < 1, False, True) INTO @isExist
+	FROM (SELECT name FROM gobeautypet.tb_artist_list
+		WHERE artist_id='pettester@peteasy.kr'
+		GROUP BY name) A 
+	WHERE A.name = dataWorker;
+    
+    IF @isExist < 1 THEN
+    BEGIN
+		SELECT 905 as err;
+		LEAVE BODY;
+    END;
+    END IF;
+	
+    SET @year_int = CAST(SUBSTRING(dataStDate, 1, 4) AS SIGNED);
+    SET @month_int = CAST(SUBSTRING(dataStDate, 5, 2) AS SIGNED);
+    SET @day_int = CAST(SUBSTRING(dataStDate, 7, 2) AS SIGNED);
+    SET @to_year_int = CAST(SUBSTRING(dataFiDate, 1, 4) AS SIGNED);
+    SET @to_month_int = CAST(SUBSTRING(dataFiDate, 5, 2) AS SIGNED);
+    SET @to_day_int = CAST(SUBSTRING(dataFiDate, 7, 2) AS SIGNED);
+    
+
+	START TRANSACTION;
+    
+		UPDATE tb_payment_log 
+        SET year = @year_int, month = @month_int, day = @day_int, 
+            to_year=@to_year_int, to_month = @to_month_int, to_day = @to_day_int, update_time = NOW(),
+            worker=dataWorker
+        WHERE payment_log_seq = dataPaymentIdx;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Cancel_put $$
+CREATE PROCEDURE procPartnerPC_Booking_Cancel_put(
+	dataPaymentIdx INT,
+    dataCancel INT 
+)
+BEGIN
+	/**
+		예약 취소
    */
    	DECLARE aErr INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
 	START TRANSACTION;
-    
-	IF dataNoShow THEN
-		UPDATE tb_payment_log SET is_no_show = 1 WHERE payment_log_seq = dataPaymentIdx;
-    ELSE
-		UPDATE tb_payment_log SET is_no_show = 0 WHERE payment_log_seq = dataPaymentIdx;
-    END IF;
+	
+    UPDATE tb_payment_log SET is_cancel = 1, cancel_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
     
 	IF aErr < 0 THEN
 		ROLLBACK;
@@ -267,9 +414,9 @@ BEGIN
 	START TRANSACTION;
     
 	IF dataNoShow THEN
-		UPDATE tb_payment_log SET is_no_show = 1 WHERE payment_log_seq = dataPaymentIdx;
+		UPDATE tb_payment_log SET is_no_show = 1, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
     ELSE
-		UPDATE tb_payment_log SET is_no_show = 0 WHERE payment_log_seq = dataPaymentIdx;
+		UPDATE tb_payment_log SET is_no_show = 0, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
     END IF;
     
 	IF aErr < 0 THEN
@@ -281,6 +428,7 @@ BEGIN
 	SELECT aErr as err;
 END $$ 
 DELIMITER ;
+
 
 
 --         $que = "SELECT COUNT(*) AS cnt FROM tb_grade_of_customer WHERE customer_id = '{$_POST['id']}' AND grade_idx = '{$_POST['org_grade']}'";

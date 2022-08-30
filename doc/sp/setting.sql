@@ -1,4 +1,5 @@
-
+select * from tb_artist_list 
+where artist_id = 'pettester@peteasy.kr';
 call procPartnerPC_Setting_Artist_Working_get('pettester@peteasy.kr');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Artist_Working_get $$
@@ -8,6 +9,28 @@ CREATE PROCEDURE procPartnerPC_Setting_Artist_Working_get(
 BEGIN
 	/**
 		샵별 미용사 근무일시 조회 
+   */
+	SELECT if(sequ_prnt is NULL,9999, sequ_prnt) as ord, artist_id, name, nicname, if((is_main = ''or is_main = null), 0, is_main) AS is_host
+		,is_out AS is_leave, is_view AS is_show
+		, GROUP_CONCAT(CONCAT(seq,'|',week,'|', time_start,'|',time_end)) AS work
+	FROM tb_artist_list
+	WHERE artist_id = dataPartnerId
+	GROUP BY name, nicname
+	ORDER BY ord ASC, is_main DESC;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Artist_Working_post $$
+CREATE PROCEDURE procPartnerPC_Setting_Artist_Working_post(
+	dataPartnerId VARCHAR(64),
+    dataName VARCHAR(64),
+    dataNick VARCHAR(64),
+    
+)
+BEGIN
+	/**
+		샵별 미용사 근무일시 추가 
    */
 	SELECT if(sequ_prnt=null,9999, sequ_prnt) as ord, artist_id, name, nicname, if((is_main = ''or is_main = null), 0, is_main) AS is_host
 		,is_out AS is_leave, is_view AS is_show
