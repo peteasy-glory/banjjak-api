@@ -53,7 +53,7 @@ DELIMITER ;
     FROM tb_customer_family 
 	WHERE to_cellphone = '01086331776'  AND artist_id = 'pettester@peteasy.kr' AND is_delete = 0;
     
-call procPartnerPC_Booking_CustomerPetInfo_get(568582);
+call procPartnerPC_Booking_CustomerPetInfo_get(571239);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerPetInfo_get $$
 CREATE PROCEDURE procPartnerPC_Booking_CustomerPetInfo_get(
@@ -136,6 +136,7 @@ BEGIN
 		   aPhone AS cell_phone, aSubPhone AS sub_phone, 
            aCustomerGradeIdx AS customer_grade_idx,  aShopGradeIdx AS shop_grade_idx, aGradeName AS grade_name, aGradeOrd AS grade_ord, 
            aOwnerMemo AS owner_memo, @noshow_count AS noshow_count, @is_noshow AS is_noshow, @worker AS worker, @beauty_date AS beauty_date,
+            aMemo AS payment_memo,
 		#예약 펫 정보
 		pet_seq, name, name_for_owner, type, pet_type, gender, weight, photo, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0)) AS birth, neutral, etc,
 		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting, #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
@@ -429,17 +430,187 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Booking_BeautyGallery_get(592111);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_get $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyGallery_get(
+	dataPaymentIdx INT
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 갤러리 조회
+   */
+   	
+    SELECT * FROM tb_mypet_beauty_photo WHERE  payment_log_seq= dataPaymentIdx order by idx desc;
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_post $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyGallery_post(
+	dataPaymentIdx INT,
+    dataPantnerID VARCHAR(64),
+    dataPetIdx INT,
+    dataTitle VARCHAR(100),
+    dataFilePath VARCHAR(256)
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 갤러리 추가
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+    INSERT INTO tb_mypet_beauty_photo 
+    SET payment_log_seq = dataPaymentIdx,
+		artist_id = dataPantnerID,
+		pet_seq = dataPetIdx,
+		prnt_title = dataTitle,
+		file_path = dataFilePath,
+		prnt_yn = 'Y',
+        is_tag = '1';
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_delete $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyGallery_delete(
+	dataIdx INT
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 갤러리 추가
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+    DELETE FROM tb_mypet_beauty_photo WHERE idx = dataIdx;
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
 
 
---         $que = "SELECT COUNT(*) AS cnt FROM tb_grade_of_customer WHERE customer_id = '{$_POST['id']}' AND grade_idx = '{$_POST['org_grade']}'";
---         //echo $que;
---         $row = sql_fetch_array($que);
---         if($row[0]['cnt']>0) {
---             $que = "UPDATE tb_grade_of_customer SET grade_idx = '{$_POST['grade']}' WHERE customer_id = '{$_POST['id']}' AND grade_idx = '{$_POST['org_grade']}'";
---         } else {
---             //$que = "INSERT INTO tb_grade_of_customer SET grade_idx = '{$_POST['grade']}',  customer_id = '{$_POST['id']}'";
---             $que = "INSERT INTO `tb_grade_of_customer` (`grade_idx`, `customer_id`, `is_delete`) VALUES ('{$_POST['grade']}', '{$_POST['id']}', 0);";
---         } 
+call procPartnerPC_Booking_BeautySign_get('pettester@peteasy.kr', 0);
+call procPartnerPC_Booking_BeautySign_get('pettester@peteasy.kr', 178430);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautySign_get $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautySign_get(
+	dataPartnerID VARCHAR(64),
+    dataPetID INT
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 동의서 조회
+   */
+	IF dataPetId > 0 THEN
+		SELECT B.*, A.image
+		FROM tb_beauty_sign A JOIN tb_beauty_agree B ON A.bs_seq = B.bs_seq
+		WHERE B.artist_id = dataPartnerID AND B.pet_id = dataPetID;
+    ELSE
+		SELECT B.*, A.image
+		FROM tb_beauty_sign A JOIN tb_beauty_agree B ON A.bs_seq = B.bs_seq
+		WHERE B.artist_id = dataPartnerID;
+    END IF;
+    
+END $$ 
+DELIMITER ;
+
+	SELECT ba_seq 
+	FROM tb_beauty_agree
+	WHERE customer_id = 0192222
+		AND artist_id = 'pettester@peteasy.kr'
+		AND pet_id = '1111'
+		AND doc_type = '0';
+
+call procPartnerPC_Booking_BeautySign_post('pettester@peteasy.kr', '', '', '1111', '0192222', '/upload/sign/pettester@peteasy.kr/tmp_252634.png'
+	, '1', '1', '0', '');
+				select * from tb_beauty_sign order by bs_seq desc;
+                select * from tb_beauty_agree order by ba_seq desc; 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautySign_post $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautySign_post(
+	dataPartnerID VARCHAR(64),
+    dataCustomerID VARCHAR(64),
+    dataCustomerName VARCHAR(64),
+    dataPetID INT,
+    dataPhone VARCHAR(20),
+    dataIsBeautyAgree INT,  #미용 동의 
+    dataIsPrivateAgree INT, #개인정보 동의
+    dataAgreeType INT,     #0: 미용, 1: 호텔
+    dataAuthURL VARCHAR(256),
+    dataFilePath VARCHAR(256)
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 동의서 추가
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+    
+	SET @customer_id = dataCustomerID;
+	IF @customer_id = '' OR @customer_id IS NULL THEN
+		SET @customer_id = dataPhone;
+    END IF;
+
+	SELECT ba_seq INTO @ba_seq
+	FROM tb_beauty_agree
+	WHERE customer_id = @customer_id
+		AND artist_id = dataPartnerID
+		AND pet_id = dataPetID
+		AND doc_type = dataAgreeType;
+
+
+	START TRANSACTION;
+
+    INSERT INTO tb_beauty_sign (customer_id, image, reg_date) 
+    VALUES (@customer_id, dataFilePath, NOW());
+    SET @new_sign_id = LAST_INSERT_ID();
+
+	IF @ba_seq = '' or @ba_seq IS NULL THEN
+    BEGIN
+		INSERT INTO tb_beauty_agree (bs_seq, customer_id, artist_id, pet_id, customer_name, cellphone, is_agree, is_customer, doc_type, auth_url, reg_date) 
+		VALUES (@new_sign_id, @customer_id, dataPartnerID, dataPetId, dataCustomerName, dataPhone, dataIsBeautyAgree, dataIsPrivateAgree, dataAgreeType, 
+                dataAuthURL, NOW());
+	END;
+    ELSE
+    BEGIN
+		UPDATE tb_beauty_agree 
+        SET bs_seq = @new_sign_id,customer_id = @customer_id,pet_id = dataPetId,customer_name = dataCustomerName,cellphone = dataPhone,
+			is_agree = dataIsBeautyAgree,is_customer = dataIsPrivateAgree,doc_type = dataAgreeType
+		WHERE ba_seq = @ba_seq AND artist_id = dataPartnerID;
+	END;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	SELECT aErr as err;
+
+END $$ 
+DELIMITER ;
 
 call procPartnerPC_Booking_GRADE_SHOP_ID_get('pettester@peteasy.kr');        
 DELIMITER $$
