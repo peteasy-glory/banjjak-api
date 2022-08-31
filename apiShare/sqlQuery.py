@@ -47,10 +47,11 @@ PROC_BEAUTY_BOOKING_BEAUTY_SIGN_POST = "call procPartnerPC_Booking_BeautySign_po
 
 
 PROC_BEAUTY_BOOKING_COUPON_GET = "call procPartnerPC_Booking_Coupon_get('%s', '%s', '%s')"
-PROC_BEAUTY_BOOKING_BEAUTY_PRODUCT_POST = "call procPartnerPC_Booking_BeautySign_post('%s','%s','%s', %d, '%s','%s','%s','%s','%s','%s')"
-
-
-
+PROC_BEAUTY_BOOKING_COUPON_MODIFY = "call procPartnerPC_Booking_BeautyCoupon_modify(%d, %d, '%s', '%s',%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_PRODUCT_PUT = "call procPartnerPC_Booking_BeautyProduct_put(%d,'%s',%d, '%s')"
+PROC_BEAUTY_BOOKING_BEAUTY_DISCOUNT_PUT = "call procPartnerPC_Booking_BeautyDisCount_put(%d,%d,%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_CARD_CASH_PUT = "call procPartnerPC_Booking_BeautyCardCash_put(%d,%d,%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_CONFIRM_PUT = "call  procPartnerPC_Booking_BeautyConfirm_put(%d,%d)"
 
 
 PROC_BEAUTY_BOOKING_GRADE_SHOP_ID_GET = "call procPartnerPC_Booking_GRADE_SHOP_ID_get('%s')"

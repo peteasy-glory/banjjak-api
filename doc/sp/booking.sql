@@ -1393,6 +1393,249 @@ BODY: BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Booking_Coupon_get('pettester@peteasy.kr', 'B', 'A');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Coupon_get $$
+CREATE PROCEDURE procPartnerPC_Booking_Coupon_get(
+	dataPartnerID VARCHAR(64),
+    dataType CHAR(1),
+    dataCouponType CHAR(1)
+)
+BODY: BEGIN
+	/**
+		쿠폰 조회 
+   */
+	
+    IF dataCouponType = 'A' THEN
+		SELECT * 
+		FROM tb_coupon 
+		WHERE customer_id = dataPartnerID
+			AND del_yn = 'N' AND product_type = dataType;
+    ELSE    
+		SELECT * 
+		FROM tb_coupon 
+		WHERE customer_id = dataPartner
+			AND del_yn = 'N' AND product_type = dataType AND type = dataCouponType;
+	END IF;
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Booking_BeautyCoupon_modify( 582771, 151591,'','pettester@peteasy.kr',796, 'C',10000);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyCoupon_modify $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyCoupon_modify(
+	dataPaymentIdx INT, #406418
+	dataTmpUserIdx INT, #115267
+	dataCustomerID VARCHAR(64), #''
+    dataPartnerID VARCHAR(64), #pettester@peteasy.kr
+    dataCouponIdx INT		#795
+)
+BEGIN
+	/**
+		쿠폰 사용자 등록
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+   
+	SELECT given, type, price INTO @given_amount_balance, @coupon_type, @coupon_price
+    FROM tb_coupon WHERE coupon_seq = dataCouponIdx;
+
+	SET @user_coupon_seq = 0;
+    SET @given = 0;
+    #쿠폰 유무 확인
+    IF dataCuStomerID != '' THEN
+    BEGIN
+		SELECT user_coupon_seq, given INTO @user_coupon_seq, @given  
+		FROM tb_user_coupon 
+		WHERE customer_id = dataCustomerID AND artist_id = dataPartnerID AND coupon_seq = dataCouponIdx;
+	END;
+    ELSE
+    BEGIN
+		SELECT user_coupon_seq, given INTO @user_coupon_seq, @given   
+		FROM tb_user_coupon 
+		WHERE tmp_seq = dataTmpUserIdx AND artist_id = dataPartnerID AND coupon_seq = dataCouponIdx;
+	END;
+    END IF;
+	
+    START TRANSACTION;
+
+    IF @user_coupon_seq > 0 THEN
+    BEGIN
+		UPDATE tb_user_coupon 
+        SET given = @given_amount_balance+@given , update_date  = NOW()  
+		WHERE user_coupon_seq = @user_coupon_seq;
+	END;	
+    ELSE
+    BEGIN
+		INSERT INTO tb_user_coupon 
+		SET customer_id = customer_id, artist_id = dataPartnerID, tmp_seq = IF(dataTmpUserIdx = 0,NULL,dataTmpUserIdx), 
+			payment_log_seq = dataPaymentIdx, coupon_seq = dataCouponIdx, type = @coupon_type, price = @coupon_price, 
+            given = @given_amount_balance, reg_date = NOW();
+		SET @user_coupon_seq = LAST_INSERT_ID();
+	END;
+    END IF;
+    
+ 	INSERT INTO tb_coupon_history 
+ 	SET coupon_seq  = dataCouponIdx, user_coupon_seq = @user_coupon_seq, payment_log_seq = dataPaymentIdx, 
+		amount = @given_amount_balance, balance = @given_amount_balance, customer_id = IF(dataCustomerID = '',NULL,dataCustomerID), 
+		tmp_seq  = IF(dataTmpUserIdx = 0,NULL,dataTmpUserIdx), 
+		artist_id = dataPartnerID, memo = '쿠폰구매', type = 'N';
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+
+
+call procPartnerPC_Booking_Coupon_get('pettester@peteasy.kr', 'B', 'A');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyProduct_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyProduct_put(
+	dataPaymentIdx INT,
+    dataUseCoupon CHAR(1),
+    dataPrice INT,
+    dataProduct VARCHAR(4096)
+)
+BEGIN
+	/**
+		상품 업데이트
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+	UPDATE tb_payment_log 
+	SET local_price = dataPrice, 
+		local_price_cash  = 0, 
+		is_coupon = dataUseCoupon,
+		product            = dataProduct,
+		update_time        = NOW()  
+	WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_BeautyDisCount_put(590002, 2, 100);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyDisCount_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyDisCount_put(
+	dataPaymentIdx INT,
+    dataType INT,
+    dataDiscount INT
+)
+BEGIN
+	/**
+		단골고객 할인
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    
+	UPDATE tb_payment_log 
+	SET discount_num = dataDiscount, 
+		discount_type = dataType
+    WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_BeautyCardCash_put(590002, 33500, 0);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyCardCash_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyCardCash_put(
+	dataPaymentIdx INT,
+    dataCard INT,
+    dataCash INT
+)
+BEGIN
+	/**
+		결제액 카드 <-> 현금 
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    
+	UPDATE tb_payment_log 
+	SET local_price = dataCard, 
+		local_price_cash = dataCash
+    WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Booking_BeautyConfirm_put(590002, 1);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyConfirm_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyConfirm_put(
+	dataPaymentIdx INT,
+    dataConfirm INT
+)
+BEGIN
+	/**
+		결제액 카드 <-> 현금 
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    
+	UPDATE tb_payment_log 
+	SET is_confirm = dataConfirm, 
+		confirm_dt = NOW()
+    WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+UPDATE tb_payment_log SET is_confirm         = '1', confirm_dt         = NOW()  WHERE payment_log_seq = '590002' 
+
+
 
 
 
