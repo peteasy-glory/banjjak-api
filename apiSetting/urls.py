@@ -25,7 +25,6 @@ urlpatterns = [
     path('setting/regular-holiday', api_regular_holiday.TReqularHoliday.as_view()),
     path('setting/regular-holiday/<str:partner_id>', api_regular_holiday.TReqularHoliday.as_view()),
 
-
     path('setting/artist-put', api_artist_setting.TAuthSetting.as_view()),
     path('setting/out-artist', api_artist_setting.TArtistOut.as_view()),
     path('setting/view-artist', api_artist_setting.TArtistView.as_view()),

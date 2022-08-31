@@ -30,9 +30,21 @@ class TBlog(TAPIBookingIDBase):
             row = None
             columns = None
             if args[0] == 'POST':
-                value, rows, columns = self.db.resultDBQuery(PROC_SHOP_BLOG_POST % (args[1]["idx"], args[1]["reply"]), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_SHOP_BLOG_POST % (args[1]["partner_id"],
+                                                                                    args[1]["link"],
+                                                                                    args[1]["title"],
+                                                                                    args[1]["desc"],
+                                                                                    args[1]["thumb"],
+                                                                                    args[1]["post_date"],
+                                                                                    args[1]["blogger"]), QUERY_DB)
             elif args[0] == 'PUT':
-                value, rows, columns = self.db.resultDBQuery(PROC_SHOP_BLOG_PUT % (args[1]["idx"], args[1]["reply"]), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_SHOP_BLOG_PUT % (args[1]["idx"],
+                                                                                   args[1]["link"],
+                                                                                   args[1]["title"],
+                                                                                   args[1]["desc"],
+                                                                                   args[1]["thumb"],
+                                                                                   args[1]["post_date"],
+                                                                                   args[1]["blogger"]), QUERY_DB)
             elif args[0] == 'DELETE':
                 value, rows, columns = self.db.resultDBQuery(PROC_SHOP_BLOG_DELETE % (args[1]["idx"],), QUERY_DB)
             else:

@@ -53,7 +53,7 @@ DELIMITER ;
     FROM tb_customer_family 
 	WHERE to_cellphone = '01086331776'  AND artist_id = 'pettester@peteasy.kr' AND is_delete = 0;
     
-call procPartnerPC_Booking_CustomerPetInfo_get(568582);
+call procPartnerPC_Booking_CustomerPetInfo_get(571239);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerPetInfo_get $$
 CREATE PROCEDURE procPartnerPC_Booking_CustomerPetInfo_get(
@@ -95,8 +95,11 @@ BEGIN
     END IF;
     
 	#노쇼 카운트
-	SELECT SUM(is_no_show)INTO @noshow_count FROM tb_payment_log
-	WHERE customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId) AND artist_id=artist_id;
+-- 	SELECT SUM(is_no_show)INTO @noshow_count FROM tb_payment_log
+-- 	WHERE customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId) AND artist_id=artist_id;
+	SELECT SUM(is_no_show) INTO @noshow_count FROM tb_payment_log
+	WHERE cellphone = aPhone AND artist_id=artist_id
+		AND data_delete = 0;
 	IF @noshow_count IS NULL THEN
 		SET @noshow_count = 0;
     END IF;
@@ -133,6 +136,7 @@ BEGIN
 		   aPhone AS cell_phone, aSubPhone AS sub_phone, 
            aCustomerGradeIdx AS customer_grade_idx,  aShopGradeIdx AS shop_grade_idx, aGradeName AS grade_name, aGradeOrd AS grade_ord, 
            aOwnerMemo AS owner_memo, @noshow_count AS noshow_count, @is_noshow AS is_noshow, @worker AS worker, @beauty_date AS beauty_date,
+            aMemo AS payment_memo,
 		#예약 펫 정보
 		pet_seq, name, name_for_owner, type, pet_type, gender, weight, photo, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0)) AS birth, neutral, etc,
 		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting, #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
@@ -142,7 +146,67 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PaymentInfoEtcMemo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_PaymentInfoEtcMemo_put(
+	dataPaymentCode INT,
+    dataEtcMemo TEXT
+)
+BEGIN
+	/**
+	  작업 결제관리 특이사항 수정
+   */
+   
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
+    START TRANSACTION;
+
+	UPDATE tb_payment_log 
+    SET etc_memo = dataEtcMemo
+    WHERE payment_log_seq = dataPaymentCode;         
+        
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err; 
+
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PaymentInfoEtcMemo_put $$
+CREATE PROCEDURE procPartnerPC_Booking_PaymentInfoEtcMemo_put(
+	dataPaymentCode INT,
+    dataEtcMemo TEXT
+)
+BEGIN
+	/**
+	  작업 결제관리 예약시간 수정
+   */
+   
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+    START TRANSACTION;
+
+	UPDATE tb_payment_log 
+    SET etc_memo = dataEtcMemo
+    WHERE payment_log_seq = dataPaymentCode;         
+        
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err; 
+
+END $$ 
+DELIMITER ;
 call procPartnerPC_Booking_BeforePaymentInfo_get(571239, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(518235, false, 10);
 call procPartnerPC_Booking_BeforePaymentInfo_get(568668, true, 10);
@@ -219,27 +283,111 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-
 DELIMITER $$
-DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_put $$
-CREATE PROCEDURE procPartnerPC_Booking_NoShow_put(
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Time_put $$
+CREATE PROCEDURE procPartnerPC_Booking_Time_put(
 	dataPaymentIdx INT,
-    dataNoShow BOOL 
+    dataStTime VARCHAR(4),
+    dataFiTime VARCHAR(4)
 )
 BEGIN
 	/**
-		노쇼 수정
+		예약 시간 변경
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    SET @hour_int = CAST(SUBSTRING(dataStTime, 1, 2) AS SIGNED);
+    SET @min_int = CAST(SUBSTRING(dataStTime, 3, 2) AS SIGNED);
+    SET @to_hour_int = CAST(SUBSTRING(dataFiTime, 1, 2) AS SIGNED);
+    SET @to_min_int = CAST(SUBSTRING(dataFiTime, 3, 2) AS SIGNED);
+    
+
+	START TRANSACTION;
+    
+	UPDATE tb_payment_log SET hour = @hour_int, minute = @min_int, to_hour = @to_hour_int, to_minute = @to_min_int, update_time = NOW() 
+	WHERE payment_log_seq = dataPaymentIdx;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_DateWorker_put $$
+CREATE PROCEDURE procPartnerPC_Booking_DateWorker_put(
+	dataPaymentIdx INT,
+    dataStDate VARCHAR(8), #yyyymmdd
+    dataFiDate VARCHAR(8),
+    dataWorker VARCHAR(36)
+)
+BODY:BEGIN
+	/**
+		예약 날짜/미용사 변경
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    SELECT IF(COUNT(name) < 1, False, True) INTO @isExist
+	FROM (SELECT name FROM gobeautypet.tb_artist_list
+		WHERE artist_id='pettester@peteasy.kr'
+		GROUP BY name) A 
+	WHERE A.name = dataWorker;
+    
+    IF @isExist < 1 THEN
+    BEGIN
+		SELECT 905 as err;
+		LEAVE BODY;
+    END;
+    END IF;
+	
+    SET @year_int = CAST(SUBSTRING(dataStDate, 1, 4) AS SIGNED);
+    SET @month_int = CAST(SUBSTRING(dataStDate, 5, 2) AS SIGNED);
+    SET @day_int = CAST(SUBSTRING(dataStDate, 7, 2) AS SIGNED);
+    SET @to_year_int = CAST(SUBSTRING(dataFiDate, 1, 4) AS SIGNED);
+    SET @to_month_int = CAST(SUBSTRING(dataFiDate, 5, 2) AS SIGNED);
+    SET @to_day_int = CAST(SUBSTRING(dataFiDate, 7, 2) AS SIGNED);
+    
+
+	START TRANSACTION;
+    
+		UPDATE tb_payment_log 
+        SET year = @year_int, month = @month_int, day = @day_int, 
+            to_year=@to_year_int, to_month = @to_month_int, to_day = @to_day_int, update_time = NOW(),
+            worker=dataWorker
+        WHERE payment_log_seq = dataPaymentIdx;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Cancel_put $$
+CREATE PROCEDURE procPartnerPC_Booking_Cancel_put(
+	dataPaymentIdx INT,
+    dataCancel INT 
+)
+BEGIN
+	/**
+		예약 취소
    */
    	DECLARE aErr INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
 	START TRANSACTION;
-    
-	IF dataNoShow THEN
-		UPDATE tb_payment_log SET is_no_show = 1 WHERE payment_log_seq = dataPaymentIdx;
-    ELSE
-		UPDATE tb_payment_log SET is_no_show = 0 WHERE payment_log_seq = dataPaymentIdx;
-    END IF;
+	
+    UPDATE tb_payment_log SET is_cancel = 1, cancel_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
     
 	IF aErr < 0 THEN
 		ROLLBACK;
@@ -267,9 +415,9 @@ BEGIN
 	START TRANSACTION;
     
 	IF dataNoShow THEN
-		UPDATE tb_payment_log SET is_no_show = 1 WHERE payment_log_seq = dataPaymentIdx;
+		UPDATE tb_payment_log SET is_no_show = 1, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
     ELSE
-		UPDATE tb_payment_log SET is_no_show = 0 WHERE payment_log_seq = dataPaymentIdx;
+		UPDATE tb_payment_log SET is_no_show = 0, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
     END IF;
     
 	IF aErr < 0 THEN
@@ -282,16 +430,187 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Booking_BeautyGallery_get(592111);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_get $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyGallery_get(
+	dataPaymentIdx INT
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 갤러리 조회
+   */
+   	
+    SELECT * FROM tb_mypet_beauty_photo WHERE  payment_log_seq= dataPaymentIdx order by idx desc;
+    
+END $$ 
+DELIMITER ;
 
---         $que = "SELECT COUNT(*) AS cnt FROM tb_grade_of_customer WHERE customer_id = '{$_POST['id']}' AND grade_idx = '{$_POST['org_grade']}'";
---         //echo $que;
---         $row = sql_fetch_array($que);
---         if($row[0]['cnt']>0) {
---             $que = "UPDATE tb_grade_of_customer SET grade_idx = '{$_POST['grade']}' WHERE customer_id = '{$_POST['id']}' AND grade_idx = '{$_POST['org_grade']}'";
---         } else {
---             //$que = "INSERT INTO tb_grade_of_customer SET grade_idx = '{$_POST['grade']}',  customer_id = '{$_POST['id']}'";
---             $que = "INSERT INTO `tb_grade_of_customer` (`grade_idx`, `customer_id`, `is_delete`) VALUES ('{$_POST['grade']}', '{$_POST['id']}', 0);";
---         } 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_post $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyGallery_post(
+	dataPaymentIdx INT,
+    dataPantnerID VARCHAR(64),
+    dataPetIdx INT,
+    dataTitle VARCHAR(100),
+    dataFilePath VARCHAR(256)
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 갤러리 추가
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+    INSERT INTO tb_mypet_beauty_photo 
+    SET payment_log_seq = dataPaymentIdx,
+		artist_id = dataPantnerID,
+		pet_seq = dataPetIdx,
+		prnt_title = dataTitle,
+		file_path = dataFilePath,
+		prnt_yn = 'Y',
+        is_tag = '1';
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_delete $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyGallery_delete(
+	dataIdx INT
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 갤러리 추가
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+    DELETE FROM tb_mypet_beauty_photo WHERE idx = dataIdx;
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Booking_BeautySign_get('pettester@peteasy.kr', 0);
+call procPartnerPC_Booking_BeautySign_get('pettester@peteasy.kr', 178430);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautySign_get $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautySign_get(
+	dataPartnerID VARCHAR(64),
+    dataPetID INT
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 동의서 조회
+   */
+	IF dataPetId > 0 THEN
+		SELECT B.*, A.image
+		FROM tb_beauty_sign A JOIN tb_beauty_agree B ON A.bs_seq = B.bs_seq
+		WHERE B.artist_id = dataPartnerID AND B.pet_id = dataPetID;
+    ELSE
+		SELECT B.*, A.image
+		FROM tb_beauty_sign A JOIN tb_beauty_agree B ON A.bs_seq = B.bs_seq
+		WHERE B.artist_id = dataPartnerID;
+    END IF;
+    
+END $$ 
+DELIMITER ;
+
+	SELECT ba_seq 
+	FROM tb_beauty_agree
+	WHERE customer_id = 0192222
+		AND artist_id = 'pettester@peteasy.kr'
+		AND pet_id = '1111'
+		AND doc_type = '0';
+
+call procPartnerPC_Booking_BeautySign_post('pettester@peteasy.kr', '', '', '1111', '0192222', '/upload/sign/pettester@peteasy.kr/tmp_252634.png'
+	, '1', '1', '0', '');
+				select * from tb_beauty_sign order by bs_seq desc;
+                select * from tb_beauty_agree order by ba_seq desc; 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautySign_post $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautySign_post(
+	dataPartnerID VARCHAR(64),
+    dataCustomerID VARCHAR(64),
+    dataCustomerName VARCHAR(64),
+    dataPetID INT,
+    dataPhone VARCHAR(20),
+    dataIsBeautyAgree INT,  #미용 동의 
+    dataIsPrivateAgree INT, #개인정보 동의
+    dataAgreeType INT,     #0: 미용, 1: 호텔
+    dataAuthURL VARCHAR(256),
+    dataFilePath VARCHAR(256)
+)
+BEGIN
+	/**
+		작업/결제관리 > 미용 동의서 추가
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+    
+	SET @customer_id = dataCustomerID;
+	IF @customer_id = '' OR @customer_id IS NULL THEN
+		SET @customer_id = dataPhone;
+    END IF;
+
+	SELECT ba_seq INTO @ba_seq
+	FROM tb_beauty_agree
+	WHERE customer_id = @customer_id
+		AND artist_id = dataPartnerID
+		AND pet_id = dataPetID
+		AND doc_type = dataAgreeType;
+
+
+	START TRANSACTION;
+
+    INSERT INTO tb_beauty_sign (customer_id, image, reg_date) 
+    VALUES (@customer_id, dataFilePath, NOW());
+    SET @new_sign_id = LAST_INSERT_ID();
+
+	IF @ba_seq = '' or @ba_seq IS NULL THEN
+    BEGIN
+		INSERT INTO tb_beauty_agree (bs_seq, customer_id, artist_id, pet_id, customer_name, cellphone, is_agree, is_customer, doc_type, auth_url, reg_date) 
+		VALUES (@new_sign_id, @customer_id, dataPartnerID, dataPetId, dataCustomerName, dataPhone, dataIsBeautyAgree, dataIsPrivateAgree, dataAgreeType, 
+                dataAuthURL, NOW());
+	END;
+    ELSE
+    BEGIN
+		UPDATE tb_beauty_agree 
+        SET bs_seq = @new_sign_id,customer_id = @customer_id,pet_id = dataPetId,customer_name = dataCustomerName,cellphone = dataPhone,
+			is_agree = dataIsBeautyAgree,is_customer = dataIsPrivateAgree,doc_type = dataAgreeType
+		WHERE ba_seq = @ba_seq AND artist_id = dataPartnerID;
+	END;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	SELECT aErr as err;
+
+END $$ 
+DELIMITER ;
 
 call procPartnerPC_Booking_GRADE_SHOP_ID_get('pettester@peteasy.kr');        
 DELIMITER $$
@@ -1073,6 +1392,249 @@ BODY: BEGIN
 	END IF;
 END $$ 
 DELIMITER ;
+
+call procPartnerPC_Booking_Coupon_get('pettester@peteasy.kr', 'B', 'A');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_Coupon_get $$
+CREATE PROCEDURE procPartnerPC_Booking_Coupon_get(
+	dataPartnerID VARCHAR(64),
+    dataType CHAR(1),
+    dataCouponType CHAR(1)
+)
+BODY: BEGIN
+	/**
+		쿠폰 조회 
+   */
+	
+    IF dataCouponType = 'A' THEN
+		SELECT * 
+		FROM tb_coupon 
+		WHERE customer_id = dataPartnerID
+			AND del_yn = 'N' AND product_type = dataType;
+    ELSE    
+		SELECT * 
+		FROM tb_coupon 
+		WHERE customer_id = dataPartner
+			AND del_yn = 'N' AND product_type = dataType AND type = dataCouponType;
+	END IF;
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Booking_BeautyCoupon_modify( 582771, 151591,'','pettester@peteasy.kr',796, 'C',10000);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyCoupon_modify $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyCoupon_modify(
+	dataPaymentIdx INT, #406418
+	dataTmpUserIdx INT, #115267
+	dataCustomerID VARCHAR(64), #''
+    dataPartnerID VARCHAR(64), #pettester@peteasy.kr
+    dataCouponIdx INT		#795
+)
+BEGIN
+	/**
+		쿠폰 사용자 등록
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+   
+	SELECT given, type, price INTO @given_amount_balance, @coupon_type, @coupon_price
+    FROM tb_coupon WHERE coupon_seq = dataCouponIdx;
+
+	SET @user_coupon_seq = 0;
+    SET @given = 0;
+    #쿠폰 유무 확인
+    IF dataCuStomerID != '' THEN
+    BEGIN
+		SELECT user_coupon_seq, given INTO @user_coupon_seq, @given  
+		FROM tb_user_coupon 
+		WHERE customer_id = dataCustomerID AND artist_id = dataPartnerID AND coupon_seq = dataCouponIdx;
+	END;
+    ELSE
+    BEGIN
+		SELECT user_coupon_seq, given INTO @user_coupon_seq, @given   
+		FROM tb_user_coupon 
+		WHERE tmp_seq = dataTmpUserIdx AND artist_id = dataPartnerID AND coupon_seq = dataCouponIdx;
+	END;
+    END IF;
+	
+    START TRANSACTION;
+
+    IF @user_coupon_seq > 0 THEN
+    BEGIN
+		UPDATE tb_user_coupon 
+        SET given = @given_amount_balance+@given , update_date  = NOW()  
+		WHERE user_coupon_seq = @user_coupon_seq;
+	END;	
+    ELSE
+    BEGIN
+		INSERT INTO tb_user_coupon 
+		SET customer_id = customer_id, artist_id = dataPartnerID, tmp_seq = IF(dataTmpUserIdx = 0,NULL,dataTmpUserIdx), 
+			payment_log_seq = dataPaymentIdx, coupon_seq = dataCouponIdx, type = @coupon_type, price = @coupon_price, 
+            given = @given_amount_balance, reg_date = NOW();
+		SET @user_coupon_seq = LAST_INSERT_ID();
+	END;
+    END IF;
+    
+ 	INSERT INTO tb_coupon_history 
+ 	SET coupon_seq  = dataCouponIdx, user_coupon_seq = @user_coupon_seq, payment_log_seq = dataPaymentIdx, 
+		amount = @given_amount_balance, balance = @given_amount_balance, customer_id = IF(dataCustomerID = '',NULL,dataCustomerID), 
+		tmp_seq  = IF(dataTmpUserIdx = 0,NULL,dataTmpUserIdx), 
+		artist_id = dataPartnerID, memo = '쿠폰구매', type = 'N';
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+
+
+call procPartnerPC_Booking_Coupon_get('pettester@peteasy.kr', 'B', 'A');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyProduct_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyProduct_put(
+	dataPaymentIdx INT,
+    dataUseCoupon CHAR(1),
+    dataPrice INT,
+    dataProduct VARCHAR(4096)
+)
+BEGIN
+	/**
+		상품 업데이트
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+	UPDATE tb_payment_log 
+	SET local_price = dataPrice, 
+		local_price_cash  = 0, 
+		is_coupon = dataUseCoupon,
+		product            = dataProduct,
+		update_time        = NOW()  
+	WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_BeautyDisCount_put(590002, 2, 100);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyDisCount_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyDisCount_put(
+	dataPaymentIdx INT,
+    dataType INT,
+    dataDiscount INT
+)
+BEGIN
+	/**
+		단골고객 할인
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    
+	UPDATE tb_payment_log 
+	SET discount_num = dataDiscount, 
+		discount_type = dataType
+    WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_BeautyCardCash_put(590002, 33500, 0);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyCardCash_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyCardCash_put(
+	dataPaymentIdx INT,
+    dataCard INT,
+    dataCash INT
+)
+BEGIN
+	/**
+		결제액 카드 <-> 현금 
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    
+	UPDATE tb_payment_log 
+	SET local_price = dataCard, 
+		local_price_cash = dataCash
+    WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Booking_BeautyConfirm_put(590002, 1);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyConfirm_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyConfirm_put(
+	dataPaymentIdx INT,
+    dataConfirm INT
+)
+BEGIN
+	/**
+		결제액 카드 <-> 현금 
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+    
+	UPDATE tb_payment_log 
+	SET is_confirm = dataConfirm, 
+		confirm_dt = NOW()
+    WHERE payment_log_seq = dataPaymentIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+
+END $$ 
+DELIMITER ;
+
+UPDATE tb_payment_log SET is_confirm         = '1', confirm_dt         = NOW()  WHERE payment_log_seq = '590002' 
+
 
 
 

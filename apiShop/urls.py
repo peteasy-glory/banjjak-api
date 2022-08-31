@@ -23,5 +23,6 @@ urlpatterns = [
     path('shop/review', api_review.TReview.as_view()),
     path('shop/review/<str:partner_id>', api_review.TReview.as_view()),
 
+    path('shop/blog', api_blog.TBlog.as_view()),
     path('shop/blog/<str:partner_id>', api_blog.TBlog.as_view()),
 ]

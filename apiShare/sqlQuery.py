@@ -33,9 +33,26 @@ PROC_NO_SHOW_COUNT_GET = "call procPartnerPC_Home__NoShowCount_get('%s','%s')"
 PROC_BEAUTY_BOOKING_PEROID_GET = "call procPartnerPC_Booking_BeautyPeroid_get('%s', '%s', '%s')"
 PROC_BEAUTY_BOOKING_CUSTOMER_PET_INFO_GET = "call procPartnerPC_Booking_CustomerPetInfo_get(%s)"
 PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_BeforePaymentInfo_get(%s, %s, %s)"
-
 PROC_BEAUTY_BOOKING_PAYMENT_INFO_GET = "call procPartnerPC_Booking_PaymentInfo_get(%s)"
+PROC_BEAUTY_BOOKING_PAYMENT_MEMO_PUT = "call procPartnerPC_Booking_PaymentInfoEtcMemo_put(%d, '%s')"
 PROC_BEAUTY_BOOKING_NO_SHOW_PUT = "call procPartnerPC_Booking_NoShow_put(%s, %s)"
+PROC_BEAUTY_BOOKING_TIME_PUT = "call procPartnerPC_Booking_Time_put(%d, '%s', '%s')"
+PROC_BEAUTY_BOOKING_DATE_WORKER_PUT = "call procPartnerPC_Booking_DateWorker_put(%d, '%s','%s','%s')"
+PROC_BEAUTY_BOOKING_CANCEL_PUT = "call procPartnerPC_Booking_Cancel_put(%d, %d)"
+PROC_BEAUTY_BOOKING_BEAUTY_GALLERY_GET = "call procPartnerPC_Booking_BeautyGallery_get(%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_GALLERY_POST = "call procPartnerPC_Booking_BeautyGallery_post(%d,'%s', %d, '%s','%s')"
+PROC_BEAUTY_BOOKING_BEAUTY_GALLERY_DELETE = "call procPartnerPC_Booking_BeautyGallery_delete(%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_SIGN_GET = "call procPartnerPC_Booking_BeautySign_get('%s',%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_SIGN_POST = "call procPartnerPC_Booking_BeautySign_post('%s','%s','%s', %d, '%s','%s','%s','%s','%s','%s')"
+
+
+PROC_BEAUTY_BOOKING_COUPON_GET = "call procPartnerPC_Booking_Coupon_get('%s', '%s', '%s')"
+PROC_BEAUTY_BOOKING_COUPON_MODIFY = "call procPartnerPC_Booking_BeautyCoupon_modify(%d, %d, '%s', '%s',%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_PRODUCT_PUT = "call procPartnerPC_Booking_BeautyProduct_put(%d,'%s',%d, '%s')"
+PROC_BEAUTY_BOOKING_BEAUTY_DISCOUNT_PUT = "call procPartnerPC_Booking_BeautyDisCount_put(%d,%d,%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_CARD_CASH_PUT = "call procPartnerPC_Booking_BeautyCardCash_put(%d,%d,%d)"
+PROC_BEAUTY_BOOKING_BEAUTY_CONFIRM_PUT = "call  procPartnerPC_Booking_BeautyConfirm_put(%d,%d)"
+
 
 PROC_BEAUTY_BOOKING_GRADE_SHOP_ID_GET = "call procPartnerPC_Booking_GRADE_SHOP_ID_get('%s')"
 PROC_BEAUTY_BOOKING_GRADE_SHOP_IDX_GET = "call procPartnerPC_Booking_GRADE_SHOP_IDX_get(%s)"
