@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import traceback
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import PROC_BEAUTY_BOOKING_BEAUTY_SIGN_GET, PROC_BEAUTY_BOOKING_BEAUTY_SIGN_POST
