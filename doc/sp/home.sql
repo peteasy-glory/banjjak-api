@@ -348,6 +348,60 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Home_SearchPhone_get('pettester@peteasy.kr', '002');
+-- DELIMITER $$
+-- DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPhone_get $$
+-- CREATE PROCEDURE procPartnerPC_Home_SearchPhone_get(
+-- 	dataPartnerId VARCHAR(64),
+--     dataPhone VARCHAR(50)
+-- )
+-- BEGIN
+-- 	/**
+-- 		전화번호 조회
+--    */
+-- 	SELECT X.*, Y.family, Z.no_show_count
+-- 	FROM 
+-- 	(       
+-- 		SELECT cellphone, GROUP_CONCAT(client_id) AS client_id, 
+-- 				GROUP_CONCAT(CONCAT(IF(use_date IS NULL, '', use_date),'|',pet_seq,'|',name,'|',type,'|',pet_type,'|',IF(photo IS NULL, '', photo),'|')) AS pet_info 
+-- 		FROM
+-- 		(
+-- 			SELECT A.pet_seq, A.cellphone, IF(A.customer_id = '' OR A.customer_id LIKE '신규등록%', B.tmp_seq, A.customer_id) AS client_id
+-- 			,CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,02)) as use_date
+-- 			, C.name, C.type, C.pet_type, C.photo
+-- 			FROM tb_payment_log A 
+-- 				LEFT JOIN tb_tmp_user B ON A.cellphone = B.cellphone
+-- 				JOIN tb_mypet C ON A.pet_seq = C.pet_seq
+-- 			WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND
+-- 				A.cellphone LIKE CONCAT('%',dataPhone,'%') 
+-- 			ORDER BY CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,0)) DESC
+-- 			LIMIT 18446744073709551615
+-- 		) D 
+-- 		#WHERE use_date IS NOT NULL AND use_date != ''
+-- 		GROUP BY D.cellphone
+
+-- 	) X	LEFT JOIN 
+-- 	(        
+-- 		SELECT to_cellphone , group_concat(from_cellphone) AS family
+-- 		FROM tb_customer_family 
+-- 		WHERE is_delete = 0 AND
+-- 			artist_id = dataPartnerId AND
+-- 			(from_cellphone like CONCAT('%',dataPhone,'%')
+-- 			OR to_cellphone like CONCAT('%',dataPhone,'%'))
+-- 		GROUP BY to_cellphone 
+-- 	) Y ON X.cellphone = Y.to_cellphone 
+-- 	 JOIN 
+-- 	(
+-- 		SELECT cellphone, SUM(is_no_show) AS no_show_count
+-- 		FROM tb_payment_log 
+-- 		WHERE data_delete = 0 AND artist_id = dataPartnerId AND
+-- 			cellphone LIKE CONCAT('%',dataPhone,'%') 
+-- 		GROUP BY cellphone
+-- 	) Z ON X.cellphone = Z.cellphone;
+-- END $$ 
+-- DELIMITER ;
+
+call procPartnerPC_Home_SearchPhone_get('pettester@peteasy.kr', '75');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPhone_get $$
 CREATE PROCEDURE procPartnerPC_Home_SearchPhone_get(
@@ -358,18 +412,31 @@ BEGIN
 	/**
 		전화번호 조회
    */
-	SELECT  A.cellphone, A.no_show_count, A.pet_seq,C.customer_id, 
-		C.tmp_seq, C.name, C.type, C.pet_type, C.photo, B.family 
-	FROM
-	(
-		SELECT *, SUM(is_no_show) AS no_show_count
-		FROM tb_payment_log 
-		WHERE data_delete = 0 AND artist_id = dataPartnerId AND
-			cellphone LIKE CONCAT('%',dataPhone,'%') 
-		GROUP BY cellphone
-	) A
-	LEFT JOIN
-	(
+	SELECT X.*, Y.family, Z.no_show_count, T.file_Path AS beauty_phoro
+	FROM 
+	(       
+			SELECT cellphone, pet_seq, name, type, pet_type, IF(photo IS NULL, '', photo) AS pet_photo 
+				#GROUP_CONCAT(client_id) AS client_id, 
+				#GROUP_CONCAT(CONCAT(IF(use_date IS NULL, '', use_date),'|',pet_seq,'|',name,'|',type,'|',pet_type,'|',IF(photo IS NULL, '', photo),'|')) AS pet_info 
+			FROM
+			(
+				SELECT A.payment_log_seq, A.pet_seq, A.cellphone, IF(A.customer_id = '' OR A.customer_id LIKE '신규등록%', B.tmp_seq, A.customer_id) AS client_id
+				,CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,02)) as use_date
+				, C.name, C.type, C.pet_type, IF(C.photo IS NULL, '', C.photo) AS photo
+				FROM tb_payment_log A 
+					LEFT JOIN tb_tmp_user B ON A.cellphone = B.cellphone
+					JOIN tb_mypet C ON A.pet_seq = C.pet_seq
+				WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND
+					A.cellphone LIKE CONCAT('%',dataPhone,'%') 
+				ORDER BY CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,0)) DESC
+				LIMIT 18446744073709551615
+			) D  
+			#WHERE use_date IS NOT NULL AND use_date != ''
+			GROUP BY cellphone
+			ORDER BY payment_log_seq desc
+
+	) X	LEFT JOIN 
+	(        
 		SELECT to_cellphone , group_concat(from_cellphone) AS family
 		FROM tb_customer_family 
 		WHERE is_delete = 0 AND
@@ -377,11 +444,59 @@ BEGIN
 			(from_cellphone like CONCAT('%',dataPhone,'%')
 			OR to_cellphone like CONCAT('%',dataPhone,'%'))
 		GROUP BY to_cellphone 
-	) B ON A.cellphone = B.to_cellphone
-	JOIN tb_mypet C ON A.pet_seq = C.pet_seq;
+	) Y ON X.cellphone = Y.to_cellphone 
+	 JOIN 
+	(
+		SELECT cellphone, SUM(is_no_show) AS no_show_count
+		FROM tb_payment_log 
+		WHERE data_delete = 0 AND artist_id = dataPartnerId AND
+			cellphone LIKE CONCAT('%',dataPhone,'%') 
+		GROUP BY cellphone
+	) Z ON X.cellphone = Z.cellphone
+	LEFT JOIN
+	(
+		SELECT * 
+		FROM
+		(
+			SELECT * FROM tb_mypet_beauty_photo 
+			WHERE artist_id = dataPhone
+				AND file_path IS NOT NULL
+			ORDER BY upload_dt DESC
+			LIMIT 18446744073709551615
+		) bp
+		GROUP BY pet_seq
+	) T ON X.pet_seq = T.pet_seq;
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Home_FamilyPhoneSearch_get('pettester@peteasy.kr', '75');
+call procPartnerPC_Home_SearchPhone_get('pettester@peteasy.kr', '777');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_FamilyPhoneSearch_get $$
+CREATE PROCEDURE procPartnerPC_Home_FamilyPhoneSearch_get(
+	dataPartnerId VARCHAR(64),
+    dataPhone VARCHAR(50)
+)
+BEGIN
+	/**
+		전화번호 조회
+   */
+	SELECT *
+	FROM tb_customer_family 
+	WHERE is_delete = 0 AND
+		artist_id = dataPartnerId AND
+	    from_cellphone like CONCAT('%',dataPhone,'%')
+	GROUP BY to_cellphone;
+END $$ 
+DELIMITER ;
+
+  select * from tb_payment_log
+  where payment_log_seq = 471352
+  ;
+  select * from tb_payment_log
+  where cellphone = '01053900003'
+  ;
+call procPartnerPC_Home_SearchPetName_get('pettester@peteasy.kr', '두');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPetName_get $$
 CREATE PROCEDURE procPartnerPC_Home_SearchPetName_get(
@@ -392,25 +507,57 @@ BEGIN
     /**
 		펫명 조회
    */
-    SELECT AA.cellphone, AA.no_show_count, AA.pet_seq, AA.customer_id, 
-		AA.tmp_seq, AA.name, AA.type, AA.pet_type, AA.photo, BB.family
-	FROM
+	SELECT X.cellphone, X.pet_seq, X.name, X.type, X.pet_type, X.pet_photo, Y.family, Z.no_show_count , T.file_path AS beauty_photo
+	FROM 
+	(       
+		SELECT *
+			#GROUP_CONCAT(client_id) AS client_id, 
+			#GROUP_CONCAT(CONCAT(IF(use_date IS NULL, '', use_date),'|',pet_seq,'|',name,'|',type,'|',pet_type,'|',IF(photo IS NULL, '', photo),'|')) AS pet_info 
+		FROM
+		(
+			SELECT A.payment_log_seq, A.pet_seq, A.cellphone, IF(A.customer_id = '' OR A.customer_id LIKE '신규등록%', B.tmp_seq, A.customer_id) AS client_id
+			,CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,02)) as use_date
+			, C.name, C.type, C.pet_type, IF(C.photo IS NULL, '', C.photo) AS pet_photo
+			FROM tb_payment_log A 
+				LEFT JOIN tb_tmp_user B ON A.cellphone = B.cellphone
+				JOIN tb_mypet C ON A.pet_seq = C.pet_seq
+			WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND
+				(C.name LIKE CONCAT('%',dataPetName,'%') or C.pet_type LIKE CONCAT('%',dataPetName,'%'))
+			ORDER BY CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,0)) DESC
+			LIMIT 18446744073709551615
+		) D  
+		#WHERE use_date IS NOT NULL AND use_date != ''
+		GROUP BY cellphone, pet_seq
+		ORDER BY payment_log_seq desc
+
+	) X	LEFT JOIN 
+	(        
+		SELECT to_cellphone , group_concat(from_cellphone) AS family
+		FROM tb_customer_family 
+		WHERE is_delete = 0 AND
+			artist_id = dataPartnerId
+		GROUP BY to_cellphone 
+	) Y ON X.cellphone = Y.to_cellphone 
+	 JOIN 
 	(
-		SELECT A.cellphone, SUM(A.is_no_show) AS no_show_count, 
-				B.pet_seq, B.customer_id, B.tmp_seq, B.name, B.type, B.pet_type, B.photo
-		FROM tb_payment_log A JOIN tb_mypet B ON A.pet_seq = B.pet_seq
-		WHERE A.data_delete = 0 AND B.data_delete = 0
-			AND A.artist_id = dataPartnerId 
-			AND B.name LIKE CONCAT('%', dataPetName, '%')
-		GROUP BY A.cellphone
-	) AA LEFT JOIN 
+		SELECT cellphone, SUM(is_no_show) AS no_show_count
+		FROM tb_payment_log 
+		WHERE data_delete = 0 AND artist_id = dataPartnerId 
+		GROUP BY cellphone
+	) Z ON X.cellphone = Z.cellphone
+    LEFT JOIN
 	(
-		SELECT to_cellphone, GROUP_CONCAT(from_cellphone) AS family
-		FROM tb_customer_family
-		WHERE artist_id = dataPartnerId
-			AND is_delete = 0
-		GROUP BY to_cellphone
-	)BB ON AA.cellphone = BB.to_cellphone;
+		SELECT * 
+		FROM
+		(
+			SELECT * FROM tb_mypet_beauty_photo 
+			WHERE artist_id = dataPartnerId 
+				AND file_path IS NOT NULL
+			ORDER BY upload_dt DESC
+			LIMIT 18446744073709551615
+		) bp
+		GROUP BY pet_seq
+	) T ON X.pet_seq = T.pet_seq;
     
 END $$ 
 DELIMITER ;

@@ -47,21 +47,60 @@ class TCellSearch(TAPIBase):
 
     def get(self, request, partner_id):
         try:
+            ret = self.message.successOk()
+            ret["body"] = []
             if partner_id is None:
                 return HttpResponse(self.json.dicToJson(self.message.errorBadRequst()))
             if request.GET.get('phone') is not None and request.GET.get('name') is not None:
                 return HttpResponse(self.json.dicToJson(self.message.multiplSsearchFail()))
             if request.GET.get('phone') is not None:
                 value, rows, columns = self.db.resultDBQuery(PROC_SEARCH_PHONE_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
+                if value is not None:
+                    self.parsingData(value, rows, ret["body"])
+                    value, rows, columns = self.db.resultDBQuery(
+                        PROC_FAMILY_CELLPHONE_SEARCH_GET % (partner_id.strip(), request.GET.get('phone')), QUERY_DB)
+                    if value is not None:
+                        data = []
+                        if rows < 2:
+                            data.append(value)
+                        else:
+                            data = value
+                        for d in data:
+
+                            value1, rows1, columns1 = self.db.resultDBQuery(
+                                        PROC_SEARCH_PHONE_GET % (partner_id.strip(),d[2]), QUERY_DB)
+                            if value1 is not None:
+                                self.parsingData(value1, rows1, ret["body"])
+                return HttpResponse(self.json.dicToJson(ret))
             elif request.GET.get('name') is not None:
                 value, rows, columns = self.db.resultDBQuery(PROC_SEARCH_PET_NAME_GET % (partner_id.strip(), request.GET.get('name')), QUERY_DB)
+                if value is not None:
+                    self.parsingData(value, rows, ret["body"])
+                return HttpResponse(self.json.dicToJson(ret))
             else:
                 return HttpResponse(self.json.dicToJson(self.message.searchFail()))
-            ret = self.message.successOk()
-            ret["body"] = self.queryDataToDic(value, rows, columns)
-            return HttpResponse(self.json.dicToJson(ret))
+
+            #ret["body"] = self.queryDataToDic(value, rows, columns)
+            #return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
+
+    def parsingData(self, value, rows, body):
+        data = []
+
+        if rows < 2:
+            data.append(value)
+        else:
+            data = value
+        for d in data:
+            tmp = {"cellphone":d[0], "pet_seq":d[1], "name":d[2], "type":d[3], "pet_type":d[4], "pet_photo":d[5],
+                   "no_show_count":d[7], "beauty_photo":d[8], "family":[]}
+            if d[6] is not None:
+                arr = d[6].split(',')
+                for a in arr:
+                    tmp_family = {"phone": a}
+                    tmp["family"].append(tmp_family)
+            body.append(tmp)
 
 class TConsulting(TAPIBase):
     """
