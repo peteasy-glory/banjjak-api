@@ -11,10 +11,17 @@ class TUsageHistory(TAPIIDBase):
         try:
             body = {}
             value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_BEAUTY_USAGE_HISTORY_GET % (partner_id,args[0]["cellphone"]), QUERY_DB)
+
             if value is not None:
                 body = self.queryDataToDic(value, rows, columns)
-                for b in body:
-                    b["product_detail_parsing"] = self.productToDic(b["product"]),
+                data = []
+                if rows < 2:
+                    data.append(body)
+                else:
+                    data = body
+                for b in data:
+                    if "produrct" in b:
+                        b["product_detail_parsing"] = self.productToDic(b["product"]),
             return 0, "success", body
         except Exception as err:
             return -1, self.errorInfo(err), None

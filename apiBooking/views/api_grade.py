@@ -48,7 +48,11 @@ class TGrade(TAPIIDBase):
 
     def getInfo(self, partner_id, *args):
         try:
-            pass
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_GET % (partner_id, args[0]["cellphone"]), QUERY_DB)
+            body = {}
+            if value is not None:
+                body = self.queryDataToDic(value, rows, columns)
+            return 0, "success", body
         except Exception as err:
             return -1, self.errorInfo(err), None
 

@@ -57,6 +57,7 @@ PROC_BEAUTY_BOOKING_BEAUTY_CONFIRM_PUT = "call  procPartnerPC_Booking_BeautyConf
 
 PROC_BEAUTY_BOOKING_GRADE_SHOP_ID_GET = "call procPartnerPC_Booking_GRADE_SHOP_ID_get('%s')"
 PROC_BEAUTY_BOOKING_GRADE_SHOP_IDX_GET = "call procPartnerPC_Booking_GRADE_SHOP_IDX_get(%s)"
+PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_GET = "call procPartnerPC_Booking_GradeCustomer_get('%s','%s')"
 PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_POST = "call procPartnerPC_Booking_GradeCustomer_post(%s, %s,'%s')"
 PROC_BEAUTY_BOOKING_GRADE_CUSTOMER_PUT = "call procPartnerPC_Booking_GradeCustomer_put(%s, %s, '%s')"
 PROC_BEAUTY_BOOKING_GRADE_SHOP_PUT = "call procPartnerPC_Booking_ShopGrade_put(%s, '%s')"
