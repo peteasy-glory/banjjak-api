@@ -96,6 +96,14 @@ PROC_CUSTOMER_KINDER_TOTAL_SEARCH_GET = "call procPartnerPC_KinderCutomerSearchT
 PROC_CUSTOMER_BEAUTY_AGREE_GET = "call procPartnerPC_BeautyAgree_get('%s', %s)"
 PROC_CUSTOMER_JOIN_POST = "call procPartnerPC_CustomerJoin_post('%s','%s','%s','%s','%s',%s,%s,%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
 
+
+PROC_CUSTOMER_BEAUTY_USAGE_HISTORY_GET = "call procPartnerPC_BeautyUsageHistory_get('%s', '%s')"
+PROC_CUSTOMER_PET_LIST_GET = "call procPartnerPC_PetList_get('%s', '%s')"
+PROC_CUSTOMER_UNIQUE_MEMO_GET = "call procPartnerPC_UniqueMemo_get('%s', '%s')"
+PROC_CUSTOMER_RESERVES_GET = "call procPartnerPC_Reserves_get(%d,'%s',%d,'%s', '%s')"
+PROC_CUSTOMER_PET_DELETE = "call procPartnerPC_Pet_delete('%s', %d)"
+PROC_CUSTOMER_DELETE = "call procPartnerPC_Customer_delete('%s', '%s')"
+
 #SHOP MGE
 PROC_SHOP_FRONT_IMAGE_GET = "call procPartnerPC_Shop_Front_get('%s')"
 PROC_SHOP_FRONT_IMAGE_POST = "call procPartnerPC_Shop_Front_post('%s', '%s')"
