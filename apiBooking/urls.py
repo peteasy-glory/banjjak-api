@@ -47,6 +47,8 @@ urlpatterns = [
     path('booking/noshow/<int:idx>', api_noshow.TNoShow.as_view()),
     path('booking/grade-shop', api_grade.TShopGrade.as_view()),
     path('booking/grade/shop', api_grade.TGrade.as_view()),
+    path('booking/grade/shop/<str:partner_id>', api_grade.TGrade.as_view()),
+
 
     #path('booking/grade-customer/<int:customer_grade_idx>', api_grade.TCustomerGrade.as_view()),
     path('booking/prohibition', api_prohibition.TProhibition.as_view()),

@@ -483,3 +483,39 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+########################
+call procPartnerPC_Setting_BeautyPart_put('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyPart_put $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyPart_put(
+	dataPartnerId VARCHAR(64),
+    dataPart CHAR(14),
+    dataOne VARCHAR(32
+    dataFix1 INT
+    dataFix1 INT
+    dataFix1 INT
+    dataFix1 INT
+)
+BEGIN
+	/**
+		미용구분 저장  
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+    
+	UPDATE tb_shop
+	SET is_vat = dataIsVat
+	WHERE customer_id = dataPartnerId;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+END $$ 
+DELIMITER ;
+

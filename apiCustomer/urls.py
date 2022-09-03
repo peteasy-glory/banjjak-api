@@ -2,7 +2,8 @@
 
 from django.urls import path
 
-from apiCustomer.views import api_total_search, api_sign
+from apiCustomer.views import api_total_search, api_sign, api_usage_history, api_petlist, api_unique_memo, api_reserves, \
+    api_user
 
 urlpatterns = [
 
@@ -12,5 +13,12 @@ urlpatterns = [
     path('customer/search', api_total_search.TTotalSearch.as_view()),
     path('customer/search/<str:partner_id>', api_total_search.TTotalSearch.as_view()),
     path('customer/sign/<str:partner_id>', api_sign.TSign.as_view()),
+
+    path('customer/usage-history/<str:partner_id>', api_usage_history.TUsageHistory.as_view()),
+    path('customer/petlist/<str:partner_id>', api_petlist.TPetList.as_view()),
+    path('customer/pet', api_petlist.TPetList.as_view()),
+    path('customer/user', api_user.TUser.as_view()),
+    path('customer/unique-memo/<str:partner_id>', api_unique_memo.TUniqueMemo.as_view()),
+    path('customer/reserves/<str:partner_id>', api_reserves.TReserves.as_view()),
 
 ]

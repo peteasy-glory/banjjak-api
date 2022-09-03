@@ -106,7 +106,10 @@ class TAPIBase(APIView):
             d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[26]).zfill(2), str(d[27]).zfill(2))
         booking_fi = "%s-%s-%s %s:%s" % (
             d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
-        p_split = d[36].split('|')
+        # if d[36] is not None:
+        #     p_split = d[36].split('|')
+        # else:
+        #     p_split = ("","")
         #price = totalPrice(d[36])
 
         customer = {"customer_id": d[3], "phone": d[39]}
@@ -116,12 +119,12 @@ class TAPIBase(APIView):
             "worker": d[18],
             "is_no_show": d[51],
             "is_cancel": d[50],
-            "category": p_split[3],
-            "category_sub": p_split[4],
+            "category": "" if d[36] is None else  d[36].split('|')[3],
+            "category_sub": "" if d[36] is None else  d[36].split('|')[4],
             "pay_type": d[40],    # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
             "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
             "product_detail": d[36],
-            "product_detail_parsing": self.productToDic(d[36]),
+            "product_detail_parsing": {} if d[36] is None else self.productToDic(d[36]),
             "is_vat": True if d[59] == 1 else False,
            "origin_price": 0,
             "store_payment": {"discount_type": d[15], "discount": d[16], "card": d[13], "cash": d[14],

@@ -206,7 +206,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Home_BeautyBookingMgr_get('eaden@peteasy.kr', 2022, 7);
+call procPartnerPC_Home_BeautyBookingMgr_get('pettester@peteasy.kr', 2022, 3);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_BeautyBookingMgr_get $$
 CREATE PROCEDURE procPartnerPC_Home_BeautyBookingMgr_get(

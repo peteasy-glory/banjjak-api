@@ -376,31 +376,225 @@ END $$
 DELIMITER ;
 
 
-loof: LOOP
-		FETCH cursorPhones
-			INTO aPhone;
-		IF EOF THEN
-			LEAVE loof;
-		END IF;
-        SELECT COUNT(*) INTO aNoShow
-        FROM tb_payment_log 
-        WHERE data_delete = 0 AND is_no_show = 1 AND cellphone = aPhone;
-        SET aTotalNoShow = CONCAT(aTotalNoShow, '|', aPhone, '|', aNoShow);
-        
-    END LOOP;
-    CLOSE cursorPhones;
+call procPartnerPC_BeautyUsageHistory_get('pettester@peteasy.kr', '01089267510');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_BeautyUsageHistory_get $$
+CREATE PROCEDURE procPartnerPC_BeautyUsageHistory_get(
+	dataPartnerId VARCHAR(64),
+    dataPhone VARCHAR(20)
+)
+BEGIN
+	/**
+	 최근 이용 내역 
+   */
+	SELECT * FROM tb_payment_log 
+	WHERE cellphone = dataPhone AND artist_id = dataPartnerId
+	AND is_no_show = 0 AND is_cancel = 0 AND approval = 1 
+	ORDER BY CONCAT(year, LPAD(month,2,0), LPAD(day,2,0), LPAD(hour,2,0), LPAD(minute,2,0)) DESC;
     
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_PetList_get('pettester@peteasy.kr', '01053906572');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_PetList_get $$
+CREATE PROCEDURE procPartnerPC_PetList_get(
+	dataPartnerId VARCHAR(64),
+    dataPhone VARCHAR(20)
+)
+BEGIN
+	/**
+	 펫 종류 
+   */
+	SELECT B.*
+	FROM tb_payment_log A JOIN tb_mypet B 
+		ON A.pet_seq = B.pet_seq
+	WHERE A.data_delete = 0 AND B.data_delete = 0
+		AND A.cellphone = dataPhone AND A.artist_id = dataPartnerId
+	GROUP BY A.pet_seq;
     
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_UniqueMemo_get('pettester@peteasy.kr', '01089267510');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_UniqueMemo_get $$
+CREATE PROCEDURE procPartnerPC_UniqueMemo_get(
+	dataPartnerId VARCHAR(64),
+    dataPhone VARCHAR(20)
+)
+BEGIN
+	/**
+	 특이 사항 최근순 
+   */
+	SELECT CONCAT(year,'.', LPAD(month,2,0),'.', LPAD(day,2,0)) AS recent, etc_memo
+	FROM tb_payment_log 
+	WHERE cellphone = dataPhone AND artist_id = dataPartnerId
+		AND is_no_show = 0 AND is_cancel = 0 AND approval = 1 
+		AND etc_memo != '';
     
-        SELECT * 
-    FROM 
-    (
-		SELECT cellphone, customer_id  FROM tb_payment_log 
-        WHERE data_delete = 0 AND artist_id = 'sally@peteasy.kr' GROUP BY cellphone, customer_id;
-        select * from tb_tmp_user where cellphone='01082320830'
-	) A LEFT JOIN 
-    (
-		SELECT * FROM tb_customer
-		WHERE enable_flag = 1 #and cellphone in ('01039091436', '01025180714', '01053906573', '01053906575', '01053906578', '01084599700')
-	) B ON A.cellphone = B.cellphone;
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Reserves_get(592111, '',152634,'B','U');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Reserves_get $$
+CREATE PROCEDURE procPartnerPC_Reserves_get(
+	dataPaymentIdx INT,
+    dataCustomerID VARCHAR(64),
+    dataTmpUserIdx INT,
+    dataService CHAR(1),
+    dataReserveType CHAR(1)
+)
+BEGIN
+	/**
+	 구매별 사용 적립금/ 이후 누적금 
+   */
+	SET @use_reserve = 0;
+    SET @reserve = 0;
     
+	IF dataCustomerID != '' THEN
+		SELECT use_reserve, now_reserve INTO @use_reserve, @accum_reserve
+		FROM tb_user_reserve_log 
+		WHERE payment_log_seq = dataPaymentIdx AND service_type = dataService AND type = dataReserveType AND customer_id = dataCustomerID;
+    ELSE
+		SELECT use_reserve, now_reserve INTO @use_reserve, @accum_reserve
+		FROM tb_user_reserve_log 
+		WHERE payment_log_seq = dataPaymentIdx AND service_type = dataService AND type = dataReserveType AND tmp_seq = dataTmpUserIdx;
+    END IF;
+    
+    SELECT @use_reserve AS use_reserve , @reserve AS accum_reserve;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Pet_delete('pettester@peteasy.kr', 146693);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Pet_delete $$
+CREATE PROCEDURE procPartnerPC_Pet_delete(
+	dataPartnerId VARCHAR(64),
+    dataPetIdx INT
+)
+BEGIN
+	/**
+	 펫 삭제(페이먼트 내역만 삭제됨)
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+	UPDATE tb_payment_log   
+    SET data_delete = '1'
+	WHERE pet_seq = dataPetIdx AND artist_id = dataPartnerId;
+	
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Customer_delete('pettester@peteasy.kr', 3333);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Customer_delete $$
+CREATE PROCEDURE procPartnerPC_Customer_delete(
+	dataPartnerId VARCHAR(64),
+    dataCellPhone VARCHAR(20)
+)
+BEGIN
+	/**
+	 고객 삭제(페이먼트 내역만 삭제됨)
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    START TRANSACTION;
+    
+	UPDATE tb_payment_log   
+    SET data_delete = '1'
+	WHERE cellphone = dataCellPhone AND artist_id = dataPartnerId;
+
+	UPDATE tb_hotel_payment_log   
+    SET data_delete = '1'
+	WHERE cellphone = dataCellPhone AND artist_id = dataPartnerId;
+
+	UPDATE tb_playroom_payment_log   
+    SET data_delete = '1'
+	WHERE cellphone = dataCellPhone AND artist_id = dataPartnerId;
+	
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;    
+END $$ 
+DELIMITER ;
+
+
+
+					select cellphone from  tb_payment_log
+						where data_delete = 0 and etc_memo != '' and artist_id = 'pettester@peteasy.kr';
+                        
+					WHERE a.cellphone = '010892675101' AND a.artist_id = 'pettester@peteasy.kr'
+					
+					
+				
+
+				
+select * From tb_mypet where pet_seq = 167426;
+
+
+-- 정회원 여부
+select * from tb_customer where cellphone = '01084797510' and nickname not like 'cellp_%'
+-- 가회원 여부
+select * from tb_tmp_user where cellphone = '01084797510'
+
+SELECT * FROM tb_customer WHERE cellphone = '01084797510' and nickname not like 'cellp_%'
+
+SELECT * FROM tb_tmp_user WHERE cellphone = '01084797510'
+
+SELECT COUNT(*) AS cnt, name FROM tb_mypet WHERE customer_id = '' AND tmp_seq = '152634'
+
+
+		SELECT *
+		FROM tb_shop_customer_memo
+		WHERE artist_id = 'pettester@peteasy.kr'
+			AND cellphone = '01084797510'
+			AND is_delete = '2'
+	
+
+		SELECT * FROM (
+			SELECT 
+				if(sum(pl.data_delete) > 0, NULL, mp.pet_seq) AS pet_seq,
+				if(sum(pl.data_delete) > 0, NULL, mp.name) AS name, 
+				if(sum(pl.data_delete) > 0, NULL, mp.photo) AS photo
+			FROM tb_mypet AS mp
+				LEFT OUTER JOIN (
+					SELECT * 
+					FROM tb_payment_log
+					WHERE artist_id = 'pettester@peteasy.kr'
+				) AS pl ON mp.pet_seq = pl.pet_seq
+				
+			WHERE 1=1 
+			AND mp.data_delete = '0'
+			 AND mp.tmp_seq = '152634' 
+			GROUP BY mp.pet_seq
+		) AS past
+		WHERE past.pet_seq IS NOT NULL
+	
+SELECT * FROM tb_grade_of_shop WHERE artist_id = 'pettester@peteasy.kr' ORDER BY grade_ord ASC
+
+
+
+
+
+
+
+
+
