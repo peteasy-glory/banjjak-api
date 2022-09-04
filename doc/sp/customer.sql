@@ -376,7 +376,7 @@ END $$
 DELIMITER ;
 
 
-call procPartnerPC_BeautyUsageHistory_get('pettester@peteasy.kr', '01089267510');
+call procPartnerPC_BeautyUsageHistory_get('pettester@peteasy.kr', '01053906571');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_BeautyUsageHistory_get $$
 CREATE PROCEDURE procPartnerPC_BeautyUsageHistory_get(

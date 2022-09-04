@@ -430,6 +430,69 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_put $$
+CREATE PROCEDURE procPartnerPC_Booking_NoShow_put(
+	dataPaymentIdx INT,
+    dataNoShow BOOL 
+)
+BEGIN
+	/**
+		노쇼 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+	IF dataNoShow THEN
+		UPDATE tb_payment_log SET is_no_show = 1, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
+    ELSE
+		UPDATE tb_payment_log SET is_no_show = 0, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_All_put $$
+CREATE PROCEDURE procPartnerPC_Booking_NoShow_All_put(
+	dataPartnerID VARCHAR(64),
+    dataCellPhone VARCHAR(45),
+    dataNoShow BOOL 
+)
+BEGIN
+	/**
+		노쇼 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+	IF dataNoShow THEN
+		UPDATE tb_payment_log SET is_no_show = 1, update_time = NOW() WHERE artist_id = dataPartnerID AND cellphone = dataCellPhone;
+    ELSE
+		UPDATE tb_payment_log SET is_no_show = 0, update_time = NOW() WHERE artist_id = dataPartnerID AND cellphone = dataCellPhone;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
 call procPartnerPC_Booking_BeautyGallery_get(592111);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_get $$

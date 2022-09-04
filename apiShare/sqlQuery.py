@@ -37,6 +37,7 @@ PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_Before
 PROC_BEAUTY_BOOKING_PAYMENT_INFO_GET = "call procPartnerPC_Booking_PaymentInfo_get(%s)"
 PROC_BEAUTY_BOOKING_PAYMENT_MEMO_PUT = "call procPartnerPC_Booking_PaymentInfoEtcMemo_put(%d, '%s')"
 PROC_BEAUTY_BOOKING_NO_SHOW_PUT = "call procPartnerPC_Booking_NoShow_put(%s, %s)"
+PROC_BEAUTY_BOOKING_NO_SHOW_ALL_PUT = "call procPartnerPC_Booking_NoShow_All_put('%s','%s', %s)"
 PROC_BEAUTY_BOOKING_TIME_PUT = "call procPartnerPC_Booking_Time_put(%d, '%s', '%s')"
 PROC_BEAUTY_BOOKING_DATE_WORKER_PUT = "call procPartnerPC_Booking_DateWorker_put(%d, '%s','%s','%s')"
 PROC_BEAUTY_BOOKING_CANCEL_PUT = "call procPartnerPC_Booking_Cancel_put(%d, %d)"

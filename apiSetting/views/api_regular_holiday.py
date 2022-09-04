@@ -44,6 +44,6 @@ class TReqularHoliday(TAPIIDBase):
                 if value is not None:
                     body = self.queryDataToDic(value, rows, columns)
                 return 0, "success", body
-            return - 1, "undefined method", body
+            return -1, "undefined method", body
         except Exception as err:
             return -1, self.errorInfo(err), None

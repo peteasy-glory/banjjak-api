@@ -326,7 +326,7 @@ END $$
 DELIMITER ;
 
 -- call procPartnerPC_Home_PhoneSearch_get('eaden@peteasy.kr', '111');
-call procPartnerPC_Home_PhoneSearch_get('pettester@peteasy.kr', '003');
+call procPartnerPC_Home_PhoneSearch_get('pettester@peteasy.kr', '01053906571');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_PhoneSearch_get $$
 CREATE PROCEDURE procPartnerPC_Home_PhoneSearch_get(
@@ -348,7 +348,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Home_SearchPhone_get('pettester@peteasy.kr', '002');
+call procPartnerPC_Home_SearchPhone_get('pettester@peteasy.kr', '01053906571');
 -- DELIMITER $$
 -- DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPhone_get $$
 -- CREATE PROCEDURE procPartnerPC_Home_SearchPhone_get(
