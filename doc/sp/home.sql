@@ -349,58 +349,6 @@ END $$
 DELIMITER ;
 
 call procPartnerPC_Home_SearchPhone_get('pettester@peteasy.kr', '01053906571');
--- DELIMITER $$
--- DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPhone_get $$
--- CREATE PROCEDURE procPartnerPC_Home_SearchPhone_get(
--- 	dataPartnerId VARCHAR(64),
---     dataPhone VARCHAR(50)
--- )
--- BEGIN
--- 	/**
--- 		전화번호 조회
---    */
--- 	SELECT X.*, Y.family, Z.no_show_count
--- 	FROM 
--- 	(       
--- 		SELECT cellphone, GROUP_CONCAT(client_id) AS client_id, 
--- 				GROUP_CONCAT(CONCAT(IF(use_date IS NULL, '', use_date),'|',pet_seq,'|',name,'|',type,'|',pet_type,'|',IF(photo IS NULL, '', photo),'|')) AS pet_info 
--- 		FROM
--- 		(
--- 			SELECT A.pet_seq, A.cellphone, IF(A.customer_id = '' OR A.customer_id LIKE '신규등록%', B.tmp_seq, A.customer_id) AS client_id
--- 			,CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,02)) as use_date
--- 			, C.name, C.type, C.pet_type, C.photo
--- 			FROM tb_payment_log A 
--- 				LEFT JOIN tb_tmp_user B ON A.cellphone = B.cellphone
--- 				JOIN tb_mypet C ON A.pet_seq = C.pet_seq
--- 			WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND
--- 				A.cellphone LIKE CONCAT('%',dataPhone,'%') 
--- 			ORDER BY CONCAT(A.year, LPAD(A.month,2,0), LPAD(A.day,2,0), LPAD(A.hour,2,0), LPAD(A.minute,2,0)) DESC
--- 			LIMIT 18446744073709551615
--- 		) D 
--- 		#WHERE use_date IS NOT NULL AND use_date != ''
--- 		GROUP BY D.cellphone
-
--- 	) X	LEFT JOIN 
--- 	(        
--- 		SELECT to_cellphone , group_concat(from_cellphone) AS family
--- 		FROM tb_customer_family 
--- 		WHERE is_delete = 0 AND
--- 			artist_id = dataPartnerId AND
--- 			(from_cellphone like CONCAT('%',dataPhone,'%')
--- 			OR to_cellphone like CONCAT('%',dataPhone,'%'))
--- 		GROUP BY to_cellphone 
--- 	) Y ON X.cellphone = Y.to_cellphone 
--- 	 JOIN 
--- 	(
--- 		SELECT cellphone, SUM(is_no_show) AS no_show_count
--- 		FROM tb_payment_log 
--- 		WHERE data_delete = 0 AND artist_id = dataPartnerId AND
--- 			cellphone LIKE CONCAT('%',dataPhone,'%') 
--- 		GROUP BY cellphone
--- 	) Z ON X.cellphone = Z.cellphone;
--- END $$ 
--- DELIMITER ;
-
 call procPartnerPC_Home_SearchPhone_get('pettester@peteasy.kr', '75');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_SearchPhone_get $$

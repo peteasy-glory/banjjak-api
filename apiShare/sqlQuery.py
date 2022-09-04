@@ -106,6 +106,11 @@ PROC_CUSTOMER_RESERVES_GET = "call procPartnerPC_Reserves_get(%d,'%s',%d,'%s', '
 PROC_CUSTOMER_PET_DELETE = "call procPartnerPC_Pet_delete('%s', %d)"
 PROC_CUSTOMER_DELETE = "call procPartnerPC_Customer_delete('%s', '%s')"
 
+PROC_CUSTOMER_SUB_PHONE_GET = "call procPartnerPC_Customer_SubPhone_get('%s', '%s')"
+PROC_CUSTOMER_SUB_PHONE_POST = "call procPartnerPC_Customer_SubPhone_post('%s', '%s','%s', '%s')"
+PROC_CUSTOMER_SUB_PHONE_DELETE = "call procPartnerPC_Customer_SubPhone_put(%d)"
+
+
 #SHOP MGE
 PROC_SHOP_FRONT_IMAGE_GET = "call procPartnerPC_Shop_Front_get('%s')"
 PROC_SHOP_FRONT_IMAGE_POST = "call procPartnerPC_Shop_Front_post('%s', '%s')"

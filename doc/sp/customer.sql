@@ -537,6 +537,110 @@ END $$
 DELIMITER ;
 
 
+call procPartnerPC_Customer_SubPhone_get('pettester@peteasy.kr', '01089267510');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Customer_SubPhone_get $$
+CREATE PROCEDURE procPartnerPC_Customer_SubPhone_get(
+	dataPartnerID VARCHAR(64),
+    dataMainPhone VARCHAR(32)
+)
+BODY: BEGIN
+	/**
+	보조 연락처 조회
+   */
+	SELECT * 
+	FROM tb_customer_family 
+	WHERE artist_id = dataPartnerID 
+		AND to_cellphone = dataMainPhone AND is_delete = 0;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Customer_SubPhone_post('pettester@peteasy.kr', '01089267510','hptop sub', '01989267510');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Customer_SubPhone_post $$
+CREATE PROCEDURE procPartnerPC_Customer_SubPhone_post(
+	dataPartnerID VARCHAR(64),
+    dataMainPhone VARCHAR(32),
+    dataSubName VARCHAR(64),
+	dataSubPhone VARCHAR(32)
+)
+BODY: BEGIN
+	/**
+	보조 연락처 추가
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    SET @cnt = -1;
+    SET @idx = -1;
+	SELECT is_delete, family_seq INTO @cnt, @idx 
+	FROM tb_customer_family 
+	WHERE artist_id = dataPartnerID
+		AND to_cellphone = dataMainPhone AND from_cellphone = dataSubPhone;
+	
+    IF @cnt = 0 THEN
+    BEGIN
+		SELECT 906 as err; 
+		LEAVE BODY;
+    END;
+    END IF;
+
+
+	START TRANSACTION;
+
+	IF @cnt < 0 THEN
+		INSERT INTO tb_customer_family 
+		SET artist_id      = dataPartnerID, 
+		to_cellphone       = dataMainPhone, 
+		to_customer_id     = '', 
+		from_nickname      = dataSubName,
+		from_cellphone     = dataSubPhone, 
+		from_customer_id   = '', 
+		reg_dt             = NOW();   
+	ELSE
+		UPDATE tb_customer_family 
+        SET is_delete = 0,from_nickname = dataSubName  
+WHERE family_seq = @idx;  
+	END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Customer_SubPhone_put('pettester@peteasy.kr', '01089267510','hptop sub', '01989267510');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Customer_SubPhone_put $$
+CREATE PROCEDURE procPartnerPC_Customer_SubPhone_put(
+	dataSubPhoneIdx INT
+)
+BODY: BEGIN
+	/**
+	보조 연락처 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+	START TRANSACTION;
+
+	UPDATE tb_customer_family SET is_delete = 1 WHERE family_seq = dataSubPhoneIdx;  
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+
+
 
 					select cellphone from  tb_payment_log
 						where data_delete = 0 and etc_memo != '' and artist_id = 'pettester@peteasy.kr';
