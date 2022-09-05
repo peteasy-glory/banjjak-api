@@ -46,3 +46,27 @@ class TPartTime(TAPIIDBase):
             return - 1, "undefined method", body
         except Exception as err:
             return -1, self.errorInfo(err), None
+
+
+class TPartTimeSet(TAPIIDBase):
+    def getInfo(self, partner_id, *args):
+        try:
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_TIME_CHOICE_TYPE_GET % (partner_id,), QUERY_DB)
+            if value is not None:
+                body = self.queryDataToDic(value, rows, columns)
+            return 0, "success", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None
+
+    def modifyInfo(self, *args):
+        try:
+            body = {}
+            if args[0] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_SETTING_TIME_CHOICE_TYPE_PUT % (args[1]["partner_id"],
+                                                                                                  args[1]["is_time_Type"]),QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None

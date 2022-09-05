@@ -160,6 +160,9 @@ PROC_SETTING_PERSONAL_VACATION_POST = "call procPartnerPC_Setting_Personal_Vacat
 PROC_SETTING_PERSONAL_VACATION_DELETE = "call procPartnerPC_Setting_Personal_Vacation_delete('%s','%s','%s','%s','%s')"
 PROC_SETTING_TIME_LIMIT_GET = "call procPartnerPC_Setting_Time_Limit_get('%s')"
 PROC_SETTING_TIME_LIMIT_MODIFY = "call procPartnerPC_Setting_Time_Limit_modify(%d, '%s', '%s', '%s')"
+PROC_SETTING_TIME_CHOICE_TYPE_GET = "call procPartnerPC_Setting_BookingChoiceTimeType_get('%s')"
+PROC_SETTING_TIME_CHOICE_TYPE_PUT = "call procPartnerPC_Setting_BookingChoiceTimeType_put('%s',%d)"
+
 PROC_SETTING_BREAK_TIME_GET = "call procPartnerPC_Setting_Break_Time_get('%s')"
 PROC_SETTING_BREAK_TIME_MODIFY = "call procPartnerPC_Setting_Break_Time_modify('%s','%s')"
 PROC_IS_EXIST_AUTHORITY_GET = "call procPartnerPC_Is_Exist_Authority_get('%s')"
