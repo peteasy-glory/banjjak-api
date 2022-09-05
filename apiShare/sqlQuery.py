@@ -109,7 +109,8 @@ PROC_CUSTOMER_DELETE = "call procPartnerPC_Customer_delete('%s', '%s')"
 PROC_CUSTOMER_SUB_PHONE_GET = "call procPartnerPC_Customer_SubPhone_get('%s', '%s')"
 PROC_CUSTOMER_SUB_PHONE_POST = "call procPartnerPC_Customer_SubPhone_post('%s', '%s','%s', '%s')"
 PROC_CUSTOMER_SUB_PHONE_DELETE = "call procPartnerPC_Customer_SubPhone_put(%d)"
-
+PROC_CUSTOMER_PHONE_CHANGE_HISTORY_GET = "call procPartnerPC_Customer_RepresentativePhoneHistory_get('%s','%s')"
+PROC_CUSTOMER_PHONE_CHANGE_HISTORY_POST = "call procPartnerPC_Customer_RepresentativePhoneHistory_post('%s', '%s',%d, '%s', '%s')"
 
 #SHOP MGE
 PROC_SHOP_FRONT_IMAGE_GET = "call procPartnerPC_Shop_Front_get('%s')"

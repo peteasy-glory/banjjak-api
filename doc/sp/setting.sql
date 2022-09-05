@@ -411,22 +411,6 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-UPDATE tb_shop SET is_time_type = '1' WHERE customer_id = 'pettester@peteasy.kr'
-call procPartnerPC_Setting_Time_Limit_modify (3333, 'pettester@peteasy.kr', 'pettester1@peteasy.kr', '09:00~10:30');
-
-select * from tb_time_schedule 
-where artist_id = 'pettester@peteasy.kr'
-
-
-select * from tb_time_schedule
-where artist_id = 'pettester@peteasy.kr'
-;
-
-select * from tb_time_off
-where customer_id = 'pettester@peteasy.kr'
-;
-
-
 call procPartnerPC_Setting_Break_Time_get('pettester@peteasy.kr');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Break_Time_get $$
@@ -483,22 +467,6 @@ BEGIN
     SELECT aErr AS err;    
 END $$ 
 DELIMITER ;
-
-SELECT * FROM tb_time_off
-where customer_id = 'pettester@peteasy.kr';
-
-select * From tb_shop
-where customer_id = 'pettester@peteasy.kr'
-;
-
-select * From tb_artist_list
-where artist_id = 'pettester@peteasy.kr'
-;
-
-select * from tb_time_schedule
-where artist_id = 'pettester@peteasy.kr'
-;
-
 
 
 call procPartnerPC_Setting_Vat_put('pettester@peteasy.kr');

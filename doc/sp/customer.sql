@@ -536,19 +536,54 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+select * from tb_tmp_user
+order by tmp_seq desc;
 
-call procPartnerPC_Customer_SubPhone_get('pettester@peteasy.kr', '01089267510');
+select * from tb_payment_log
+where artist_id = 'pettester@peteasy.kr'
+order by payment_log_seq desc
+;
+
+call procPartnerPC_Customer_SubPhone_get('pettester@peteasy.kr', '01056785608');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Customer_SubPhone_get $$
 CREATE PROCEDURE procPartnerPC_Customer_SubPhone_get(
 	dataPartnerID VARCHAR(64),
     dataMainPhone VARCHAR(32)
 )
-BODY: BEGIN
+BEGIN
 	/**
 	보조 연락처 조회
    */
-	SELECT * 
+	SET @client_id = '';
+		
+	SELECT customer_id INTO @client_id 
+	FROM tb_payment_log 
+	WHERE artist_id = dataPartnerID AND cellphone = dataMainPhone
+	GROUP BY cellphone;
+
+	IF @client_id IS NULL OR @client_id = '' THEN
+		SELECT customer_id INTO @client_id 
+		FROM tb_playroom_payment_log 
+		WHERE artist_id = dataPartnerID AND cellphone = dataMainPhone
+		GROUP BY cellphone;
+    END IF;
+    
+    IF @client_id IS NULL OR @client_id = '' THEN
+		SELECT customer_id INTO @client_id 
+		FROM tb_hotel_payment_log 
+		WHERE artist_id = dataPartnerID AND cellphone = dataMainPhone
+		GROUP BY cellphone;
+    END IF;
+
+	IF @client_id IS NULL OR @client_id = '' THEN
+		SELECT CONCAT(tmp_seq) INTO @client_id
+        FROM tb_tmp_user
+        WHERE cellphone = dataMainPhone LIMIT 1;
+	END IF;
+    
+    
+	SELECT * , @client_id AS client_id
 	FROM tb_customer_family 
 	WHERE artist_id = dataPartnerID 
 		AND to_cellphone = dataMainPhone AND is_delete = 0;
@@ -639,7 +674,109 @@ BODY: BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Customer_RepresentativePhoneHistory_get('pettester@peteasy.kr', '');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Customer_RepresentativePhoneHistory_get $$
+CREATE PROCEDURE procPartnerPC_Customer_RepresentativePhoneHistory_get(
+	dataPartnerID VARCHAR(64),
+    dataCustomerID VARCHAR(64)
+)
+BEGIN 
+	/**
+		대표전화 이력 조회(파트너샵)
+   */
+	
+    IF dataCustomerID = '' THEN
+		SELECT * 
+		FROM tb_representative_phone_modify_history
+		WHERE partner_id=dataPartnerID;
+    ELSE
+		SELECT * 
+		FROM tb_representative_phone_modify_history
+		WHERE partner_id = dataPartnerID AND customer_id = dataCustomerID;
+    END IF;
+	
+END $$ 
+DELIMITER ;
 
+call procPartnerPC_Booking_RepresentativePhoneHistory_post('pettester@peteasy.kr', '',96992,'0312022022','01056785608');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Customer_RepresentativePhoneHistory_post $$
+CREATE PROCEDURE procPartnerPC_Customer_RepresentativePhoneHistory_post(
+	dataPartnerID VARCHAR(64),
+	dataCustomerID VARCHAR(64),
+    dataTmpUserIdx INT,
+	dataOldPhone VARCHAR(20),
+	dataNewPhone VARCHAR(20)
+)
+BODY:BEGIN
+	/**
+		대표전화 변경 이력 추가(파트너샵에서)
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+    START TRANSACTION;
+    
+	IF dataTmpUserIdx > 0 AND dataCustomerID = '' THEN
+    BEGIN
+		SET @cnt = 0;
+        SELECT COUNT(*) INTO @cnt
+        FROM tb_tmp_user
+        WHERE cellphone = dataOldPhone 
+			AND tmp_seq = dataTmpUserIdx; 
+        IF @cnt < 1 THEN
+		BEGIN	
+			SELECT 907 AS err;
+			LEAVE BODY;
+        END;
+        END IF;
+    
+		INSERT INTO tb_representative_phone_modify_history(partner_id, customer_id, old_phone, new_phone)
+		VALUES (dataPartnerID, CONCAT(dataTmpUserIdx), dataOldPhone, dataNewPhone);
+    
+        UPDATE tb_customer_family 
+        SET to_cellphone = dataNewPhone,
+			from_cellphone = dataOldPhone
+        WHERE artist_id = dataPartnerID
+			AND to_cellphone = dataOldPhone
+            AND from_cellphone = dataNewPhone;
+
+        UPDATE tb_customer_family 
+        SET to_cellphone = dataNewPhone
+        WHERE artist_id = dataPartnerID
+			AND to_cellphone = dataOldPhone;
+            
+		UPDATE tb_tmp_user 
+		SET cellphone = dataNewPhone
+		WHERE cellphone = dataOldPhone;
+        
+        UPDATE tb_payment_log
+        SET cellphone = dataNewPhone
+        WHERE artist_id = dataPartnerID
+			AND customer_id = '' AND cellphone = dataOldPhone;
+
+        UPDATE tb_playroom_payment_log 
+        SET cellphone = dataNewPhone
+        WHERE artist_id = dataPartnerID
+			AND customer_id = '' AND cellphone = dataOldPhone;
+
+        UPDATE tb_hotel_payment_log 
+        SET cellphone = dataNewPhone
+        WHERE artist_id = dataPartnerID
+			AND customer_id = '' AND cellphone = dataOldPhone;
+    END;
+    END IF;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+END $$ 
+DELIMITER ;
 
 
 					select cellphone from  tb_payment_log
@@ -666,35 +803,13 @@ SELECT * FROM tb_tmp_user WHERE cellphone = '01084797510'
 SELECT COUNT(*) AS cnt, name FROM tb_mypet WHERE customer_id = '' AND tmp_seq = '152634'
 
 
-		SELECT *
-		FROM tb_shop_customer_memo
-		WHERE artist_id = 'pettester@peteasy.kr'
-			AND cellphone = '01084797510'
-			AND is_delete = '2'
-	
+select * from tb_customer_family where 
+	artist_id = 'pettester@peteasy.kr'  and  to_cellphone = '31053906571'
+    and (
+ to_cellphone = '01089267510' or from_cellphone = '01089267510');
 
-		SELECT * FROM (
-			SELECT 
-				if(sum(pl.data_delete) > 0, NULL, mp.pet_seq) AS pet_seq,
-				if(sum(pl.data_delete) > 0, NULL, mp.name) AS name, 
-				if(sum(pl.data_delete) > 0, NULL, mp.photo) AS photo
-			FROM tb_mypet AS mp
-				LEFT OUTER JOIN (
-					SELECT * 
-					FROM tb_payment_log
-					WHERE artist_id = 'pettester@peteasy.kr'
-				) AS pl ON mp.pet_seq = pl.pet_seq
-				
-			WHERE 1=1 
-			AND mp.data_delete = '0'
-			 AND mp.tmp_seq = '152634' 
-			GROUP BY mp.pet_seq
-		) AS past
-		WHERE past.pet_seq IS NOT NULL
-	
-SELECT * FROM tb_grade_of_shop WHERE artist_id = 'pettester@peteasy.kr' ORDER BY grade_ord ASC
-
-
+select cellphone from tb_payment_log 
+where artist_id = 'pettester@peteasy.kr'  and  customer_id = ''
 
 
 
