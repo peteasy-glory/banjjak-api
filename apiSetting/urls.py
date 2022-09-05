@@ -18,6 +18,10 @@ urlpatterns = [
     path('setting/break-time/<str:partner_id>', api_break_time.TBreakTime.as_view()),
     path('setting/part-time', api_part_time.TPartTime.as_view()),
     path('setting/part-time/<str:partner_id>', api_part_time.TPartTime.as_view()),
+
+    path('setting/part-time-set', api_part_time.TPartTimeSet.as_view()),
+    path('setting/part-time-set/<str:partner_id>', api_part_time.TPartTimeSet.as_view()),
+
     path('setting/artist-vacation', api_artist_vacation.TVacation.as_view()),
     path('setting/artist-vacation/<str:partner_id>', api_artist_vacation.TVacation.as_view()),
     path('setting/open-close', api_open_close.TOpenClose.as_view()),
