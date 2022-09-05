@@ -363,7 +363,55 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Setting_BookingChoiceTimeType_get('pettester@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BookingChoiceTimeType_get $$
+CREATE PROCEDURE procPartnerPC_Setting_BookingChoiceTimeType_get(
+	dataPartnerID VARCHAR(64)
+)
+BEGIN
+	/**
+		예약 스케쥴 운영방식 조회
+   */
 
+	SELECT is_time_Type 
+    FROM tb_shop
+    WHERE customer_id=dataPartnerID;
+	
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Setting_BookingChoiceTimeType_put('pettester@peteasy.kr', 0);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BookingChoiceTimeType_put $$
+CREATE PROCEDURE procPartnerPC_Setting_BookingChoiceTimeType_put(
+	dataPartnerID VARCHAR(64),
+    dataTimeType INT
+)
+BEGIN
+	/**
+		예약 스케쥴 운영방식 설정
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+    START TRANSACTION;
+
+	UPDATE tb_shop 
+    SET is_time_type = dataTimeType 
+    WHERE customer_id = dataPartnerID;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;   
+END $$ 
+DELIMITER ;
+
+UPDATE tb_shop SET is_time_type = '1' WHERE customer_id = 'pettester@peteasy.kr'
 call procPartnerPC_Setting_Time_Limit_modify (3333, 'pettester@peteasy.kr', 'pettester1@peteasy.kr', '09:00~10:30');
 
 select * from tb_time_schedule 
