@@ -430,6 +430,69 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_put $$
+CREATE PROCEDURE procPartnerPC_Booking_NoShow_put(
+	dataPaymentIdx INT,
+    dataNoShow BOOL 
+)
+BEGIN
+	/**
+		노쇼 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+	IF dataNoShow THEN
+		UPDATE tb_payment_log SET is_no_show = 1, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
+    ELSE
+		UPDATE tb_payment_log SET is_no_show = 0, update_time = NOW() WHERE payment_log_seq = dataPaymentIdx;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_NoShow_All_put $$
+CREATE PROCEDURE procPartnerPC_Booking_NoShow_All_put(
+	dataPartnerID VARCHAR(64),
+    dataCellPhone VARCHAR(45),
+    dataNoShow BOOL 
+)
+BEGIN
+	/**
+		노쇼 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;
+    
+	IF dataNoShow THEN
+		UPDATE tb_payment_log SET is_no_show = 1, update_time = NOW() WHERE artist_id = dataPartnerID AND cellphone = dataCellPhone;
+    ELSE
+		UPDATE tb_payment_log SET is_no_show = 0, update_time = NOW() WHERE artist_id = dataPartnerID AND cellphone = dataCellPhone;
+    END IF;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+	SELECT aErr as err;
+END $$ 
+DELIMITER ;
+
 call procPartnerPC_Booking_BeautyGallery_get(592111);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyGallery_get $$
@@ -640,7 +703,53 @@ BEGIN
    */
 	SELECT * FROM tb_grade_of_shop 
     WHERE idx = dataGradeIdx;
-    tb_grade_of_customer
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Booking_GradeCustomer_get('pettester@peteasy.kr', '01089267510');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GradeCustomer_get $$
+CREATE PROCEDURE procPartnerPC_Booking_GradeCustomer_get(
+	dataPartnerID VARCHAR(64),
+    dataCellPhone VARCHAR(20)
+)
+BEGIN
+	/**
+		고객 등급 조회 
+   */
+
+	SET @customer_id = '';
+    SET @grade_name = '';
+    SET @grade_ord = 0;
+    SET @customer_idx = -1;
+    
+	SELECT customer_id INTO @customer_id
+	FROM tb_payment_log 
+    WHERE data_delete = 0 AND artist_id = dataPartnerID 
+		AND cellphone = dataCellphone
+	GROUP BY cellphone;
+   
+   	#가회원인경우 임시 아이디 가져오기
+	IF TRIM(@customer_id) = '' OR @customer_id IS NULL THEN
+		SELECT CAST(tmp_seq AS CHAR(11)) INTO @customer_id FROM tb_tmp_user
+        WHERE cellphone = dataCellPhone AND data_delete = 0;
+    END IF;
+    
+    #등급 가져오기
+	SELECT a.idx, b.grade_name, b.grade_ord INTO @customer_idx, @grade_name, @grade_ord 
+    FROM tb_grade_of_customer a 
+		LEFT JOIN tb_grade_of_shop b ON a.grade_idx = b.idx 
+    WHERE a.customer_id = @customer_id AND b.artist_id = dataPartnerID AND a.is_delete = 0 AND b.is_delete = 0;
+    
+    IF LENGTH(@grade_name) < 1 then
+		# 등급이 없으면 해당샵 2번째 등급 부여 
+		SELECT grade_name , grade_ord INTO @grade_name, @grade_ord 
+        FROM tb_grade_of_shop 
+        WHERE artist_id = dataPartnerID AND grade_ord = 2 ORDER BY grade_ord ASC;
+        SET @customer_idx = -1;
+    END IF;
+
+	SELECT @customer_idx AS customer_idx, @grade_name AS grade_name, @grade_ord AS grade_ord;
 END $$ 
 DELIMITER ;
 
@@ -787,6 +896,8 @@ BEGIN
 	SELECT aErr as err;
 END $$ 
 DELIMITER ;
+#==================
+
 
 #=================
 call procPartnerPC_Booking_PetType_get('cat');

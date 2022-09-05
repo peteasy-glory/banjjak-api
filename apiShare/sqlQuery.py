@@ -37,6 +37,7 @@ PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_GET = "call procPartnerPC_Booking_Before
 PROC_BEAUTY_BOOKING_PAYMENT_INFO_GET = "call procPartnerPC_Booking_PaymentInfo_get(%s)"
 PROC_BEAUTY_BOOKING_PAYMENT_MEMO_PUT = "call procPartnerPC_Booking_PaymentInfoEtcMemo_put(%d, '%s')"
 PROC_BEAUTY_BOOKING_NO_SHOW_PUT = "call procPartnerPC_Booking_NoShow_put(%s, %s)"
+PROC_BEAUTY_BOOKING_NO_SHOW_ALL_PUT = "call procPartnerPC_Booking_NoShow_All_put('%s','%s', %s)"
 PROC_BEAUTY_BOOKING_TIME_PUT = "call procPartnerPC_Booking_Time_put(%d, '%s', '%s')"
 PROC_BEAUTY_BOOKING_DATE_WORKER_PUT = "call procPartnerPC_Booking_DateWorker_put(%d, '%s','%s','%s')"
 PROC_BEAUTY_BOOKING_CANCEL_PUT = "call procPartnerPC_Booking_Cancel_put(%d, %d)"
@@ -104,6 +105,11 @@ PROC_CUSTOMER_UNIQUE_MEMO_GET = "call procPartnerPC_UniqueMemo_get('%s', '%s')"
 PROC_CUSTOMER_RESERVES_GET = "call procPartnerPC_Reserves_get(%d,'%s',%d,'%s', '%s')"
 PROC_CUSTOMER_PET_DELETE = "call procPartnerPC_Pet_delete('%s', %d)"
 PROC_CUSTOMER_DELETE = "call procPartnerPC_Customer_delete('%s', '%s')"
+
+PROC_CUSTOMER_SUB_PHONE_GET = "call procPartnerPC_Customer_SubPhone_get('%s', '%s')"
+PROC_CUSTOMER_SUB_PHONE_POST = "call procPartnerPC_Customer_SubPhone_post('%s', '%s','%s', '%s')"
+PROC_CUSTOMER_SUB_PHONE_DELETE = "call procPartnerPC_Customer_SubPhone_put(%d)"
+
 
 #SHOP MGE
 PROC_SHOP_FRONT_IMAGE_GET = "call procPartnerPC_Shop_Front_get('%s')"

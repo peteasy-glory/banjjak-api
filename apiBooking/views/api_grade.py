@@ -14,7 +14,7 @@ class TShopGrade(TAPIBooking):
     def getInfo(self, *args):
         try:
             if type(args[0]["arg"]) == str:
-                if args[0]["arg"].isdigit() :
+                if args[0]["arg"].isdigit():
                     value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GRADE_SHOP_IDX_GET % (int(args[0]["arg"]),),QUERY_DB)
                 else:
                     value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GRADE_SHOP_ID_GET % (args[0]["arg"],), QUERY_DB)
