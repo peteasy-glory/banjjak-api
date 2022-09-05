@@ -119,12 +119,42 @@ BEGIN
 	SELECT A.approval, A.update_time, A.payment_log_seq, C.id, C.usr_name, A.cellphone, B.pet_seq, B.name, B.pet_type
 		, CONCAT(B.year,'-', LPAD(B.month,2,0),'-', LPAD(B.day,2,0)) AS birth,
         B.gender, B.neutral, B.weight, B.photo, B.beauty_exp, B.vaccination, B.bite, B.heart_trouble, B.marking, B.mounting, B.luxation, B.dermatosis
-        , B.photo_counseling, A.etc_memo, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part 
+        , B.photo_counseling, A.etc_memo, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, A.payment_log_seq 
 	FROM tb_payment_log A, tb_mypet B, tb_customer C
 	WHERE A.pet_seq = B.pet_seq	AND A.customer_id = C.id AND 
 			A.artist_id = dataPartnerId AND A.data_delete = 0
             AND C.enable_flag = 1
 	ORDER BY A.update_time DESC;
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Home_ConsultinMgr_put(599037,0);
+select approval from tb_payment_log where payment_log_seq = 599037;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_ConsultinMgr_put $$
+CREATE PROCEDURE procPartnerPC_Home_ConsultinMgr_put(
+	dataPaymentIdx INT,
+    dataApprovalIdx INT # 0:첫이용상담신청, 1:미용, 2:첫이용상담수락, 3:첫이용상담거절
+)
+BEGIN
+	/**
+		이용 상담 수정
+   */
+   	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+    START TRANSACTION;
+	
+    UPDATE tb_payment_log SET approval=dataApprovalIdx WHERE payment_log_seq = dataPaymentIdx;
+	
+    IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err;  
 END $$ 
 DELIMITER ;
 
