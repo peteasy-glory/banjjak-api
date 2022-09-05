@@ -1579,6 +1579,30 @@ BODY: BEGIN
 END $$ 
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerCoupon_get $$
+CREATE PROCEDURE procPartnerPC_Booking_CustomerCoupon_get(
+	dataPartnerID VARCHAR(64),
+    dataCustomerID VARCHAR(64),
+    dataTmpUserIdx INT
+)
+BODY: BEGIN
+	/**
+		고객 쿠폰 보유 조회 
+   */
+	
+    IF dataTmpUserIdx > 0 THEN
+		SELECT * 
+		FROM tb_user_coupon 
+		WHERE tmp_seq = dataTmpUserIdx AND artist_id = dataPartnerID AND del_yn = 'N' ;
+    ELSEIF dataCustomerID != '' THEN
+		SELECT * 
+		FROM tb_user_coupon 
+		WHERE customer_id = dataCustomerID AND artist_id = dataPartnerID AND del_yn = 'N';
+	END IF;
+END $$ 
+DELIMITER ;
+
 
 call procPartnerPC_Booking_BeautyCoupon_modify( 582771, 151591,'','pettester@peteasy.kr',796, 'C',10000);
 DELIMITER $$
