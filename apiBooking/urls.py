@@ -56,4 +56,8 @@ urlpatterns = [
     path('booking/working-time/<str:partner_id>', api_working_time.TWorkingTime.as_view()),
     path('booking/statutory-holidays/<str:partner_id>', api_statutory_holidays.TStatutoryHolidays.as_view()),
 
+
+
+
+
 ]

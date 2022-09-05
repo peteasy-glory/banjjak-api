@@ -3,7 +3,7 @@
 from django.urls import path
 
 from apiCustomer.views import api_total_search, api_sign, api_usage_history, api_petlist, api_unique_memo, api_reserves, \
-    api_user, api_subphone
+    api_user, api_subphone, api_phone_history
 
 urlpatterns = [
 
@@ -23,5 +23,6 @@ urlpatterns = [
 
     path('customer/subphone', api_subphone.TSubPhone.as_view()),
     path('customer/subphone/<str:partner_id>', api_subphone.TSubPhone.as_view()),
-
+    path('customer/phone-change', api_phone_history.TMainPhone.as_view()),
+    path('customer/phone-change/<str:partner_id>', api_phone_history.TMainPhone.as_view()),
 ]

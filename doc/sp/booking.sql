@@ -1792,7 +1792,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-UPDATE tb_payment_log SET is_confirm         = '1', confirm_dt         = NOW()  WHERE payment_log_seq = '590002' 
+
 
 
 
