@@ -131,6 +131,7 @@ class TConsulting(TAPIBase):
             if value is not None:
                 for d in data:
                     tmp = {}
+                    tmp["payment_log_seq"] = d[25]
                     tmp["approval"] = d[0]  # 0:첫이용상담신청, 1:미용, 2:첫이용상담수락, 3:첫이용상담거절
                     tmp["date"] = d[1]
                     tmp["user"] = d[3]
@@ -172,6 +173,7 @@ class TConsulting(TAPIBase):
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
 
+
 class TConsultBookingWaiting(TAPIBase):
     def get(self, request, partner_id):
         try:
@@ -180,6 +182,20 @@ class TConsultBookingWaiting(TAPIBase):
             value, rows, columns = self.db.resultDBQuery(PROC_CONSULT_BOOKING_WAITING_COUNT_GET % (partner_id.strip()), QUERY_DB)
             ret = self.message.successOk()
             ret["body"] = self.queryDataToDic(value, rows, columns)
+            return HttpResponse(self.json.dicToJson(ret))
+        except Exception as e:
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
+
+class TConsultModify(TAPIBase):
+    def put(self, request):
+        try:
+            dic = request.data
+            if dic is None:
+                return HttpResponse(self.json.dicToJson(self.message.errorNonePostData()))
+            value, rows, columns = self.db.resultDBQuery(PROC_CONSULT_MGR_PUT % (dic["payment_idx"], dic["approval"]), QUERY_DB)
+            ret = self.message.successOk()
+            if value is not None:
+                ret["body"] = self.queryDataToDic(value, rows, columns)
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))

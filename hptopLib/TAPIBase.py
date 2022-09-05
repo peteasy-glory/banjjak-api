@@ -210,6 +210,7 @@ class TAPIBase(APIView):
             if value is not None:
                 for d in data:
                     tmp = {}
+                    tmp['payment_log_seq'] = d[25]
                     tmp["approval"] = d[0]  # 0:첫이용상담신청, 1:미용, 2:첫이용상담수락, 3:첫이용상담거절
                     tmp["date"] = str(d[1])
                     tmp["user"] = d[3]
@@ -235,6 +236,7 @@ class TAPIBase(APIView):
                     tmp["photocounseling"] = d[22]
                     tmp["memo"] = d[23]
                     tmp['disliked_part'] = d[24]
+
                     photo = []
                     try:
                         if d[22] is not None and len(d[22]) > 0:
