@@ -673,7 +673,7 @@ BODY: BEGIN
 	SELECT aErr as err;
 END $$ 
 DELIMITER ;
-
+call procPartnerPC_Customer_RepresentativePhoneHistory_get('pettester@peteasy.kr', '');
 call procPartnerPC_Customer_RepresentativePhoneHistory_get('pettester@peteasy.kr', '');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Customer_RepresentativePhoneHistory_get $$

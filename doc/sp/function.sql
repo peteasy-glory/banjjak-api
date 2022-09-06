@@ -112,3 +112,27 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+DELIMITER $$ 
+DROP FUNCTION IF EXISTS funcExtractID$$ 
+CREATE FUNCTION funcExtractID (
+	dataString VARCHAR(64)
+) RETURNS varchar(64) CHARSET utf8
+BEGIN
+	
+	SET @new_id = dataString;
+	SET @cnt = INSTR(@new_id, '신규등록(');
+	
+    IF @cnt > 0 THEN
+    BEGIN
+		SET @new_id = REPLACE(@new_id, '신규등록(', '');
+        SET @new_id = SUBSTRING(@new_id, 1, LENGTH(@new_id)-1);
+	END;
+    END IF;
+    IF (@new_id REGEXP ('^[0-9]+$')) THEN 
+		RETURN dataString;
+    ELSE
+		RETURN @new_id;
+    END IF;
+
+END $$ 
+DELIMITER ;
