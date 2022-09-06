@@ -119,12 +119,13 @@ class TBookingJoin(TAPIBase):
 
         value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_PREDATA_COMMON_OPTION_GET % (partner_id,), QUERY_DB)
         data = []
-        if rows < 2:
-            data.append(value)
-        else:
-            data = value
-        for d in data:
-            body["hair_feature"].append({"type": d[3], "price": str(d[4])})
+        if value is not None:
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+            for d in data:
+                body["hair_feature"].append({"type": d[3], "price": str(d[4])})
 
         for i in range(len(face_type)):
             body["face"].append({"type": face_type[i], "price": common[0][6 + i]})

@@ -24,7 +24,7 @@ class TBookingWaiting(TAPIBookingIDBase):
         try:
             value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_WAITING_LIST_GET % (partner_id,), QUERY_DB)
             if value is None:
-                return {}
+                return 0, "success", {}
             data = []
             body = []
             if rows < 2:
