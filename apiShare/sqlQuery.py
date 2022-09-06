@@ -185,6 +185,19 @@ PROC_SETTING_PLUS_OPTION_PRODUCT_GET = "call procPartnerPC_Setting_Plus_Option_P
 PROC_SETTING_BEAUTY_COUPON_GET = "call procPartnerPC_Setting_Beauty_Coupon_get('%s')"
 PROC_SETTING_ETC_PRODUCT_GET = "call procPartnerPC_Setting_Etc_Product_get('%s')"
 
+#========
+PROC_QRY_TO_EXCUTE = 'call procPartnerPC_QryToExcute(%d, "%s")'
+PROC_SETTING_BEAUTY_PART_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyPartDog_modify("%s","%s", "%s")'
+PROC_SETTING_BEAUTY_PART_DOG_DELETE = 'call procPartnerPC_Setting_BeautyPartDog_delete("%s")'
+PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyAddOptionDog_modify("%s","%s","%s","%s","%s","%s")'
+	# dataPartnerId VARCHAR(64),
+    # dataFirstType VARCHAR(10),
+    # dataSecondType VARCHAR(32),
+    # dataDirect VARCHAR(64),
+    # dataUpdateQry VARCHAR(4096),
+    # dataInsertQry VARCHAR(4096)
+#========
+
 #ETC
 PROC_ETC_ONE_ON_ONE_INQUIRY_GET = "call procPartnerPC_Etc_OneOnOneInquiry_get('%s')"
 PROC_ETC_ONE_ON_ONE_INQUIRY_POST= "call procPartnerPC_Etc_OneOnOneInquiry_post('%s','%s','%s','%s','%s','%s')"

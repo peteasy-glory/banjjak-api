@@ -4,7 +4,7 @@ from django.urls import path
 from apiSetting.views import api_artist_work, api_open_close, api_regular_holiday, api_artist_vacation, api_part_time, \
     api_break_time, api_artist_setting, api_schedule_artist, api_auth_setting, api_reserve, api_pay_type, \
     api_beauty_product, \
-    api_beauty_option, api_beauty_coupon, api_etc_product, api_vat
+    api_beauty_option, api_beauty_coupon, api_etc_product, api_vat, api_product_part, api_product_add_opt
 
 # from apiSetting.views import api_artist_work, api_schedule_artist
 
@@ -18,10 +18,8 @@ urlpatterns = [
     path('setting/break-time/<str:partner_id>', api_break_time.TBreakTime.as_view()),
     path('setting/part-time', api_part_time.TPartTime.as_view()),
     path('setting/part-time/<str:partner_id>', api_part_time.TPartTime.as_view()),
-
     path('setting/part-time-set', api_part_time.TPartTimeSet.as_view()),
     path('setting/part-time-set/<str:partner_id>', api_part_time.TPartTimeSet.as_view()),
-
     path('setting/artist-vacation', api_artist_vacation.TVacation.as_view()),
     path('setting/artist-vacation/<str:partner_id>', api_artist_vacation.TVacation.as_view()),
     path('setting/open-close', api_open_close.TOpenClose.as_view()),
@@ -42,6 +40,13 @@ urlpatterns = [
     path('setting/pay-type', api_pay_type.TPayType.as_view()),
     path('setting/beauty-product/<str:partner_id>', api_beauty_product.TProduct.as_view()),
     path('setting/option-product/<str:partner_id>', api_beauty_option.TProduct.as_view()),
+
+    path('setting/b/product/part/dog', api_product_part.TDog.as_view()),
+    path('setting/b/product/add-opt/dog', api_product_add_opt.TDog.as_view()),
+
+
+
+
     path('setting/beauty-coupon/<str:partner_id>', api_beauty_coupon.TCoupon.as_view()),
     path('setting/etc-product/<str:partner_id>', api_etc_product.TProduct.as_view()),
     path('setting/vat', api_vat.TAPIVat.as_view()),

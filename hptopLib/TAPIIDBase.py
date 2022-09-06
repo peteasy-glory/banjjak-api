@@ -26,7 +26,8 @@ class TAPIIDBase(TAPIBase):
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
-            return self.errorInfo(e)
+            return HttpResponse(self.json.dicToJson(self.message.error(self.errorInfo(e))))
+
 
     def post(self, request):
         return self.modify(request)

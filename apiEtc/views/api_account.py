@@ -23,7 +23,7 @@ class TPassword(TAPIBookingIDBase):
                     body = {"is_same": False}
             return 0, "success", body
         except Exception as err:
-            return -1, traceback.format_exc(), None
+            return -1, self.errorInfo(err), None
 
     def modifyInfo(self, *args):
         try:

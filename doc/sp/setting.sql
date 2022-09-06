@@ -500,67 +500,128 @@ END $$
 DELIMITER ;
 
 ########################
-call procPartnerPC_Setting_BeautyPart_put('pettester@peteasy.kr');
+call procPartnerPC_Setting_BeautyPartDog_modify('pettester343333@peteasy.kr', 'update', 'insert');
+call procPartnerPC_Setting_BeautyPartDog_modify('eaden@peteasy.kr',"UPDATE tb_product_dog_worktime SET worktime1_disp_yn = 'y', worktime2_disp_yn = 'y', worktime3_disp_yn = 'y', worktime4_disp_yn = 'y', worktime5_disp_yn = 'y', worktime6_disp_yn = 'y', worktime7_disp_yn = 'y', worktime8_disp_yn = 'y', worktime9_disp_yn = 'y', worktime10 = '10', worktime10_title = '미용1', worktime10_disp_yn = 'y', worktime11 = '10', worktime11_title = '미용2', worktime11_disp_yn = 'y', worktime12 = '10', worktime12_title = '미용3', worktime12_disp_yn = 'y', worktime13 = '10', worktime13_title = '미용4 ', worktime13_disp_yn = 'y', worktime14 = '10', worktime14_title = '미용5 ', worktime14_disp_yn = 'y', update_dt = NOW() WHERE artist_id = 'eaden@peteasy.kr'","INSERT INTO tb_product_dog_worktime SET artist_id = 'eaden@peteasy.kr', worktime1_disp_yn = 'y', worktime2_disp_yn = 'y', worktime3_disp_yn = 'y', worktime4_disp_yn = 'y', worktime5_disp_yn = 'y', worktime6_disp_yn = 'y', worktime7_disp_yn = 'y', worktime8_disp_yn = 'y', worktime9_disp_yn = 'y', worktime10 = '10', worktime10_title = '미용1', worktime10_disp_yn = 'y',worktime11 = '10', worktime11_title = '미용2', worktime11_disp_yn = 'y',worktime12 = '10', worktime12_title = '미용3', worktime12_disp_yn = 'y',worktime13 = '10', worktime13_title = '미용4', worktime13_disp_yn = 'y',worktime14 = '10', worktime14_title = '미용5', worktime14_disp_yn = 'y', reg_dt = NOW()");
+
 DELIMITER $$
-DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyPart_put $$
-CREATE PROCEDURE procPartnerPC_Setting_BeautyPart_put(
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyPartDog_modify $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyPartDog_modify(
 	dataPartnerId VARCHAR(64),
-    dataPart CHAR(14),
-    dataOne VARCHAR(32
-    dataFix1 INT
-    dataFix1 INT
-    dataFix1 INT
-    dataFix1 INT
+    dataUpdateQry VARCHAR(4096),
+    dataInsertQry VARCHAR(4096)
 )
 BEGIN
 	/**
-		미용구분 저장  
+		강아지 미용구분 저장  
    */
-   	DECLARE aErr INT DEFAULT 0;
-	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
     
+    SET @qry = '';
     SET @cnt = 0;
+
     SELECT COUNT(*) INTO @cnt 
     FROM tb_product_dog_worktime 
     WHERE artist_id = dataPartnerId;
     
-    START TRANSACTION;
-
     IF @cnt > 0 THEN
+		SET @qry = dataUpdateQry;
+	ELSE
+		SET @qry = dataInsertQry;
+	END IF;
+    
+    call procPartnerPC_QryToExcute(1, @qry);
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyPartDog_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyPartDog_delete(
+    dataUpdateQry VARCHAR(4096)
+)
+BEGIN
+	/**
+		강아지 미용구분 삭제  
+   */
+    
+    call procPartnerPC_QryToExcute(1, dataUpdateQry);
+    
+END $$ 
+DELIMITER ;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_QryToExcute $$
+CREATE PROCEDURE procPartnerPC_QryToExcute(
+	dataQryType INT, # 0: SELECT, 1: INSERT, UPDATE, DELETE
+	dataSQL VARCHAR(4096)
+)
+BEGIN
+	/**
+		쿼리 문자열 실행 
+        dataQryType INT - 0: SELECT, 1: INSERT, UPDATE, DELETE
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    IF dataQryType = 0 THEN
     BEGIN
-		UPDATE tb_shop
-		SET is_vat = dataIsVat
-		WHERE customer_id = dataPartnerId;
+		SET @SQL_STR = dataSQL;
+		PREPARE stmt FROM @SQL_STR;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;  
+    END;
+    ELSE
+    BEGIN
+		SET @SQL_STR = dataSQL;
+		PREPARE stmt FROM @SQL_STR;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;  
+		IF aErr < 0 THEN
+			ROLLBACK;
+		ELSE
+			COMMIT;
+		END IF;
         
-        UPDATE tb_product_dog_worktime 
-        SET worktime1_disp_yn = 'y', 
-			worktime2_disp_yn = 'y', 
-            worktime3_disp_yn = 'y', 
-            worktime4_disp_yn = 'n', 
-            worktime5_disp_yn = 'n', 
-            worktime6_disp_yn = 'n', 
-            worktime7_disp_yn = 'n', 
-            worktime8_disp_yn = 'n', 
-            worktime9_disp_yn = 'y', worktime10 = '180', worktime10_title = '마이숍 미용 1', worktime10_disp_yn = 'y', worktime11 = '30', 
-        worktime11_title = '마이숍 미용 2', worktime11_disp_yn = 'y', update_dt = NOW()  WHERE artist_id = 'eaden@peteasy.kr' 
-    END;
-    ELSE
-    BEGIN
-		UPDATE tb_shop
-		SET is_vat = dataIsVat
-		WHERE customer_id = dataPartnerId;
+        SELECT aErr AS err;   
     END;
     END IF;
     
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOptionDog_modify $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOptionDog_modify(
+	dataPartnerId VARCHAR(64),
+    dataFirstType VARCHAR(10),
+    dataSecondType VARCHAR(32),
+    dataDirect VARCHAR(64),
+    dataUpdateQry VARCHAR(4096),
+    dataInsertQry VARCHAR(4096)
+)
+BEGIN
+	/**
+		강아지 미용 추가 옵션  
+   */
     
+    SET @qry = '';
+    SET @cnt = 0;
+
+	SELECT COUNT(*) INTO @cnt 
+    FROM tb_product_dog_static 
+	WHERE customer_id = dataPartnerId 
+		AND first_type = dataFirstType 
+        AND second_type = dataSecondType 
+        AND direct_title = dataDirect;
+
     
-    IF aErr < 0 THEN
-		ROLLBACK;
-    ELSE
-		COMMIT;
-    END IF;
+    IF @cnt > 0 THEN
+		SET @qry = dataUpdateQry;
+	ELSE
+		SET @qry = dataInsertQry;
+	END IF;
     
-    SELECT aErr AS err;   
+    call procPartnerPC_QryToExcute(1, @qry);
+    
 END $$ 
 DELIMITER ;
 
