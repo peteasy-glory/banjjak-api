@@ -519,11 +519,40 @@ BEGIN
    	DECLARE aErr INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
     
-    START TRANSACTION;
+    SET @cnt = 0;
+    SELECT COUNT(*) INTO @cnt 
+    FROM tb_product_dog_worktime 
+    WHERE artist_id = dataPartnerId;
     
-	UPDATE tb_shop
-	SET is_vat = dataIsVat
-	WHERE customer_id = dataPartnerId;
+    START TRANSACTION;
+
+    IF @cnt > 0 THEN
+    BEGIN
+		UPDATE tb_shop
+		SET is_vat = dataIsVat
+		WHERE customer_id = dataPartnerId;
+        
+        UPDATE tb_product_dog_worktime 
+        SET worktime1_disp_yn = 'y', 
+			worktime2_disp_yn = 'y', 
+            worktime3_disp_yn = 'y', 
+            worktime4_disp_yn = 'n', 
+            worktime5_disp_yn = 'n', 
+            worktime6_disp_yn = 'n', 
+            worktime7_disp_yn = 'n', 
+            worktime8_disp_yn = 'n', 
+            worktime9_disp_yn = 'y', worktime10 = '180', worktime10_title = '마이숍 미용 1', worktime10_disp_yn = 'y', worktime11 = '30', 
+        worktime11_title = '마이숍 미용 2', worktime11_disp_yn = 'y', update_dt = NOW()  WHERE artist_id = 'eaden@peteasy.kr' 
+    END;
+    ELSE
+    BEGIN
+		UPDATE tb_shop
+		SET is_vat = dataIsVat
+		WHERE customer_id = dataPartnerId;
+    END;
+    END IF;
+    
+    
     
     IF aErr < 0 THEN
 		ROLLBACK;

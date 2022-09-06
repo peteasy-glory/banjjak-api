@@ -53,7 +53,7 @@ DELIMITER ;
     FROM tb_customer_family 
 	WHERE to_cellphone = '01086331776'  AND artist_id = 'pettester@peteasy.kr' AND is_delete = 0;
     
-call procPartnerPC_Booking_CustomerPetInfo_get(571239);
+call procPartnerPC_Booking_CustomerPetInfo_get(598610);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerPetInfo_get $$
 CREATE PROCEDURE procPartnerPC_Booking_CustomerPetInfo_get(
@@ -84,7 +84,7 @@ BEGIN
         
      # 회원아이디 가져오기    
     SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo, is_no_show, worker, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(hour,2,0),':',LPAD(minute,2,0)) 
-				, approval INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date, @approval 
+				INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date
     FROM tb_payment_log 
 	WHERE payment_log_seq = dataPaymentCode;
 
@@ -112,16 +112,23 @@ BEGIN
 
     
     #등급 가져오기
+    SET @extract_id = funcExtractID(aCustomerId);
 	SELECT a.idx, a.grade_idx, b.grade_name, b.grade_ord INTO aCustomerGradeIdx, aShopGradeIdx, aGradeName, aGradeOrd
     FROM tb_grade_of_customer a 
 		LEFT JOIN tb_grade_of_shop b ON a.grade_idx = b.idx 
-    WHERE a.customer_id = IF (LENGTH(TRIM(aCustomerId)) > 0, aCustomerId, aTmpId)  AND b.artist_id = aPartnerId AND a.is_delete = 0 AND b.is_delete = 0;
+    WHERE a.customer_id = IF (LENGTH(TRIM(@extract_id)) > 0, @extract_id, aTmpId)  AND b.artist_id = aPartnerId AND a.is_delete = 0 AND b.is_delete = 0
+    ORDER BY a.idx DESC LIMIT 1;
     
     IF LENGTH(aGradeName) < 1 then
 		# 등급이 없으면 해당샵 2번째 등급 부여 
 		SELECT grade_name , grade_ord INTO aGradeName, aGradeOrd 
         FROM tb_grade_of_shop WHERE artist_id = aPartnerId AND grade_ord = 2 ORDER BY grade_ord ASC;
     END IF;
+    
+    SET @is_approve = -1;
+    SELECT is_approve INTO @is_approve 
+    FROM tb_grade_reserve_approval_mgr
+    WHERE payment_log_seq = dataPaymentCode;
 
 	# 견주 메모 가져오기
     IF LENGTH(TRIM(aCustomerId)) < 1 THEN
@@ -140,12 +147,21 @@ BEGIN
 		#예약 펫 정보
 		pet_seq, name, name_for_owner, type, pet_type, gender, weight, photo, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0)) AS birth, neutral, etc,
 		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting, #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
-        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, @approval AS approval
+        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, @is_approve AS is_approve
 	FROM tb_mypet WHERE pet_seq = aPetId;
 
 END $$ 
 DELIMITER ;
+select is_approve from tb_payment_log 
+order by payment_log_seq desc;
 
+                SELECT a.idx, b.*, c.name, c.pet_type, DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d') reg_date FROM tb_grade_reserve_approval_mgr a 
+                LEFT JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq 
+                LEFT JOIN tb_mypet c ON b.pet_seq = c.pet_seq 
+                WHERE is_approve = '0'
+                AND b.artist_id = 'pettester@peteasy.kr'
+                ORDER BY DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d')
+            
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PaymentInfoEtcMemo_put $$
 CREATE PROCEDURE procPartnerPC_Booking_PaymentInfoEtcMemo_put(
@@ -706,7 +722,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Booking_GradeCustomer_get('pettester@peteasy.kr', '01089267510');
+call procPartnerPC_Booking_GradeCustomer_get('pettester@peteasy.kr', '01053906571');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GradeCustomer_get $$
 CREATE PROCEDURE procPartnerPC_Booking_GradeCustomer_get(
@@ -723,12 +739,15 @@ BEGIN
     SET @grade_ord = 0;
     SET @customer_idx = -1;
     
+    SET @customer_id = '';
 	SELECT customer_id INTO @customer_id
 	FROM tb_payment_log 
     WHERE data_delete = 0 AND artist_id = dataPartnerID 
 		AND cellphone = dataCellphone
 	GROUP BY cellphone;
-   
+
+    SET @customer_id = funcExtractID(@customer_id);
+    
    	#가회원인경우 임시 아이디 가져오기
 	IF TRIM(@customer_id) = '' OR @customer_id IS NULL THEN
 		SELECT CAST(tmp_seq AS CHAR(11)) INTO @customer_id FROM tb_tmp_user
@@ -739,7 +758,8 @@ BEGIN
 	SELECT a.idx, b.grade_name, b.grade_ord INTO @customer_idx, @grade_name, @grade_ord 
     FROM tb_grade_of_customer a 
 		LEFT JOIN tb_grade_of_shop b ON a.grade_idx = b.idx 
-    WHERE a.customer_id = @customer_id AND b.artist_id = dataPartnerID AND a.is_delete = 0 AND b.is_delete = 0;
+    WHERE a.customer_id = @customer_id AND b.artist_id = dataPartnerID AND a.is_delete = 0 AND b.is_delete = 0
+    ORDER BY a.idx DESC LIMIT 1;
     
     IF LENGTH(@grade_name) < 1 then
 		# 등급이 없으면 해당샵 2번째 등급 부여 
