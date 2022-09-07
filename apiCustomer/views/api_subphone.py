@@ -25,7 +25,7 @@ class TSubPhone(TAPIIDBase):
                                                                                              args[1]["sub_phone"]), QUERY_DB)
                 body = {}
                 if value is not None:
-                    body = self.queryDataTsoDic(value, rows, columns)
+                    body = self.queryDataToDic(value, rows, columns)
                 return 0, "success", body
             elif args[0] == 'DELETE':
                 value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_SUB_PHONE_DELETE % (args[1]["sub_phone_idx"],), QUERY_DB)
