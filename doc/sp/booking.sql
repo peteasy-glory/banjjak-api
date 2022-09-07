@@ -134,7 +134,7 @@ BEGIN
     IF LENGTH(TRIM(aCustomerId)) < 1 THEN
 		SELECT memo INTO aOwnerMemo FROM tb_shop_customer_memo 
 		WHERE tmp_seq = aTmpId AND cellphone = aPhone AND artist_id = aPartnerId;
-	ELSE
+	ELSE               
 		SELECT memo INTO aOwnerMemo FROM tb_shop_customer_memo 
 		WHERE customer_id = aCustomerId AND cellphone = aPhone AND artist_id = aPartnerId;
     END IF;
@@ -772,6 +772,54 @@ BEGIN
 	SELECT @customer_idx AS customer_idx, @grade_name AS grade_name, @grade_ord AS grade_ord;
 END $$ 
 DELIMITER ;
+
+call procPartnerPC_Booking_GradeCustomer_get('pettester@peteasy.kr', '01086331776');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_GradeCustomer_get $$
+CREATE PROCEDURE procPartnerPC_Booking_GradeCustomer_get(
+	dataPartnerID VARCHAR(64),
+    dataCellPhone VARCHAR(20)
+)
+BEGIN
+	/**
+		고객 등급 조회 
+   */
+
+	SET @customer_id = '';
+    SET @grade_name = '';
+    SET @grade_ord = 0;
+    SET @grade_none = 0;
+    
+	SELECT customer_id INTO @customer_id
+	FROM tb_payment_log 
+    WHERE data_delete = 0 AND artist_id = dataPartnerID 
+		AND cellphone = dataCellphone
+	GROUP BY cellphone;
+   
+   	#가회원인경우 임시 아이디 가져오기
+	IF TRIM(@customer_id) = '' OR @customer_id IS NULL THEN
+		SELECT CAST(tmp_seq AS CHAR(11)) INTO @customer_id FROM tb_tmp_user
+        WHERE cellphone = dataCellPhone AND data_delete = 0;
+    END IF;
+    
+    #등급 가져오기
+	SELECT b.grade_name, b.grade_ord INTO  @grade_name, @grade_ord 
+    FROM tb_grade_of_customer a 
+		LEFT JOIN tb_grade_of_shop b ON a.grade_idx = b.idx 
+    WHERE a.customer_id = @customer_id AND b.artist_id = dataPartnerID AND a.is_delete = 0 AND b.is_delete = 0;
+    
+    IF LENGTH(@grade_name) < 1 then
+		# 등급이 없으면 해당샵 2번째 등급 부여 
+		SELECT grade_name , grade_ord INTO @grade_name, @grade_ord 
+        FROM tb_grade_of_shop 
+        WHERE artist_id = dataPartnerID AND grade_ord = 2 ORDER BY grade_ord ASC;
+        SET @grade_none = -1;
+    END IF;
+
+	SELECT @grade_none AS grade_status, @grade_name AS grade_name, @grade_ord AS grade_ord;
+END $$ 
+DELIMITER ;
+
 
 call procPartnerPC_Booking_GradeCustomer_post(0, 3357,'hptop.apple@gmail.com');
 select * from tb_grade_of_customer where idx = 22005;

@@ -50,10 +50,7 @@ class TVacation(TAPIIDBase):
                 return 0, "success", body
             elif args[0] == 'DELETE':
                 value, rows, columns = self.db.resultDBQuery(
-                    PROC_SETTING_PERSONAL_VACATION_DELETE % (args[1]["partner_id"]
-                                                           , w["name"], args[1]["type"], args[1]["st_date"],
-                                                           args[1]["fi_date"]),
-                    QUERY_DB)
+                    PROC_SETTING_PERSONAL_VACATION_DELETE % (args[1]["idx"]), QUERY_DB)
                 if value is not None:
                     body = self.queryDataToDic(value, rows, columns)
                 return 0, "success", body
