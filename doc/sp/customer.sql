@@ -395,26 +395,58 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_PetList_get('pettester@peteasy.kr', '01053906572');
+call procPartnerPC_PetList_get('01053906571');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_PetList_get $$
 CREATE PROCEDURE procPartnerPC_PetList_get(
-	dataPartnerId VARCHAR(64),
     dataPhone VARCHAR(20)
 )
 BEGIN
 	/**
 	 펫 종류 
    */
-	SELECT B.*
-	FROM tb_payment_log A JOIN tb_mypet B 
-		ON A.pet_seq = B.pet_seq
-	WHERE A.data_delete = 0 AND B.data_delete = 0
-		AND A.cellphone = dataPhone AND A.artist_id = dataPartnerId
-	GROUP BY A.pet_seq;
-    
+    SELECT pet_seq, name , GROUP_CONCAT(artist_id) AS partner_id
+    FROM (
+		SELECT B.pet_seq, B.name, A.artist_id
+		FROM tb_payment_log A JOIN tb_mypet B 
+			ON A.pet_seq = B.pet_seq
+		WHERE A.data_delete = 0 AND B.data_delete = 0
+			AND A.cellphone = dataPhone
+		GROUP BY B.pet_seq, A.artist_id
+    )AA 
+    GROUP BY pet_seq;
 END $$ 
 DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_PetInfo_get $$
+CREATE PROCEDURE procPartnerPC_PetInfo_get(
+    dataPetIdx INT
+)
+BEGIN
+	/**
+	 펫 정보 
+   */
+	SELECT *
+	FROM tb_mypet 
+	WHERE pet_seq = dataPetIdx;
+END $$ 
+DELIMITER ;
+
+select * from tb_payment_log
+where cellphone = '01053906571' and data_delete = 0 and  artist_id = 'pettester@peteasy.kr'
+group by customer_id;
+
+	SELECT * FROM (
+		SELECT B.*
+		FROM tb_payment_log A JOIN tb_mypet B 
+			ON A.pet_seq = B.pet_seq
+		WHERE A.data_delete = 0 AND B.data_delete = 0
+			AND A.cellphone = '01053906571' AND A.artist_id = 'pettester@peteasy.kr'
+		GROUP BY A.pet_seq
+       ) A WHERE customer_id = 'jack@peteasy.kr'
+;
+select * from tb_mypet where pet_seq = 189923;
 
 call procPartnerPC_UniqueMemo_get('pettester@peteasy.kr', '01089267510');
 DELIMITER $$

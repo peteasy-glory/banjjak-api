@@ -500,9 +500,24 @@ END $$
 DELIMITER ;
 
 ########################
+call procPartnerPC_Setting_BeautyPartDog_get('eaden@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyPartDog_get $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyPartDog_get(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		강아지 미용구분 조회  
+   */
+    
+    SELECT * FROM tb_product_dog_worktime WHERE artist_id = dataPartnerId AND is_delete = 2;
+    
+END $$ 
+DELIMITER ;
+
 call procPartnerPC_Setting_BeautyPartDog_modify('pettester343333@peteasy.kr', 'update', 'insert');
 call procPartnerPC_Setting_BeautyPartDog_modify('eaden@peteasy.kr',"UPDATE tb_product_dog_worktime SET worktime1_disp_yn = 'y', worktime2_disp_yn = 'y', worktime3_disp_yn = 'y', worktime4_disp_yn = 'y', worktime5_disp_yn = 'y', worktime6_disp_yn = 'y', worktime7_disp_yn = 'y', worktime8_disp_yn = 'y', worktime9_disp_yn = 'y', worktime10 = '10', worktime10_title = '미용1', worktime10_disp_yn = 'y', worktime11 = '10', worktime11_title = '미용2', worktime11_disp_yn = 'y', worktime12 = '10', worktime12_title = '미용3', worktime12_disp_yn = 'y', worktime13 = '10', worktime13_title = '미용4 ', worktime13_disp_yn = 'y', worktime14 = '10', worktime14_title = '미용5 ', worktime14_disp_yn = 'y', update_dt = NOW() WHERE artist_id = 'eaden@peteasy.kr'","INSERT INTO tb_product_dog_worktime SET artist_id = 'eaden@peteasy.kr', worktime1_disp_yn = 'y', worktime2_disp_yn = 'y', worktime3_disp_yn = 'y', worktime4_disp_yn = 'y', worktime5_disp_yn = 'y', worktime6_disp_yn = 'y', worktime7_disp_yn = 'y', worktime8_disp_yn = 'y', worktime9_disp_yn = 'y', worktime10 = '10', worktime10_title = '미용1', worktime10_disp_yn = 'y',worktime11 = '10', worktime11_title = '미용2', worktime11_disp_yn = 'y',worktime12 = '10', worktime12_title = '미용3', worktime12_disp_yn = 'y',worktime13 = '10', worktime13_title = '미용4', worktime13_disp_yn = 'y',worktime14 = '10', worktime14_title = '미용5', worktime14_disp_yn = 'y', reg_dt = NOW()");
-
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyPartDog_modify $$
 CREATE PROCEDURE procPartnerPC_Setting_BeautyPartDog_modify(
@@ -625,3 +640,12 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+	SELECT *
+    FROM tb_product_dog_static 
+	WHERE customer_id = 'eaden@peteasy.kr' 
+		AND first_type = dataFirstType 
+        AND second_type = dataSecondType 
+        AND direct_title = dataDirect;
+        
+        
+        

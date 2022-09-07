@@ -14,6 +14,7 @@ class TDog(TProduct):
             if args[0] == 'POST' or args[0] == 'PUT':
                 qryUpdate, qryInsert = self.argsToInsertUpdate(args)
                 value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY % (args[1]["partner_id"]
+                                                            ,args[1]["first_type"],args[1]["second_type"],args[1]["direct_title"]
                                                             ,qryUpdate, qryInsert),QUERY_DB)
                 if value is not None:
                     body = self.queryDataToDic(value, rows, columns)
@@ -29,77 +30,64 @@ class TDog(TProduct):
             return -1, self.errorInfo(err), None
 
     def argsToInsertUpdate(self, args):
-        dispArr = args[1]["display"].split("|")
-        timeArr = args[1]["time"].split("|")
-        addTitle = args[1]["add_title"].split("|")
-
         update = "UPDATE tb_product_dog_static "
         insert = "INSERT INTO tb_product_dog_static "
-        tail =      "WHERE customer_id          = 'eaden@peteasy.kr' " \
-                    "	 AND first_type = '개' " \
-                    "   AND second_type = '직접입력' " \
-                    "   AND direct_title = '추가 강아지 상품 1' "
-
+        tail =      "WHERE customer_id          = '%s' " \
+                    "	 AND first_type = '%s' " \
+                    "   AND second_type = '%s' " \
+                    "   AND direct_title = '%s'" % (args[1]["partner_id"], args[1]["first_type"]
+                                                    , args[1]["second_type"], args[1]["direct_title"])
         middle =        "SET " \
-                        "first_type                 = '개', " \
-                        "second_type                = '직접입력', " \
-                        "direct_title               = '추가 강아지 상품 1', " \
-                        "in_shop_product            = '1', " \
-                        "out_shop_product           = '0', " \
-                        "kgs                        = '1', " \
-                        "bath_price                 = '1000', " \
-                        "part_price                 = '1000', " \
-                        "bath_part_price            = '1000', " \
-                        "sanitation_price           = '1000', " \
-                        "sanitation_bath_price      = '1000', " \
-                        "all_price                  = '1000', " \
-                        "spoting_price              = '1000', " \
-                        "scissors_price             = '1000', " \
-                        "summercut_price            = '1000', " \
-                        "beauty1_price             = '1000', " \
-                        "beauty2_price             = '1000', " \
-                        "beauty3_price             = '', " \
-                        "beauty4_price             = '', " \
-                        "beauty5_price             = '', " \
-                        "is_consult_bath            = '0', " \
-                        "is_consult_part            = '0', " \
-                        "is_consult_bath_part       = '0', " \
-                        "is_consult_sanitation      = '0', " \
-                        "is_consult_sanitation_bath = '0', " \
-                        "is_consult_all             = '0', " \
-                        "is_consult_spoting         = '0', " \
-                        "is_consult_scissors        = '0', " \
-                        "is_consult_summercut       = '0', " \
-                        "is_consult_beauty1         = '0', " \
-                        "is_consult_beauty2         = '0', " \
-                        "is_consult_beauty3         = '', " \
-                        "is_consult_beauty4         = '', " \
-                        "is_consult_beauty5         = '', " \
-                        "is_over_kgs                = '1', " \
-                        "what_over_kgs              = '9', " \
-                        "over_kgs_price             = '90', " \
-                        "add_comment                = '추가 요금 설정 설명', " \
-                        "update_time                = NOW() "
+                        "customer_id                 = '%s', " \
+                        "first_type                 = %s, " \
+                        "second_type                = %s, " \
+                        "direct_title               = %s, " \
+                        "in_shop_product            = %s, " \
+                        "out_shop_product           = %s, " \
+                        "kgs                        = %s, " \
+                        "bath_price                 = %s, " \
+                        "part_price                 = %s, " \
+                        "bath_part_price            = %s, " \
+                        "sanitation_price           = %s, " \
+                        "sanitation_bath_price      = %s, " \
+                        "all_price                  = %s, " \
+                        "spoting_price              = %s, " \
+                        "scissors_price             = %s, " \
+                        "summercut_price            = %s, " \
+                        "beauty1_price             = %s, " \
+                        "beauty2_price             = %s, " \
+                        "beauty3_price             = %s, " \
+                        "beauty4_price             = %s, " \
+                        "beauty5_price             = %s, " \
+                        "is_consult_bath            = %s, " \
+                        "is_consult_part            = %s, " \
+                        "is_consult_bath_part       = %s, " \
+                        "is_consult_sanitation      = %s, " \
+                        "is_consult_sanitation_bath = %s, " \
+                        "is_consult_all             = %s, " \
+                        "is_consult_spoting         = %s, " \
+                        "is_consult_scissors        = %s, " \
+                        "is_consult_summercut       = %s, " \
+                        "is_consult_beauty1         = %s, " \
+                        "is_consult_beauty2         = %s, " \
+                        "is_consult_beauty3         = %s, " \
+                        "is_consult_beauty4         = %s, " \
+                        "is_consult_beauty5         = %s, " \
+                        "is_over_kgs                = %s, " \
+                        "what_over_kgs              = %s, " \
+                        "over_kgs_price             = %s, " \
+                        "add_comment                = %s, " \
+                        "update_time                = NOW() " % (args[1]["partner_id"],
+                        self.isNull(args[1]["first_type"]), self.isNull(args[1]["second_type"]), self.isNull(args[1]["direct_title"]), self.isNull(args[1]["in_shop_product"]), self.isNull(args[1]["out_shop_product"]),
+                        self.isNull(args[1]["kgs"]), self.isNull(args[1]["bath_price"]), self.isNull(args[1]["part_pric"]), self.isNull(args[1]["bath_part_price"]), self.isNull(args[1]["sanitation_price"]),
+                        self.isNull(args[1]["sanitation_bath_price"]), self.isNull(args[1]["all_price"]), self.isNull(args[1]["spoting_price"]), self.isNull(args[1]["scissors_price"]), self.isNull(args[1]["summercut_price"]),
+                        self.isNull(args[1]["beauty1_price"]), self.isNull(args[1]["beauty2_price"]), self.isNull(args[1]["beauty3_price"]), self.isNull(args[1]["beauty4_price"]), self.isNull(args[1]["beauty5_price"]),
+                        self.isNull(args[1]["is_consult_bath"]), self.isNull(args[1]["is_consult_part"]), self.isNull(args[1]["is_consult_bath_part"]), self.isNull(args[1]["is_consult_sanitation"]), self.isNull(args[1]["is_consult_sanitation_bath"]),
+                        self.isNull(args[1]["is_consult_all"]), self.isNull(args[1]["is_consult_spoting"]), self.isNull(args[1]["is_consult_scissors"]), self.isNull(args[1]["is_consult_summercut"]), self.isNull(args[1]["is_consult_beauty1"]),
+                        self.isNull(args[1]["is_consult_beauty2"]), self.isNull(args[1]["is_consult_beauty3"]), self.isNull(args[1]["is_consult_beauty4"]), self.isNull(args[1]["is_consult_beauty5"]), self.isNull(args[1]["is_over_kgs"]),
+                        self.isNull(args[1]["what_over_kgs"]), self.isNull(args[1]["over_kgs_price"]), self.isNull(args[1]["add_comment"]))
 
-
-        insert = "INSERT INTO tb_product_dog_worktime " \
-                 "SET artist_id = '%s', worktime1_disp_yn = '%s', worktime2_disp_yn = '%s', " \
-                 "worktime3_disp_yn = '%s', worktime4_disp_yn = '%s', worktime5_disp_yn = '%s', worktime6_disp_yn = '%s', " \
-                 "worktime7_disp_yn = '%s', worktime8_disp_yn = '%s', worktime9_disp_yn = '%s', " \
-                 "worktime10 = '%s', worktime10_title = '%s', worktime10_disp_yn = '%s'," \
-                 "worktime11 = '%s', worktime11_title = '%s', worktime11_disp_yn = '%s'," \
-                 "worktime12 = '%s', worktime12_title = '%s', worktime12_disp_yn = '%s'," \
-                 "worktime13 = '%s', worktime13_title = '%s', worktime13_disp_yn = '%s'," \
-                 "worktime14 = '%s', worktime14_title = '%s', worktime14_disp_yn = '%s', " \
-                 "reg_dt = NOW()" % (args[1]["partner_id"], dispArr[0], dispArr[1]
-                                     , dispArr[2], dispArr[3], dispArr[4], dispArr[5]
-                                     , dispArr[6], dispArr[7], dispArr[8]
-                                     , timeArr[0], addTitle[0], dispArr[9]
-                                     , timeArr[1], addTitle[1], dispArr[10]
-                                     , timeArr[2], addTitle[2], dispArr[11]
-                                     , timeArr[3], addTitle[3], dispArr[12]
-                                     , timeArr[4], addTitle[4], dispArr[13])
-        return update+middle, insert+middle
+        return update+middle+tail, insert+middle
 
     def argsToDelete(self, args):
         dispArr = args[1]["display"].split("|")

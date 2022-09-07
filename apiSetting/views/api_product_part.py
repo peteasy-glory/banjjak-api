@@ -1,12 +1,47 @@
 # -*- coding: utf-8 -*-
 from apiSetting.views.base.api_product import TProduct
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_SETTING_BEAUTY_PART_DOG_MODIFY, PROC_SETTING_BEAUTY_PART_DOG_DELETE
+from apiShare.sqlQuery import PROC_SETTING_BEAUTY_PART_DOG_MODIFY, PROC_SETTING_BEAUTY_PART_DOG_DELETE, \
+    PROC_SETTING_BEAUTY_PART_DOG_GET
 
 
 class TDog(TProduct):
     def getInfo(self, partner_id, *args):
-       pass
+        try:
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BEAUTY_PART_DOG_GET % (partner_id,), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+            body = []
+            if value is not None:
+                for d in data:
+                    tmp = {
+                        "idx": d[0],
+                        "part":[
+                               {"tag":"목욕", "time":d[2], "is_show":d[21], "ord":1},
+                               {"tag": "부분미용", "time": d[3], "is_show":d[22], "ord":2},
+                               {"tag": "부분+목욕", "time": d[4], "is_show":d[23], "ord":3},
+                               {"tag": "위생", "time": d[5], "is_show":d[24], "ord":4},
+                               {"tag": "위생+목욕", "time": d[6], "is_show":d[25], "ord":5},
+                               {"tag": "전체미용", "time": d[7], "is_show":d[26], "ord":6},
+                               {"tag": "스포팅", "time": d[8], "is_show":d[27], "ord":7},
+                               {"tag": "가위컷", "time": d[9], "is_show":d[28], "ord":8},
+                               {"tag": "썸머컷", "time": d[10], "is_show":d[29], "ord":9},
+                               {"tag": d[16], "time": d[11], "is_show":d[30], "ord":10},
+                               {"tag": d[17], "time": d[12], "is_show":d[31], "ord":11},
+                               {"tag": d[18], "time": d[13], "is_show":d[32], "ord":12},
+                               {"tag": d[19], "time": d[14], "is_show":d[33], "ord":13},
+                               {"tag": d[20], "time": d[15], "is_show":d[34], "ord":14}
+                             ],
+                        "reg_date":d[35],
+                        "update_date":d[36]
+                    }
+                    body.append(tmp)
+            return 0, "success", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
     def modifyInfo(self, *args):
         try:

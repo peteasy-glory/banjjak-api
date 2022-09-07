@@ -41,6 +41,7 @@ urlpatterns = [
     path('setting/beauty-product/<str:partner_id>', api_beauty_product.TProduct.as_view()),
     path('setting/option-product/<str:partner_id>', api_beauty_option.TProduct.as_view()),
 
+    path('setting/b/product/part/dog/<str:partner_id>', api_product_part.TDog.as_view()),
     path('setting/b/product/part/dog', api_product_part.TDog.as_view()),
     path('setting/b/product/add-opt/dog', api_product_add_opt.TDog.as_view()),
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_CUSTOMER_PET_LIST_GET, PROC_CUSTOMER_PET_DELETE
+from apiShare.sqlQuery import PROC_CUSTOMER_PET_LIST_GET, PROC_CUSTOMER_PET_DELETE, PROC_CUSTOMER_PET_INFO_GET
 from hptopLib.TAPIIDBase import TAPIIDBase
 
 
@@ -10,9 +10,23 @@ class TPetList(TAPIIDBase):
 
         try:
             body = {}
-            value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_PET_LIST_GET % (partner_id,args[0]["cellphone"]), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_PET_LIST_GET % (args[0]["cellphone"]), QUERY_DB)
             if value is not None:
                 body = self.queryDataToDic(value, rows, columns)
+                for val in body:
+                    if val["partner_id"] != "":
+                        split = val["partner_id"].split(",")
+                        arr = []
+                        for s in split:
+                            tmp = {"tag":s}
+                            arr.append(tmp)
+                        val["partner_id"] = arr
+                    else:
+                        val["partner_id"] = []
+                    value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_PET_INFO_GET % (val["pet_seq"]),
+                                                                 QUERY_DB)
+                    detail = self.queryDataToDic(value, rows, columns)
+                    val["detail"] = detail
             return 0, "success", body
         except Exception as err:
             return -1, self.errorInfo(err), None

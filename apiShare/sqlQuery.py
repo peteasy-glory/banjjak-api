@@ -102,7 +102,8 @@ PROC_CUSTOMER_JOIN_POST = "call procPartnerPC_CustomerJoin_post('%s','%s','%s','
 
 
 PROC_CUSTOMER_BEAUTY_USAGE_HISTORY_GET = "call procPartnerPC_BeautyUsageHistory_get('%s', '%s')"
-PROC_CUSTOMER_PET_LIST_GET = "call procPartnerPC_PetList_get('%s', '%s')"
+PROC_CUSTOMER_PET_LIST_GET = "call procPartnerPC_PetList_get('%s')"
+PROC_CUSTOMER_PET_INFO_GET = "call procPartnerPC_PetInfo_get(%d)"
 PROC_CUSTOMER_UNIQUE_MEMO_GET = "call procPartnerPC_UniqueMemo_get('%s', '%s')"
 PROC_CUSTOMER_RESERVES_GET = "call procPartnerPC_Reserves_get(%d,'%s',%d,'%s', '%s')"
 PROC_CUSTOMER_PET_DELETE = "call procPartnerPC_Pet_delete('%s', %d)"
@@ -186,16 +187,13 @@ PROC_SETTING_BEAUTY_COUPON_GET = "call procPartnerPC_Setting_Beauty_Coupon_get('
 PROC_SETTING_ETC_PRODUCT_GET = "call procPartnerPC_Setting_Etc_Product_get('%s')"
 
 #========
+
 PROC_QRY_TO_EXCUTE = 'call procPartnerPC_QryToExcute(%d, "%s")'
+PROC_SETTING_BEAUTY_PART_DOG_GET = "call procPartnerPC_Setting_BeautyPartDog_get('%s')"
 PROC_SETTING_BEAUTY_PART_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyPartDog_modify("%s","%s", "%s")'
 PROC_SETTING_BEAUTY_PART_DOG_DELETE = 'call procPartnerPC_Setting_BeautyPartDog_delete("%s")'
 PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyAddOptionDog_modify("%s","%s","%s","%s","%s","%s")'
-	# dataPartnerId VARCHAR(64),
-    # dataFirstType VARCHAR(10),
-    # dataSecondType VARCHAR(32),
-    # dataDirect VARCHAR(64),
-    # dataUpdateQry VARCHAR(4096),
-    # dataInsertQry VARCHAR(4096)
+
 #========
 
 #ETC

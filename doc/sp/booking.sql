@@ -1623,6 +1623,13 @@ BODY: BEGIN
 END $$ 
 DELIMITER ;
 
+SELECT * 
+		FROM tb_user_coupon #where artist_id = 'pettester@peteasy.kr'
+		WHERE customer_id = 'lyw08205@naver.com' AND artist_id = 'pettester@peteasy.kr' AND del_yn = 'N';
+
+select * from tb_payment_log
+where cellphone = '01053906571'
+group by customer_id;
 
 call procPartnerPC_Booking_BeautyCoupon_modify( 582771, 151591,'','pettester@peteasy.kr',796, 'C',10000);
 DELIMITER $$
