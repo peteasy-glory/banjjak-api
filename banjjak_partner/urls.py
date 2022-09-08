@@ -32,4 +32,5 @@ urlpatterns = [
     path('partner/', include('apiSetting.urls')),
     path('partner/', include('apiPerformance.urls')),
     path('partner/', include('apiEtc.urls')),
+    path('partner/', include('apiAllim.urls')),
 ]
