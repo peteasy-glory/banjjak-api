@@ -25,6 +25,13 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+
+	SET aMinus = DATE_SUB(NOW(), INTERVAL 12 HOUR);
+    SELECT COUNT(*) INTO aConsulting  
+	FROM tb_payment_log A JOIN tb_customer B ON A.customer_id = B.id
+	WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND A.approval = 0 AND A.is_cancel = 0 AND A.is_no_show = 0 AND A.update_time > @aMinus;
+    
+call procPartnerPC_Home_TopInfo_get('jack@peteasy.kr', 2022, 09, 08);
 call procPartnerPC_Home_TopInfo_get('pettester@peteasy.kr', 2022, 8, 24);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_TopInfo_get $$
@@ -51,7 +58,7 @@ BEGIN
 	SET aMinus = DATE_SUB(NOW(), INTERVAL 12 HOUR);
     SELECT COUNT(*) INTO aConsulting  
 	FROM tb_payment_log A JOIN tb_customer B ON A.customer_id = B.id
-	WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND A.approval = 0 AND A.is_cancel = 0 AND A.is_no_show = 0 AND A.update_time > @aMinus;
+	WHERE A.data_delete = 0 AND A.artist_id = dataPartnerId AND A.approval = 0 AND A.is_cancel = 0 AND A.is_no_show = 0 AND A.update_time > aMinus;
     
     
     #오늘 일정
@@ -210,6 +217,9 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+select * from tb_mypet 
+where pet_seq=191877
+;
 
 call procPartnerPC_Home_NoticeMgr_get(1, '2020-07-31', '2021-08-1');
 DELIMITER $$

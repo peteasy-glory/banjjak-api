@@ -1325,13 +1325,17 @@ BODY : BEGIN
 		WHERE cellphone = dataCellPhone 
 			AND nickname not like 'cellp_%' 
 		ORDER BY last_login_time DESC LIMIT 1;
+        
+        SELeCT 1, @customer_id;
 
 		IF LENGTH(@customer_id) < 1 OR @customer_id IS NULL THEN
         BEGIN
 			SELECT CAST(tmp_seq AS CHAR(12)) INTO @customer_id FROM tb_tmp_user WHERE cellphone = dataCellPhone;
+        SELeCT 2, @customer_id;
 
       		IF LENGTH(@customer_id) < 1 OR @customer_id IS NULL THEN
             BEGIN
+        SELeCT 3, @customer_id;
                 
                 START TRANSACTION;
 
@@ -1365,6 +1369,8 @@ BODY : BEGIN
 	END;
     ELSE
     BEGIN
+            SELeCT 4, @customer_id;
+
 		UPDATE tb_mypet 
         SET type = dataAnimal, pet_type = dataPetType, 
 		year = dataPetYear, month = dataPetMonth, day = dataPetDay, 
@@ -1599,6 +1605,7 @@ BODY: BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Booking_CustomerCoupon_get (
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerCoupon_get $$
 CREATE PROCEDURE procPartnerPC_Booking_CustomerCoupon_get(
@@ -1625,7 +1632,7 @@ DELIMITER ;
 
 SELECT * 
 		FROM tb_user_coupon #where artist_id = 'pettester@peteasy.kr'
-		WHERE customer_id = 'lyw08205@naver.com' AND artist_id = 'pettester@peteasy.kr' AND del_yn = 'N';
+		WHERE customer_id = 'jack@peteasy.kr' AND artist_id = 'pettester@peteasy.kr' AND del_yn = 'N';
 
 select * from tb_payment_log
 where cellphone = '01053906571'
