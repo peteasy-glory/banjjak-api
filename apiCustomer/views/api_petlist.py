@@ -13,7 +13,13 @@ class TPetList(TAPIIDBase):
             value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_PET_LIST_GET % (args[0]["cellphone"]), QUERY_DB)
             if value is not None:
                 body = self.queryDataToDic(value, rows, columns)
-                for val in body:
+                data = []
+                if rows < 2:
+                    data.append(body)
+                else:
+                    data = body
+
+                for val in data:
                     if val["partner_id"] != "":
                         split = val["partner_id"].split(",")
                         arr = []
