@@ -758,7 +758,59 @@ BEGIN
     
 END $$ 
 DELIMITER ;
+
+call procPartnerPC_Setting_Shop_Vat_get('eaden@peteasy.kr');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Shop_Vat_get $$
+CREATE PROCEDURE procPartnerPC_Setting_Shop_Vat_get(
+	dataPartnerID VARCHAR(64)
+)
+BEGIN
+	/**
+		부가세 설정
+   */
+	
+    SELECT is_vat 
+    FROM tb_shop
+	WHERE customer_id = dataPartnerID;
     
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Shop_Vat_put $$
+CREATE PROCEDURE procPartnerPC_Setting_Shop_Vat_put(
+	dataPartnerID VARCHAR(64),
+    dataVat INT
+)
+BEGIN
+	/**
+		부가세 설정
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    UPDATE tb_shop 
+    SET is_vat = dataVat 
+    WHERE customer_id = dataPartnerID; 
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+
+
+ UPDATE tb_shop SET is_vat = '{$_POST['type']}' WHERE customer_id = 'eaden@peteasy.kr';
+ 
+ Select * from tb_shop
+ where customer_id = 'eaden@peteasy.kr'
+ ;
     select * from tb_product_dog_worktime 
     where artist_id = 'eaden@peteasy.kr';
         

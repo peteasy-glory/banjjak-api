@@ -196,7 +196,8 @@ PROC_SETTING_BEAUTY_PART_TIME_DOG_PUT = "call procPartnerPC_Setting_BeautyPartTi
 PROC_SETTING_BEAUTY_ADD_OPT_KIND_GET = "call procPartnerPC_Setting_BeautyAddOptionKind_get('%s','%s')"
 PROC_SETTING_BEAUTY_ADD_OPT_DOG_GET = "call procPartnerPC_Setting_BeautyAddOption_get('%s','%s','%s')"
 PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyPartTimeDog_get("%s","%s","%s","%s","%s","%s")'
-
+PROC_SETTING_SHOP_VAT_GET = "call procPartnerPC_Setting_Shop_Vat_get('%s')"
+PROC_SETTING_SHOP_VAT_PUT = "call procPartnerPC_Setting_Shop_Vat_put('%s',%d)"
 #========
 
 #ETC

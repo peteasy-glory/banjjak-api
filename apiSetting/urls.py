@@ -4,7 +4,7 @@ from django.urls import path
 from apiSetting.views import api_artist_work, api_open_close, api_regular_holiday, api_artist_vacation, api_part_time, \
     api_break_time, api_artist_setting, api_schedule_artist, api_auth_setting, api_reserve, api_pay_type, \
     api_beauty_product, \
-    api_beauty_option, api_beauty_coupon, api_etc_product, api_vat, api_product_part, api_product_add_opt
+    api_beauty_option, api_beauty_coupon, api_etc_product, api_vat, api_product_part, api_product_add_opt, api_shop_vat
 
 # from apiSetting.views import api_artist_work, api_schedule_artist
 
@@ -48,8 +48,8 @@ urlpatterns = [
     path('setting/b/product/add-opt/dog', api_product_add_opt.TDog.as_view()),
     path('setting/b/product/add-opt/dog/<str:partner_id>', api_product_add_opt.TDog.as_view()),
 
-
-
+    path('setting/shop-vat/<str:partner_id>', api_shop_vat.TShopVat.as_view()),
+    path('setting/shop-vat', api_shop_vat.TShopVat.as_view()),
 
 
     path('setting/beauty-coupon/<str:partner_id>', api_beauty_coupon.TCoupon.as_view()),
