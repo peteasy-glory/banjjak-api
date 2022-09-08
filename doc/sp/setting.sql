@@ -586,6 +586,8 @@ BEGIN
     END;
     ELSE
     BEGIN
+		START TRANSACTION;
+     
 		SET @SQL_STR = dataSQL;
 		PREPARE stmt FROM @SQL_STR;
 		EXECUTE stmt;
@@ -620,13 +622,21 @@ BEGIN
     
     SET @qry = '';
     SET @cnt = 0;
-
-	SELECT COUNT(*) INTO @cnt 
-    FROM tb_product_dog_static 
-	WHERE customer_id = dataPartnerId 
-		AND first_type = dataFirstType 
-        AND second_type = dataSecondType 
-        AND direct_title = dataDirect;
+    
+    IF dataDirect = '' THEN
+		SELECT COUNT(*) INTO @cnt 
+		FROM tb_product_dog_static 
+		WHERE customer_id = dataPartnerId 
+			AND first_type = dataFirstType 
+			AND second_type = dataSecondType;    
+    ELSE
+		SELECT COUNT(*) INTO @cnt 
+		FROM tb_product_dog_static 
+		WHERE customer_id = dataPartnerId 
+			AND first_type = dataFirstType 
+			AND second_type = dataSecondType 
+			AND direct_title = dataDirect;
+	END IF;
 
     
     IF @cnt > 0 THEN
@@ -640,12 +650,116 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOptionKind_get $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOptionKind_get(
+	dataPartnerID VARCHAR(64),
+    dataFirstType VARCHAR(10)
+)
+BEGIN
+	/**
+		강아지 미용 추가 옵션 미용 분류 조회( 소형견 미용 , 중형견 미용 등) 
+   */
+    
+	SELECT DISTINCT(IF(second_type='기타공통','추가공통옵션',second_type)) AS second_type
+    FROM tb_product_dog_static 
+	WHERE customer_id = dataPartnerId AND first_type = dataFirstType;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Setting_BeautyAddOption_get('eaden@peteasy.kr', '개','소형견미용');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOption_get $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOption_get(
+	dataPartnerID VARCHAR(64),
+    dataFirstType VARCHAR(10),
+    dataSecondType VARCHAR(32)
+)
+BEGIN
+	/**
+		미용 추가 옵션 조회 
+   */
+    
 	SELECT *
     FROM tb_product_dog_static 
-	WHERE customer_id = 'eaden@peteasy.kr' 
+	WHERE customer_id = dataPartnerID
 		AND first_type = dataFirstType 
-        AND second_type = dataSecondType 
-        AND direct_title = dataDirect;
+        AND second_type = dataSecondType;
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Setting_BeautyAddOption_get('eaden@peteasy.kr', '개','소형견미용');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOption_get $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOption_get(
+	dataPartnerID VARCHAR(64),
+    dataFirstType VARCHAR(10),
+    dataSecondType VARCHAR(32)
+)
+BEGIN
+	/**
+		미용 구분 조회 
+   */
+    
+	SELECT *
+    FROM tb_product_dog_static 
+	WHERE customer_id = dataPartnerID
+		AND first_type = dataFirstType 
+        AND second_type = dataSecondType;
+    
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Setting_BeautyPartTimeDog_put('eaden@peteasy.kr', '개','소형견미용');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyPartTimeDog_put $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyPartTimeDog_put(
+	dataPartnerID VARCHAR(64),
+    dataTime1 INT,
+    dataTime2 INT,
+    dataTime3 INT,
+    dataTime4 INT,
+    dataTime5 INT,
+    dataTime6 INT,
+    dataTime7 INT,
+    dataTime8 INT,
+    dataTime9 INT,
+    dataTime10 INT,
+    dataTime11 INT,
+    dataTime12 INT,
+    dataTime13 INT,
+    dataTime14 INT
+)
+BEGIN
+	/**
+		미용 구분 조회 
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    UPDATE tb_product_dog_worktime 
+    SET worktime1 = CONCAT(dataTime1), worktime2 = CONCAT(dataTime2), worktime3 = CONCAT(dataTime3), 
+		worktime4 = CONCAT(dataTime4), worktime5 = CONCAT(dataTime5), worktime6 = CONCAT(dataTime6), 
+        worktime7 = CONCAT(dataTime7), worktime8 = CONCAT(dataTime8), worktime9 = CONCAT(dataTime9), 
+        worktime10 = CONCAT(dataTime10), worktime11 = CONCAT(dataTime11), worktime12 = CONCAT(dataTime12), 
+        worktime13 = CONCAT(dataTime13), worktime14 = CONCAT(dataTime14), update_dt = NOW()  
+    WHERE artist_id = dataPartnerID; 
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;   
+    
+END $$ 
+DELIMITER ;
+    
+    select * from tb_product_dog_worktime 
+    where artist_id = 'eaden@peteasy.kr';
         
-        
-        
+        SELECT * FROM tb_product_dog_worktime WHERE artist_id = 'eaden@peteasy.kr' 

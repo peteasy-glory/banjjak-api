@@ -1,12 +1,60 @@
 # -*- coding: utf-8 -*-
 from apiSetting.views.base.api_product import TProduct
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY
+from apiShare.sqlQuery import PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY, PROC_SETTING_BEAUTY_ADD_OPT_DOG_GET, \
+    PROC_SETTING_BEAUTY_PART_DOG_GET, PROC_SETTING_BEAUTY_ADD_OPT_KIND_GET
 
+
+class TKind(TProduct):
+    def getInfo(self, partner_id, *args):
+        try:
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BEAUTY_ADD_OPT_KIND_GET % (partner_id,
+                                                                                                args[0]["first_type"]), QUERY_DB)
+            body = self.queryDataToDic(value, rows, columns)
+            return 0, "success", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
 class TDog(TProduct):
+
+
+
     def getInfo(self, partner_id, *args):
-       pass
+        try:
+            body = {}
+            body2 = {}
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BEAUTY_ADD_OPT_DOG_GET % (partner_id,
+                                                                                                args[0]["first_type"],
+                                                                                                args[0]["second_type"]), QUERY_DB)
+            value2, rows2, columns2 = self.db.resultDBQuery(PROC_SETTING_BEAUTY_PART_DOG_GET % (partner_id,), QUERY_DB)
+
+            if value is not None:
+                body = self.queryDataToDic(value, rows, columns)
+                body2 = self.queryDataToDic(value2, rows2, columns2)
+                data = []
+                if rows < 2:
+                    data.append(body)
+                else:
+                    data = body
+                for d in data:
+                    d["bath"] = self.dictValToChange(d,"목욕","bath_price","is_consult_bath")
+                    d["part"] = self.dictValToChange(d,"부분미용","part_price","is_consult_part")
+                    d["bath_part"] = self.dictValToChange(d,"부분+목욕","bath_part_price","is_consult_bath_part")
+                    d["sanitation"] = self.dictValToChange(d,"위생","sanitation_price","is_consult_sanitation")
+                    d["sanitation_bath"] = self.dictValToChange(d,"위생+목욕","sanitation_bath_price","is_consult_sanitation_bath")
+                    d["all"] = self.dictValToChange(d,"전체미용","all_price","is_consult_all")
+                    d["spoting"] = self.dictValToChange(d,"스포팅","spoting_price","is_consult_spoting")
+                    d["scissors"] = self.dictValToChange(d,"가위컷","scissors_price","is_consult_scissors")
+                    d["summercut"] = self.dictValToChange(d,"썸머컷","summercut_price","is_consult_summercut")
+                    d["beauty1"] = self.dictValToChange(d,self.nullToStr(body2["worktime10_title"]),"beauty1_price","is_consult_beauty1")
+                    d["beauty2"] = self.dictValToChange(d,self.nullToStr(body2["worktime11_title"]),"beauty2_price","is_consult_beauty2")
+                    d["beauty3"] = self.dictValToChange(d,self.nullToStr(body2["worktime12_title"]),"beauty3_price","is_consult_beauty3")
+                    d["beauty4"] = self.dictValToChange(d,self.nullToStr(body2["worktime13_title"]),"beauty4_price","is_consult_beauty4")
+                    d["beauty5"] = self.dictValToChange(d,self.nullToStr(body2["worktime14_title"]),"beauty5_price","is_consult_beauty5")
+
+            return 0, "success", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
     def modifyInfo(self, *args):
         try:
@@ -28,6 +76,12 @@ class TDog(TProduct):
             return - 1, "undefined method", body
         except Exception as err:
             return -1, self.errorInfo(err), None
+
+    def dictValToChange(self, d, tag,old_val1, old_val2):
+        new_val = {"tag":tag, "price":d[old_val1], "is_consult": d[old_val2]}
+        del(d[old_val1])
+        del(d[old_val2])
+        return new_val
 
     def argsToInsertUpdate(self, args):
         update = "UPDATE tb_product_dog_static "
@@ -108,6 +162,10 @@ class TDog(TProduct):
                                             ,self.isNull(timeArr[4]), self.isNull(addTitle[4]), self.isNull(dispArr[4]),args[1]["partner_id"])
         return update
 
+    def nullToStr(self, val):
+        if val is None or val == "null":
+            return ""
+        return val
     def isNull(self, val):
         if val == 'null'.lower():
             return 'NULL'

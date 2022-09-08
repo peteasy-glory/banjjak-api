@@ -112,7 +112,7 @@ BEGIN
 	ORDER BY A.odr_5 ASC;
 END $$ 
 DELIMITER ;
-call procPartnerPC_Home_ConsultinMgr_get('pettester@peteasy.kr');
+call procPartnerPC_Home_ConsultinMgr_get('me2mj@naver.com');
 call procPartnerPC_Home_ConsultinMgr_get('itseokbeom@gmail.com');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_ConsultinMgr_get $$
@@ -130,7 +130,7 @@ BEGIN
 	FROM tb_payment_log A, tb_mypet B, tb_customer C
 	WHERE A.pet_seq = B.pet_seq	AND A.customer_id = C.id AND 
 			A.artist_id = dataPartnerId AND A.data_delete = 0
-            AND C.enable_flag = 1
+            AND C.enable_flag = 1 AND A.approval != 1
 	ORDER BY A.update_time DESC;
 END $$ 
 DELIMITER ;
