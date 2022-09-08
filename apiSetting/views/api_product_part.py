@@ -2,7 +2,29 @@
 from apiSetting.views.base.api_product import TProduct
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import PROC_SETTING_BEAUTY_PART_DOG_MODIFY, PROC_SETTING_BEAUTY_PART_DOG_DELETE, \
-    PROC_SETTING_BEAUTY_PART_DOG_GET
+    PROC_SETTING_BEAUTY_PART_DOG_GET, PROC_SETTING_BEAUTY_PART_TIME_DOG_PUT
+
+
+class TPartTime(TProduct):
+    def getInfo(self, partner_id, *args):
+        pass
+
+    def modifyInfo(self, *args):
+        try:
+            body = {}
+            if  args[0] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BEAUTY_PART_TIME_DOG_PUT % (args[1]["partner_id"],
+                                                            args[1]["work_time1"],args[1]["work_time2"],args[1]["work_time3"],
+                                                            args[1]["work_time4"],args[1]["work_time5"],args[1]["work_time6"],
+                                                            args[1]["work_time7"],args[1]["work_time8"],args[1]["work_time9"],
+                                                            args[1]["work_time10"],args[1]["work_time11"],args[1]["work_time12"],
+                                                            args[1]["work_time13"],args[1]["work_time14"],),QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
 
 class TDog(TProduct):

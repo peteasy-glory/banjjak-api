@@ -43,7 +43,11 @@ urlpatterns = [
 
     path('setting/b/product/part/dog/<str:partner_id>', api_product_part.TDog.as_view()),
     path('setting/b/product/part/dog', api_product_part.TDog.as_view()),
+    path('setting/b/product/part-time/dog', api_product_part.TPartTime.as_view()),
+    path('setting/b/product/add-opt/kind/<str:partner_id>', api_product_add_opt.TKind.as_view()),
     path('setting/b/product/add-opt/dog', api_product_add_opt.TDog.as_view()),
+    path('setting/b/product/add-opt/dog/<str:partner_id>', api_product_add_opt.TDog.as_view()),
+
 
 
 
