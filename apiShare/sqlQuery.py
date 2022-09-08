@@ -205,3 +205,7 @@ PROC_ETC_PASSWORD_GET = "call procPartnerPC_Etc_Password_get('%s')"
 PROC_ETC_PASSWORD_PUT = "call procPartnerPC_Etc_Password_put('%s', '%s')"
 
 PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s','%s','%s','%s')"
+
+#ALLIMTALK
+PROC_ALLIM_WITHBTN_POST = "call procPartnerPC_Allim_WithBtn_post('%s','%s','%s','%s')"
+PROC_ALLIM_WITHOUTBTN_POST = "call procPartnerPC_Allim_WithoutBtn_post('%s','%s','%s')"
