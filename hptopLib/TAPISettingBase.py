@@ -254,6 +254,7 @@ class TAPISettingBase(TAPIBase):
                     tmp["toenail_price"] = d[11]
                     tmp["hair_clot_price"] = d[13]
                     tmp["ferocity_price"] = d[14]
+                    tmp["comment"] = d[18]
 
                     if d[12] is not None and d[12] != '':
                         tmp['option'] = {}
