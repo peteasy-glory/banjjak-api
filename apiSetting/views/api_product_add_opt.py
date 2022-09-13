@@ -16,9 +16,6 @@ class TKind(TProduct):
             return -1, self.errorInfo(err), None
 
 class TDog(TProduct):
-
-
-
     def getInfo(self, partner_id, *args):
         try:
             body = {}

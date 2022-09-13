@@ -667,28 +667,12 @@ BEGIN
     
 END $$ 
 DELIMITER ;
-
-call procPartnerPC_Setting_BeautyAddOption_get('eaden@peteasy.kr', '개','소형견미용');
-DELIMITER $$
-DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOption_get $$
-CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOption_get(
-	dataPartnerID VARCHAR(64),
-    dataFirstType VARCHAR(10),
-    dataSecondType VARCHAR(32)
-)
-BEGIN
-	/**
-		미용 추가 옵션 조회 
-   */
-    
 	SELECT *
     FROM tb_product_dog_static 
-	WHERE customer_id = dataPartnerID
-		AND first_type = dataFirstType 
-        AND second_type = dataSecondType;
-    
-END $$ 
-DELIMITER ;
+	WHERE customer_id = 'eaden@peteasy.kr'
+		AND first_type =  '개' 
+        AND second_type = '소형견미용';
+
 
 call procPartnerPC_Setting_BeautyAddOption_get('eaden@peteasy.kr', '개','소형견미용');
 DELIMITER $$
@@ -805,13 +789,70 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+#==============================
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOptionEtcDog_modify $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOptionEtcDog_modify(
+	dataPartnerId VARCHAR(64),
+    dataFirstType VARCHAR(10),
+    dataSecondType VARCHAR(32),
+    dataUpdateQry VARCHAR(4096),
+    dataInsertQry VARCHAR(4096)
+)
+BEGIN
+	/**
+		강아지 미용 추가 옵션  
+   */
+    
+    SET @qry = '';
+    SET @cnt = 0;
+    
+	SELECT COUNT(*) INTO @cnt 
+	FROM tb_product_dog_common 
+	WHERE customer_id = dataPartnerId 
+		AND first_type = dataFirstType 
+		AND second_type = dataSecondType;    
 
- UPDATE tb_shop SET is_vat = '{$_POST['type']}' WHERE customer_id = 'eaden@peteasy.kr';
- 
- Select * from tb_shop
- where customer_id = 'eaden@peteasy.kr'
- ;
-    select * from tb_product_dog_worktime 
-    where artist_id = 'eaden@peteasy.kr';
-        
-        SELECT * FROM tb_product_dog_worktime WHERE artist_id = 'eaden@peteasy.kr' 
+    
+    IF @cnt > 0 THEN
+		SET @qry = dataUpdateQry;
+	ELSE
+		SET @qry = dataInsertQry;
+	END IF;
+    
+    call procPartnerPC_QryToExcute(1, @qry);
+    
+END $$ 
+DELIMITER ;
+
+#delete
+DELETE FROM tb_product_dog_common WHERE customer_id = 'eaden@peteasy.kr' AND first_type = '개' AND second_type = '추가공통옵션'
+DELETE FROM tb_product_common_option WHERE customer_id = 'eaden@peteasy.kr' AND type = '목욕' 
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOptionEtcDog_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOptionEtcDog_delete(
+	dataPartnerId VARCHAR(64),
+    dataFirstType VARCHAR(10)  
+)
+BEGIN
+	/**
+		강아지 미용 추가 옵션 삭제
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+	DELETE FROM tb_product_dog_common WHERE customer_id = dataPartnerId AND first_type = dataFirstType AND second_type = '추가공통옵션';
+	DELETE FROM tb_product_common_option WHERE customer_id = dataPartnerId AND type = '목욕';
+	 
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
