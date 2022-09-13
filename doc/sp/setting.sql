@@ -910,3 +910,250 @@ BEGIN
     
 END $$ 
 DELIMITER ;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Beauty_Coupon_post $$
+CREATE PROCEDURE procPartnerPC_Setting_Beauty_Coupon_post(
+	dataPartnerId VARCHAR(64),
+    dataProductType CHAR(1),
+	dataType CHAR(1),
+    dataCouponName VARCHAR(32),
+    dataGiven VARCHAR(12),
+    dataPrice VARCHAR(12)
+)
+BEGIN
+	/**
+		쿠폰 추가 
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	INSERT INTO tb_coupon 
+	SET customer_id     = dataPartnerId, 
+		product_type    = dataProductType, 
+		type            = dataType, 
+		name            = dataCouponName, 
+		given           = dataGiven, 
+		price           = dataPrice, 
+		reg_date        = NOW();
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Beauty_Coupon_put $$
+CREATE PROCEDURE procPartnerPC_Setting_Beauty_Coupon_put(
+	dataIdx INT,
+    dataPartnerId VARCHAR(64),
+    dataProductType CHAR(1),
+	dataType CHAR(1),
+    dataCouponName VARCHAR(32),
+    dataGiven VARCHAR(12),
+    dataPrice VARCHAR(12)
+)
+BEGIN
+	/**
+		쿠폰 수정 
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	UPDATE tb_coupon 
+	SET customer_id     = dataPartnerId, 
+		product_type    = dataProductType, 
+		type            = dataType, 
+		name            = dataCouponName, 
+		given           = dataGiven, 
+		price           = dataPrice, 
+		update_date     = NOW()  
+	WHERE coupon_seq = dataIdx;
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Beauty_Coupon_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_Beauty_Coupon_delete(
+	dataIdx INT
+)
+BEGIN
+	/**
+		쿠폰 삭제  
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	UPDATE tb_coupon SET del_yn = 'Y'
+	WHERE coupon_seq = dataIdx;
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+#======
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Beauty_CouponMemo_post $$
+CREATE PROCEDURE procPartnerPC_Setting_Beauty_CouponMemo_post(
+	dataPartnerID VARCHAR(64),
+	dataCouponMemo TEXT,
+    dataFlatMemo TEXT
+)
+BEGIN
+	/**
+		쿠폰 메모 추가 
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	INSERT INTO tb_coupon_memo 
+	SET customer_id = dataPartnerID , 
+		coupon_memo = dataCouponMemo,
+		flat_memo = dataFlatMemo, 
+		reg_date = NOW();
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+select * from tb_coupon_memo where customer_id = 'eaden@peteasy.kr';
+
+call procPartnerPC_Setting_Beauty_CouponMemo_put(153,'eadenpeteasy.kreaden@peteasy.kr', 'test', 'test');
+	UPDATE tb_coupon_memo 
+	SET customer_id = dataPartnerID , 
+		coupon_memo = dataCouponMemo,
+		flat_memo = dataFlatMemo, 
+		update_date = NOW() 
+	WHERE coupon_seq = dataIdx;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Beauty_CouponMemo_put $$
+CREATE PROCEDURE procPartnerPC_Setting_Beauty_CouponMemo_put(
+	dataIdx INT,
+    dataPartnerId VARCHAR(64),
+	dataCouponMemo TEXT,
+    dataFlatMemo TEXT
+)
+BEGIN
+	/**
+		쿠폰메모 수정 
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	UPDATE tb_coupon_memo 
+	SET customer_id = dataPartnerID , 
+		coupon_memo = dataCouponMemo,
+		flat_memo = dataFlatMemo, 
+		update_date = NOW() 
+	WHERE memo_seq = dataIdx;
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+#===========
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Beauty_StoreGoods_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_Beauty_StoreGoods_delete(
+    dataPartnerId VARCHAR(64),
+	dataKind VARCHAR(2)
+)
+BEGIN
+	/**
+		매장 상품 해당 종류 삭제
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	DELETE FROM tb_product_dog_etc WHERE customer_id = dataPartnerId AND product_kind = dataKind;
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Beauty_StoreGoods_post $$
+CREATE PROCEDURE procPartnerPC_Setting_Beauty_StoreGoods_post(
+    dataPartnerId VARCHAR(64),
+	dataKind VARCHAR(2),
+    dataName VARCHAR(256),
+    dataPrice VARCHAR(12)
+)
+BEGIN
+	/**
+		매장 상품 해당 종류 삭제 후 추가
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	INSERT INTO tb_product_dog_etc 
+	SET customer_id    = dataPartnerId, 
+		product_kind   = dataKind, 
+		name           = dataName, 
+		price          = dataPrice, 
+		update_time    = NOW();
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
