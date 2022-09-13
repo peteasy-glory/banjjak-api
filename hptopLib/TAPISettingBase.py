@@ -141,6 +141,9 @@ class TAPISettingBase(TAPIBase):
                         tmp["in_shop"] = d[4]
                         tmp["out_shop"] = d[5]
                         tmp["comment"] = d[40]
+                        tmp["is_over_kgs"] = d[36]
+                        tmp["over_kg"] = d[38]
+                        tmp["over_price"] = d[39]
                         kgs = d[35].split(',')
                         tmp["service"] = []
                         for i, k in enumerate(kgs):
