@@ -23,7 +23,7 @@ class TAPISettingBase(TAPIBase):
             else:
                 return HttpResponse(self.json.dicToJson(self.message.error(msg)))
         except Exception as e:
-            return self.errorInfo(e)
+            return HttpResponse(self.json.dicToJson(self.message.error(self.errorInfo(e))))
 
     @abstractmethod
     def getInfo(self, partner_id):

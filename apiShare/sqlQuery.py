@@ -204,6 +204,15 @@ PROC_SETTING_BEAUTY_COMMON_OPTION_POST = "call procPartnerPC_Setting_BeautyCommo
 PROC_SETTING_BEAUTY_ADD_OPT_ETC_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyAddOptionEtcDog_modify("%s","%s","%s","%s","%s")'
 PROC_SETTING_BEAUTY_ADD_OPT_ETC_DOG_DELETE = "call procPartnerPC_Setting_BeautyAddOptionEtcDog_delete('%s','%s')"
 
+PROC_SETTING_BEAUTY_COUPON_POST = "call procPartnerPC_Setting_Beauty_Coupon_post('%s','%s','%s','%s','%s','%s')"
+PROC_SETTING_BEAUTY_COUPON_PUT = "call procPartnerPC_Setting_Beauty_Coupon_put(%d,'%s','%s','%s','%s','%s','%s')"
+PROC_SETTING_BEAUTY_COUPON_DELETE = "call procPartnerPC_Setting_Beauty_Coupon_delete(%d)"
+
+PROC_SETTING_BEAUTY_COUPON_MEMO_POST = "call procPartnerPC_Setting_Beauty_CouponMemo_post('%s','%s','%s')"
+PROC_SETTING_BEAUTY_COUPON_MEMO_PUT = "call procPartnerPC_Setting_Beauty_CouponMemo_put(%d,'%s','%s','%s')"
+
+PROC_SETTING_BEAUTY_STORE_GOODS_DELETE = "call procPartnerPC_Setting_Beauty_StoreGoods_delete('%s','%s')"
+PROC_SETTING_BEAUTY_STORE_GOODS_POST = "call procPartnerPC_Setting_Beauty_StoreGoods_post('%s','%s','%s','%s')"
 #========
 
 #ETC
