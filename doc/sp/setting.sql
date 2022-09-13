@@ -825,10 +825,6 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-#delete
-DELETE FROM tb_product_dog_common WHERE customer_id = 'eaden@peteasy.kr' AND first_type = '개' AND second_type = '추가공통옵션'
-DELETE FROM tb_product_common_option WHERE customer_id = 'eaden@peteasy.kr' AND type = '목욕' 
-
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyAddOptionEtcDog_delete $$
 CREATE PROCEDURE procPartnerPC_Setting_BeautyAddOptionEtcDog_delete(
@@ -846,6 +842,64 @@ BEGIN
 	DELETE FROM tb_product_dog_common WHERE customer_id = dataPartnerId AND first_type = dataFirstType AND second_type = '추가공통옵션';
 	DELETE FROM tb_product_common_option WHERE customer_id = dataPartnerId AND type = '목욕';
 	 
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+#=======================
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyCommonOption_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyCommonOption_delete(
+	dataPartnerId VARCHAR(64)
+)
+BEGIN
+	/**
+		목욕 추가 옵션 삭제
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+	DELETE FROM tb_product_common_option WHERE customer_id = dataPartnerId AND type = '목욕'; 
+
+
+	IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+    
+END $$ 
+DELIMITER ;
+
+call procPartnerPC_Setting_BeautyCommonOption_post('eaden@peteasy.kr','오중모','10');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_BeautyCommonOption_post $$
+CREATE PROCEDURE procPartnerPC_Setting_BeautyCommonOption_post(
+	dataPartnerId VARCHAR(64),
+    dataBathTitle VARCHAR(64),
+    dataBathPrice VARCHAR(12)
+)
+BEGIN
+	/**
+		목욕 추가 옵션 추가 
+   */
+    
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	INSERT INTO tb_product_common_option 
+    SET customer_id = dataPartnerId, type = '목욕', price = dataBathPrice, title = dataBathTitle, reg_date = NOW();
+
 	IF aErr < 0 THEN
 		ROLLBACK;
 	ELSE
