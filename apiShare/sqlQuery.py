@@ -195,9 +195,15 @@ PROC_SETTING_BEAUTY_PART_DOG_DELETE = 'call procPartnerPC_Setting_BeautyPartDog_
 PROC_SETTING_BEAUTY_PART_TIME_DOG_PUT = "call procPartnerPC_Setting_BeautyPartTimeDog_put('%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)"
 PROC_SETTING_BEAUTY_ADD_OPT_KIND_GET = "call procPartnerPC_Setting_BeautyAddOptionKind_get('%s','%s')"
 PROC_SETTING_BEAUTY_ADD_OPT_DOG_GET = "call procPartnerPC_Setting_BeautyAddOption_get('%s','%s','%s')"
-PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyPartTimeDog_get("%s","%s","%s","%s","%s","%s")'
+PROC_SETTING_BEAUTY_ADD_OPT_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyAddOptionDog_modify("%s","%s","%s","%s","%s","%s")'
 PROC_SETTING_SHOP_VAT_GET = "call procPartnerPC_Setting_Shop_Vat_get('%s')"
 PROC_SETTING_SHOP_VAT_PUT = "call procPartnerPC_Setting_Shop_Vat_put('%s',%d)"
+
+PROC_SETTING_BEAUTY_COMMON_OPTION_DELETE = "call procPartnerPC_Setting_BeautyCommonOption_delete('%s')"
+PROC_SETTING_BEAUTY_COMMON_OPTION_POST = "call procPartnerPC_Setting_BeautyCommonOption_post('%s','%s','%s')"
+PROC_SETTING_BEAUTY_ADD_OPT_ETC_DOG_MODIFY = 'call procPartnerPC_Setting_BeautyAddOptionEtcDog_modify("%s","%s","%s","%s","%s")'
+PROC_SETTING_BEAUTY_ADD_OPT_ETC_DOG_DELETE = "call procPartnerPC_Setting_BeautyAddOptionEtcDog_delete('%s','%s')"
+
 #========
 
 #ETC
