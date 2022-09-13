@@ -141,6 +141,9 @@ class TAPISettingBase(TAPIBase):
                         tmp["in_shop"] = d[4]
                         tmp["out_shop"] = d[5]
                         tmp["comment"] = d[40]
+                        tmp["is_over_kgs"] = d[36]
+                        tmp["over_kg"] = d[38]
+                        tmp["over_price"] = d[39]
                         kgs = d[35].split(',')
                         tmp["service"] = []
                         for i, k in enumerate(kgs):
@@ -251,6 +254,7 @@ class TAPISettingBase(TAPIBase):
                     tmp["toenail_price"] = d[11]
                     tmp["hair_clot_price"] = d[13]
                     tmp["ferocity_price"] = d[14]
+                    tmp["comment"] = d[18]
 
                     if d[12] is not None and d[12] != '':
                         tmp['option'] = {}
