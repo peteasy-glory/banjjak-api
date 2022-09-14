@@ -228,3 +228,27 @@ PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s'
 #ALLIMTALK
 PROC_ALLIM_WITHBTN_POST = "call procPartnerPC_Allim_WithBtn_post('%s','%s','%s','%s')"
 PROC_ALLIM_WITHOUTBTN_POST = "call procPartnerPC_Allim_WithoutBtn_post('%s','%s','%s')"
+
+################ HOTEL #################
+PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"
+PROC_SETTING_HOTEL_PUT = "call procPartnerPC_Setting_Hotel_put(%d,'%s','%s','%s','%s','%s','%s','%s')"
+
+PROC_SETTING_HOTEL_PRODUCT_GET = "call procPartnerPC_Setting_HotelProduct_get('%s')"
+PROC_SETTING_HOTEL_PRODUCT_POST = "call procPartnerPC_Setting_HotelProduct_post(%d,'%s','%s','%s',%d,,'%s','%s','%s',%d,'%s','%s',%d,%d,'%s','%s','%s','%s')"
+PROC_SETTING_HOTEL_PRODUCT_PUT = "call procPartnerPC_Setting_HotelProduct_put(%d,'%s',%d,,'%s','%s','%s',%d,'%s','%s',%d,%d,'%s','%s','%s','%s')"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

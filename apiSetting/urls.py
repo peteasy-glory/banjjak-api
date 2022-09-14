@@ -6,9 +6,7 @@ from apiSetting.views import api_artist_work, api_open_close, api_regular_holida
     api_beauty_product, \
     api_beauty_option, api_beauty_coupon, api_etc_product, api_vat, api_product_part, api_product_add_opt, api_shop_vat, \
     api_product_add_opt_etc, api_store_goods
-
-# from apiSetting.views import api_artist_work, api_schedule_artist
-
+from apiSetting.views.hotel import api_h_product
 
 urlpatterns = [
 
@@ -27,7 +25,6 @@ urlpatterns = [
     path('setting/open-close/<str:partner_id>', api_open_close.TOpenClose.as_view()),
     path('setting/regular-holiday', api_regular_holiday.TReqularHoliday.as_view()),
     path('setting/regular-holiday/<str:partner_id>', api_regular_holiday.TReqularHoliday.as_view()),
-
     path('setting/artist-put', api_artist_setting.TAuthSetting.as_view()),
     path('setting/out-artist', api_artist_setting.TArtistOut.as_view()),
     path('setting/view-artist', api_artist_setting.TArtistView.as_view()),
@@ -41,7 +38,6 @@ urlpatterns = [
     path('setting/pay-type', api_pay_type.TPayType.as_view()),
     path('setting/beauty-product/<str:partner_id>', api_beauty_product.TProduct.as_view()),
     path('setting/option-product/<str:partner_id>', api_beauty_option.TProduct.as_view()),
-
     path('setting/b/product/part/dog/<str:partner_id>', api_product_part.TDog.as_view()),
     path('setting/b/product/part/dog', api_product_part.TDog.as_view()),
     path('setting/b/product/part-time/dog', api_product_part.TPartTime.as_view()),
@@ -49,18 +45,15 @@ urlpatterns = [
     path('setting/b/product/add-opt/dog', api_product_add_opt.TDog.as_view()),
     path('setting/b/product/add-opt/dog/<str:partner_id>', api_product_add_opt.TDog.as_view()),
     path('setting/b/product/add-opt-etc/dog', api_product_add_opt_etc.TDog.as_view()),
-
-
     path('setting/shop-vat/<str:partner_id>', api_shop_vat.TShopVat.as_view()),
     path('setting/shop-vat', api_shop_vat.TShopVat.as_view()),
-
-
     path('setting/beauty-coupon/<str:partner_id>', api_beauty_coupon.TCoupon.as_view()),
     path('setting/beauty-coupon', api_beauty_coupon.TCoupon.as_view()),
     path('setting/beauty-coupon-memo', api_beauty_coupon.TCouponMemo.as_view()),
     path('setting/etc-product/<str:partner_id>', api_etc_product.TProduct.as_view()),
     path('setting/vat', api_vat.TAPIVat.as_view()),
     path('setting/vat/<str:partner_id>', api_vat.TAPIVat.as_view()),
-
     path('setting/beauty-store-goods', api_store_goods.TGoods.as_view()),
+    #===============
+    path('setting/h/product/<str:partner_id>', api_h_product.TRoom.as_view()),
 ]
