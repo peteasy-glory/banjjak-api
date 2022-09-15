@@ -92,31 +92,31 @@ class TAPISettingBase(TAPIBase):
                     sub["time"] = d[10]
                     sub["is_use"] = d[29]
 
-                    if d[11] is not None:
+                    if d[11] is not None and d[11] != '0':
                         tmp[d[16]] = {}
                         sub = tmp[d[16]]
                         sub["time"] = d[11]
                         sub["is_use"] = d[30]
 
-                    if d[12] is not None:
+                    if d[12] is not None and d[12] != '0':
                         tmp[d[17]] = {}
                         sub = tmp[d[17]]
                         sub["time"] = d[12]
                         sub["is_use"] = d[31]
 
-                    if d[13] is not None:
+                    if d[13] is not None and d[13] != '0':
                         tmp[d[18]] = {}
                         sub = tmp[d[18]]
                         sub["time"] = d[13]
                         sub["is_use"] = d[32]
 
-                    if d[14] is not None:
+                    if d[14] is not None and d[14] != '0':
                         tmp[d[19]] = {}
                         sub = tmp[d[19]]
                         sub["time"] = d[14]
                         sub["is_use"] = d[33]
 
-                    if d[15] is not None:
+                    if d[15] is not None and d[15] != '0':
                         tmp[d[20]] = {}
                         sub = tmp[d[20]]
                         sub["time"] = d[15]
