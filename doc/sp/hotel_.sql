@@ -1,4 +1,4 @@
-
+call procPartnerPC_Setting_Hotel_get('itseokbeom@gmail.com');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Hotel_get $$
 CREATE PROCEDURE procPartnerPC_Setting_Hotel_get(
@@ -76,8 +76,25 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Setting_Photo_get(3915);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Photo_get $$
+CREATE PROCEDURE procPartnerPC_Setting_Photo_get(
+    dataIdx INT
+)
+BEGIN
+	/**
+		사진 가져 오기
+   */
+	SELECT f_seq, file_name, file_path 
+	FROM tb_file
+	WHERE is_delete = '1'
+		AND f_seq = dataIdx;
 
+END $$ 
+DELIMITER ;
 
+call procPartnerPC_Setting_HotelProduct_post(177,'itseokbeom@gmail.com','dog','객실6',1,'2.0','100','200','1','1',10,100,'1','2','객실6 추가','');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_HotelProduct_post $$
 CREATE PROCEDURE procPartnerPC_Setting_HotelProduct_post(
@@ -89,7 +106,6 @@ CREATE PROCEDURE procPartnerPC_Setting_HotelProduct_post(
     dataWeight VARCHAR(45),
     dataNormalPrice VARCHAR(45),
     dataPeakPrice VARCHAR(45),
-    dataSort INT,
     dataIsNeutral CHAR(1),
     dataIsNeutralPay CHAR(1),
     dataNeutralPrice INT,
@@ -137,7 +153,7 @@ END $$
 DELIMITER ;
 
 
-
+call procPartnerPC_Setting_HotelProduct_put(401,'6객',2,'2.1','20','200','1','1',5000,10000,'2','1','수정','');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_HotelProduct_put $$
 CREATE PROCEDURE procPartnerPC_Setting_HotelProduct_put(
@@ -159,7 +175,7 @@ CREATE PROCEDURE procPartnerPC_Setting_HotelProduct_put(
 )
 BEGIN
 	/**
-		호텔 정보 수정(체크인/체크아웃/쿠폰사용여부
+		호텔 상품 수정
    */
     DECLARE aErr INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
@@ -182,8 +198,118 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Setting_HotelProduct_delete(401,'6객',2,'2.1','20','200','1','1',5000,10000,'2','1','수정','');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_HotelProduct_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_HotelProduct_delete(
+    dataIdx INT,
+	dataMessage VARCHAR(255)
+)
+BEGIN
+	/**
+		호텔 상품 삭제
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+	
+    UPDATE tb_hotel_product SET
+		is_delete = '1',
+		delete_msg = dataMessage,
+		delete_dt = NOW()
+	WHERE hp_seq = dataIdx;
+	
+    IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+END $$ 
+DELIMITER ;
 
 
+
+
+call procPartnerPC_Setting_Coupon_get('itseokbeom@gmail.com');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Coupon_get $$
+CREATE PROCEDURE procPartnerPC_Setting_Coupon_get(
+    dataPartnerID VARCHAR(64),
+    dataType CHAR(1)
+)
+BEGIN
+	/**
+		호텔 쿠폰 정보 
+   */
+	SELECT *
+	FROM tb_coupon
+	WHERE customer_id = dataPartnerID
+		AND del_yn = 'N'
+		 AND product_type = dataType;
+
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Coupon_post $$
+CREATE PROCEDURE procPartnerPC_Setting_Coupon_post(
+    dataPartnerID VARCHAR(64),
+    dataType CHAR(1),
+    dataCouponType CHAR(1),
+    dataName VARCHAR(250),
+    dataGiven INT,
+    dataPrice INT
+)
+BEGIN
+	/**
+		호텔 쿠폰 추가 
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+	INSERT INTO tb_coupon (customer_id, product_type, type, name, given, price) 
+    VALUES (dataPartnerID, dataType, dataCouponType, dataName, dataGiven, dataPrice);
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+END $$ 
+DELIMITER ;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_Coupon_put $$
+CREATE PROCEDURE procPartnerPC_Setting_Coupon_put(
+    dataIdx INT,
+    dataName VARCHAR(250),
+    dataGiven INT,
+    dataPrice INT
+)
+BEGIN
+	/**
+		호텔 쿠폰 수정 
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+    
+	UPDATE tb_coupon 
+    SET name = dataName,  given = dataGiven,  price = dataPrice, del_yn = 'N',update_date = NOW()
+	WHERE coupon_seq = dataIdx;
+    
+    IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+END $$ 
+DELIMITER ;
 
 
 
