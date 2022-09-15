@@ -305,6 +305,7 @@ class TAPISettingBase(TAPIBase):
                 tmp["idx"] = value[0]
                 tmp["in_shop"] = value[4]
                 tmp["out_shop"] = value[5]
+                tmp["comment"] = value[39]
 
                 tmp["face"] = {}
                 sub = tmp["face"]
