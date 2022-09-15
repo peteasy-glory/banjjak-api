@@ -50,77 +50,77 @@ class TAPISettingBase(TAPIBase):
                     tmp["bath"] = {}
                     sub = tmp["bath"]
                     sub["time"] = d[2]
-                    sub["is_use"] = d[22]
+                    sub["is_use"] = d[21]
 
                     tmp["part"] = {}
                     sub = tmp["part"]
                     sub["time"] = d[3]
-                    sub["is_use"] = d[23]
+                    sub["is_use"] = d[22]
 
                     tmp["bath_part"] = {}
                     sub = tmp["bath_part"]
                     sub["time"] = d[4]
-                    sub["is_use"] = d[24]
+                    sub["is_use"] = d[23]
 
                     tmp["sanitation"] = {}
                     sub = tmp["sanitation"]
                     sub["time"] = d[5]
-                    sub["is_use"] = d[25]
+                    sub["is_use"] = d[24]
 
                     tmp["sanitation_bath"] = {}
                     sub = tmp["sanitation_bath"]
                     sub["time"] = d[6]
-                    sub["is_use"] = d[26]
+                    sub["is_use"] = d[25]
 
                     tmp["all"] = {}
                     sub = tmp["all"]
                     sub["time"] = d[7]
-                    sub["is_use"] = d[27]
+                    sub["is_use"] = d[26]
 
                     tmp["spoting"] = {}
                     sub = tmp["spoting"]
                     sub["time"] = d[8]
-                    sub["is_use"] = d[28]
+                    sub["is_use"] = d[27]
 
                     tmp["scissors"] = {}
                     sub = tmp["scissors"]
                     sub["time"] = d[9]
-                    sub["is_use"] = d[29]
+                    sub["is_use"] = d[28]
 
                     tmp["summercut"] = {}
                     sub = tmp["summercut"]
                     sub["time"] = d[10]
-                    sub["is_use"] = d[30]
+                    sub["is_use"] = d[29]
 
-                    if d[11] is not None:
+                    if d[11] is not None and d[11] != '0':
                         tmp[d[16]] = {}
                         sub = tmp[d[16]]
                         sub["time"] = d[11]
-                        sub["is_use"] = d[31]
+                        sub["is_use"] = d[30]
 
-                    if d[12] is not None:
+                    if d[12] is not None and d[12] != '0':
                         tmp[d[17]] = {}
                         sub = tmp[d[17]]
                         sub["time"] = d[12]
-                        sub["is_use"] = d[32]
+                        sub["is_use"] = d[31]
 
-                    if d[13] is not None:
+                    if d[13] is not None and d[13] != '0':
                         tmp[d[18]] = {}
                         sub = tmp[d[18]]
                         sub["time"] = d[13]
-                        sub["is_use"] = d[33]
+                        sub["is_use"] = d[32]
 
-                    if d[14] is not None:
+                    if d[14] is not None and d[14] != '0':
                         tmp[d[19]] = {}
                         sub = tmp[d[19]]
                         sub["time"] = d[14]
-                        sub["is_use"] = d[34]
+                        sub["is_use"] = d[33]
 
-                    if d[15] is not None:
+                    if d[15] is not None and d[15] != '0':
                         tmp[d[20]] = {}
                         sub = tmp[d[20]]
                         sub["time"] = d[15]
-                        sub["is_use"] = d[35]
+                        sub["is_use"] = d[34]
 
                     # body["worktime"].append(tmp)
 
@@ -305,6 +305,7 @@ class TAPISettingBase(TAPIBase):
                 tmp["idx"] = value[0]
                 tmp["in_shop"] = value[4]
                 tmp["out_shop"] = value[5]
+                tmp["comment"] = value[39]
 
                 tmp["face"] = {}
                 sub = tmp["face"]
