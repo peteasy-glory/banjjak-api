@@ -10,15 +10,16 @@ class TRoom(TProduct):
     def getInfo(self, partner_id, *args):
         try:
             value, rows, columns = self.db.resultDBQuery(PROC_SETTING_HOTEL_PRODUCT_GET % (partner_id,), QUERY_DB)
-            data = []
-            if rows < 2:
-                data.append(value)
-            else:
-                data = value
+
             body = {"dog":[], "cat":[]}
             if value is not None:
-                tmp_body = self.queryDataToDic(data, rows, columns)
-                for tmp in tmp_body:
+                tmp_body = self.queryDataToDic(value, rows, columns)
+                data = []
+                if rows < 2:
+                    data.append(tmp_body)
+                else:
+                    data = tmp_body
+                for tmp in data:
                     type = tmp["room_pet_type"]
                     tmp["fee_list"] = self.priceCommaSplit(tmp["weight"], tmp["normal_price"], tmp["peak_price"])
                     tmp["img_list"] = self.imageSplit(tmp["image"])
@@ -36,46 +37,11 @@ class TRoom(TProduct):
                         body["dog"].append(tmp)
                     else:
                         body["cat"].append(tmp)
-                err_coupon, body["coupon"] = self.getCoupon(partner_id)
+                err_coupon, body["coupon"] = self.getCoupon(partner_id, service="H")
             return 0, "success", body
         except Exception as err:
             return -1, self.errorInfo(err), None
 
-    def priceCommaSplit(self, weight, price, add_price):
-        kg_arr = weight.split(",")
-        price_arr = price.split(",")
-        add_price_arr = add_price.split(",")
-        ret_data = []
-        i = 0
-        for k in kg_arr:
-            tmp = {"kg":k, "normal_price":0, "peak_price":0}
-            if len(price_arr) > i:
-                tmp["normal_price"] =  int(price_arr[i]) if price_arr[i] != "" else 0
-            if len(add_price_arr) > i:
-                tmp["peak_price"] = int(add_price_arr[i]) if add_price_arr[i] != "" else 0
-            ret_data.append(tmp)
-            i += 1
-        return  ret_data
-
-    def getCoupon(self, partner_id):
-        try:
-            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_HOTEL_GET % (partner_id,'H'), QUERY_DB)
-            data = []
-            if rows < 2:
-                data.append(value)
-            else:
-                data = value
-            body = []
-            if value is not None:
-                tmp_body = self.queryDataToDic(data, rows, columns)
-                for tmp in tmp_body:
-                    del tmp["customer_id"]
-                    del tmp["product_type"]
-                    del tmp["del_yn"]
-                    body.append(tmp)
-            return 0, body
-        except Exception as err:
-            return -1, []
     def imageSplit(self, image):
         img_arr = image.split(",")
         ret_data = []

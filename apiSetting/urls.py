@@ -7,6 +7,7 @@ from apiSetting.views import api_artist_work, api_open_close, api_regular_holida
     api_beauty_option, api_beauty_coupon, api_etc_product, api_vat, api_product_part, api_product_add_opt, api_shop_vat, \
     api_product_add_opt_etc, api_store_goods, api_coupon
 from apiSetting.views.hotel import api_h_product, api_hotel
+from apiSetting.views.kindergarden import api_kindergarden, api_k_product
 
 urlpatterns = [
 
@@ -59,6 +60,11 @@ urlpatterns = [
     path('setting/hotel', api_hotel.THotel.as_view()),
     path('setting/hotel-product/<str:partner_id>', api_h_product.TRoom.as_view()),
     path('setting/hotel-product', api_h_product.TRoom.as_view()),
+
+    path('setting/kindergarden/<str:partner_id>', api_kindergarden.TKindergarden.as_view()),
+    path('setting/kindergarden', api_kindergarden.TKindergarden.as_view()),
+    path('setting/kindergarden-product/<str:partner_id>', api_k_product.TRoom.as_view()),
+    path('setting/kindergarden-product', api_k_product.TRoom.as_view()),
 
     ## 중복됨 -- 미용 쿠폰 api를 사용할 것
     path('setting/coupon/<str:partner_id>', api_coupon.TCoupon.as_view()),

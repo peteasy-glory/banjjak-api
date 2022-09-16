@@ -229,6 +229,7 @@ PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s'
 PROC_ALLIM_WITHBTN_POST = "call procPartnerPC_Allim_WithBtn_post('%s','%s','%s','%s')"
 PROC_ALLIM_WITHOUTBTN_POST = "call procPartnerPC_Allim_WithoutBtn_post('%s','%s','%s')"
 
+#Hotel Product
 PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"
 PROC_SETTING_HOTEL_PUT = "call procPartnerPC_Setting_Hotel_put(%d,'%s','%s','%s','%s','%s','%s','%s')"
 PROC_SETTING_HOTEL_PRODUCT_GET = "call procPartnerPC_Setting_HotelProduct_get('%s')"
@@ -237,8 +238,13 @@ PROC_SETTING_HOTEL_PRODUCT_PUT = "call procPartnerPC_Setting_HotelProduct_put(%d
 PROC_SETTING_HOTEL_PRODUCT_DELETE = "call procPartnerPC_Setting_HotelProduct_delete(%d,'%s')"
 PROC_SETTING_PHOTO_GET = "call procPartnerPC_Setting_Photo_get(%d)"
 
-
-
+#Kindergarden Product
+PROC_SETTING_KINDERGARDEN_GET = "call procPartnerPC_Setting_Kindergarden_get('%s')"
+PROC_SETTING_KINDERGARDEN_PUT = "call procPartnerPC_Setting_Kindergarden_put(%d,'%s','%s','%s',%d,%d,'%s','%s','%s')"
+PROC_SETTING_KINDERGARDEN_PRODUCT_GET = "call procPartnerPC_Setting_KindergardenProduct_get('%s')"
+PROC_SETTING_KINDERGARDEN_PRODUCT_POST = "call procPartnerPC_Setting_KindergardenProduct_post(%d,'%s','%s','%s','%s',%d,'%s')"
+PROC_SETTING_KINDERGARDEN_PRODUCT_PUT = "call procPartnerPC_Setting_KindergardenProduct_put(%d,'%s','%s','%s',%d,'%s','%s')"
+PROC_SETTING_KINDERGARDEN_PRODUCT_DELETE = "call procPartnerPC_Setting_KindergardenProduct_delete(%d,'%s')"
 
 
 ## 중복됨 -- 미용 쿠폰 api를 사용할 것
