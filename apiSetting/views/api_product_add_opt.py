@@ -22,7 +22,8 @@ class TDog(TProduct):
             body2 = {}
             value, rows, columns = self.db.resultDBQuery(PROC_SETTING_BEAUTY_ADD_OPT_DOG_GET % (partner_id,
                                                                                                 args[0]["first_type"],
-                                                                                                args[0]["second_type"]), QUERY_DB)
+                                                                                                args[0]["second_type"],
+                                                                                                args[0]["direct_title"]), QUERY_DB)
             value2, rows2, columns2 = self.db.resultDBQuery(PROC_SETTING_BEAUTY_PART_DOG_GET % (partner_id,), QUERY_DB)
 
             if value is not None:
