@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import *
 from hptopLib.TAPISettingBase import TAPISettingBase
+from hptopLib.TAPIBase import TAPIBase
 
 
 class TProduct(TAPISettingBase):
@@ -33,8 +34,7 @@ class TProduct(TAPISettingBase):
 
     def put(self, request):
         try:
-           pass
+            pass
         except Exception as e:
-            return self.errorInfo( e.args[0])
-
+            return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
 
