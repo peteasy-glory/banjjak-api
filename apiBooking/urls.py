@@ -11,6 +11,7 @@ from apiSetting.views import api_schedule_artist
 urlpatterns = [
     path('booking/pettype', api_pet.TPetType.as_view()),
     path('booking/b/<str:partner_id>', api_beauty.TBooking.as_view()),
+    path('booking/count/<str:partner_id>', api_beauty.TBookingCount.as_view()),
 #    path('booking/join', api_join.TJoin.as_view()),
     path('booking/b/join/', api_join.TJoin.as_view()),
     path('booking/b/join/<str:partner_id>', api_join.TBookingJoin.as_view()),
