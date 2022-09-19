@@ -254,7 +254,10 @@ PROC_SETTING_COUPON_GET = "call procPartnerPC_Setting_Coupon_get('%s','%s')"
 PROC_SETTING_COUPON_POST = "call procPartnerPC_Setting_Coupon_post('%s','%s','%s','%s',%d,%d)"
 PROC_SETTING_COUPON_PUT = "call procPartnerPC_Setting_Coupon_put(%d,'%s','%s','%s','%s,'%s','%s','%s')"
 # =======================================================================
-
+PROC_SETTING_PERIOD_COUPON_GET = "call procPartnerPC_Setting_PeriodCoupon_get('%s')"
+PROC_SETTING_PERIOD_COUPON_POST = "call procPartnerPC_Setting_PeriodCoupon_post('%s','%s',%d,%d,%d)"
+PROC_SETTING_PERIOD_COUPON_PUT = "call procPartnerPC_Setting_PeriodCoupon_put(%d,'%s',%d,%d,%d)"
+PROC_SETTING_PERIOD_COUPON_DELETE = "call procPartnerPC_Setting_PeriodCoupon_delete(%d,'%s','%s')"
 
 
 

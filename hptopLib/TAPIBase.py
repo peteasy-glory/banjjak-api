@@ -513,6 +513,7 @@ class TAPIBase(APIView):
                         products["add"]["leg"]["type2"] = {}
                         products["add"]["leg"]["type2"]["unit"] = p_split[pos+1].split(":")[0]
                         products["add"]["leg"]["type2"]["price"] = p_split[pos+1].split(":")[1]
+                        pos += 1
             pos += 1
             if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 스파 개수
                 if p_split[pos].isdigit():

@@ -28,6 +28,7 @@ class TRoom(TProduct):
                     del tmp["delete_dt"]
                     body["base"].append(tmp)
                 err_coupon, body["coupon"] = self.getCoupon(partner_id, service="K")
+                err_coupon, body["period_coupon"] = self.getPeriodCoupon(partner_id)
             return 0, "success", body
         except Exception as err:
             return -1, self.errorInfo(err), None
