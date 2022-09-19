@@ -81,12 +81,28 @@ BEGIN
     SET @worker = '';
     SET @is_noshow = '';
     SET @noshow_count = 0;
+    SET @spend_point = '';
+    SET @reserve_point = '';
+    SET @discount_num = '';
+    SET @discount_type = '';
+    SET @is_coupon = '';
+    SET @is_confirm = '';
+    SET @product = '';
         
      # 회원아이디 가져오기    
-    SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo, is_no_show, worker, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(hour,2,0),':',LPAD(minute,2,0)) 
-				INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date
+    SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo, is_no_show, worker, 
+				CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(hour,2,0),':',LPAD(minute,2,0)), spend_point, reserve_point, 
+                discount_num, discount_type, is_coupon,is_confirm, product  
+				INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date,@spend_point, @reserve_point, 
+                @discount_num, @discount_type, @is_coupon, @is_confirm, @product
     FROM tb_payment_log 
 	WHERE payment_log_seq = dataPaymentCode;
+
+	SET @worker_nick = '';
+	SELECT DISTINCT(nicname) INTO @worker_nick
+	FROM tb_artist_list
+	WHERE artist_id = aPartnerId
+		AND name = @worker;
 
 	#가회원인경우 임시 아이디 가져오기
 	IF TRIM(aCustomerId) = '' OR aCustomerId IS NULL THEN
@@ -147,20 +163,21 @@ BEGIN
 		#예약 펫 정보
 		pet_seq, name, name_for_owner, type, pet_type, gender, weight, photo, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0)) AS birth, neutral, etc,
 		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting, #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
-        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, @is_approve AS is_approve
+        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, @is_approve AS is_approve,
+        @worker_nick AS worker_nick, @spend_point AS spend_point, @reserve_point AS reserve_point, 
+                @discount_num AS discount_num, @discount_type AS discount_type, @is_coupon AS is_coupon, @is_confirm AS is_confirm, @product AS product
 	FROM tb_mypet WHERE pet_seq = aPetId;
 
 END $$ 
 DELIMITER ;
-select is_approve from tb_payment_log 
+
+select * from tb_payment_log 
 order by payment_log_seq desc;
 
-                SELECT a.idx, b.*, c.name, c.pet_type, DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d') reg_date FROM tb_grade_reserve_approval_mgr a 
-                LEFT JOIN tb_payment_log b ON a.payment_log_seq = b.payment_log_seq 
-                LEFT JOIN tb_mypet c ON b.pet_seq = c.pet_seq 
-                WHERE is_approve = '0'
-                AND b.artist_id = 'pettester@peteasy.kr'
-                ORDER BY DATE_FORMAT(CONCAT(b.year,'-',b.month,'-',b.day),'%Y-%m-%d')
+
+
+
+
             
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_PaymentInfoEtcMemo_put $$

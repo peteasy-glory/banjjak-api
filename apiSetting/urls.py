@@ -71,4 +71,7 @@ urlpatterns = [
     path('setting/coupon/<str:partner_id>', api_coupon.TCoupon.as_view()),
     path('setting/coupon', api_coupon.TCoupon.as_view()),
     #=======================================================================
+
+    path('setting/period-coupon/<str:partner_id>', api_coupon.TPeriodCoupon.as_view()),
+    path('setting/period-coupon', api_coupon.TPeriodCoupon.as_view()),
 ]

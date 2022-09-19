@@ -114,6 +114,7 @@ END $$
 DELIMITER ;
 
 call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr', 0, 10, 10);
+call procPartnerPC_BeautyCutomerSearchTotal_get('pettester@peteasy.kr', 1, 1, 20);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_BeautyCutomerSearchTotal_get $$
 CREATE PROCEDURE procPartnerPC_BeautyCutomerSearchTotal_get(
@@ -158,6 +159,7 @@ BEGIN
 				AND A.is_cancel = 0 AND A.is_no_show = 0
 		) BB  ON AA.cellphone = BB.cellphone 
 	) AAA ", @ORD_STR);#AND AA.ymdhm = BB.ymdhm
+    #select @SQL_STR;
     PREPARE stmt FROM @SQL_STR;
     EXECUTE stmt USING @partner_id, @partner_id, @partner_id, @partner_id, @data_start, @data_num;
     DEALLOCATE PREPARE stmt;    

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_SETTING_COUPON_GET
+from apiShare.sqlQuery import PROC_SETTING_COUPON_GET, PROC_SETTING_PERIOD_COUPON_GET
 from hptopLib.TAPIIDBase import TAPIIDBase
 
 
@@ -47,6 +47,27 @@ class TProduct(TAPIIDBase):
                     del tmp["customer_id"]
                     del tmp["product_type"]
                     del tmp["del_yn"]
+                    body.append(tmp)
+            return 0, body
+        except Exception as err:
+            return -1, []
+
+    def getPeriodCoupon(self, partner_id):
+        try:
+            value, rows, columns = self.db.resultDBQuery(PROC_SETTING_PERIOD_COUPON_GET % (partner_id), QUERY_DB)
+            data = []
+            if rows < 2:
+                data.append(value)
+            else:
+                data = value
+            body = []
+            if value is not None:
+                tmp_body = self.queryDataToDic(data, rows, columns)
+                for tmp in tmp_body:
+                    del tmp["artist_id"]
+                    del tmp["is_delete"]
+                    del tmp["delete_msg"]
+                    del tmp["delete_dt"]
                     body.append(tmp)
             return 0, body
         except Exception as err:

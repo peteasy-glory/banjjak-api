@@ -384,6 +384,125 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Setting_PeriodCoupon_get('itseokbeom@gmail.com');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_PeriodCoupon_get $$
+CREATE PROCEDURE procPartnerPC_Setting_PeriodCoupon_get(
+    dataPartnerID VARCHAR(64)
+)
+BEGIN
+	/**
+		유치원 기간 쿠폰 정보 
+   */
+	SELECT pap_seq,artist_id,name,count,price,sale_price,reg_dt,update_dt
+	FROM tb_playroom_allday_pass
+	WHERE artist_id = dataPartnerID
+		AND is_delete = '2';
+
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_PeriodCoupon_post $$
+CREATE PROCEDURE procPartnerPC_Setting_PeriodCoupon_post(
+    dataPartnerID VARCHAR(64),
+    dataName VARCHAR(255),
+    dataCount INT,
+    dataPrice INT,
+    dataSalePrice INT
+)
+BEGIN
+	/**
+		유치원 기간 쿠폰 추가 
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;   
+
+	INSERT INTO tb_playroom_allday_pass (artist_id, name, count, price, sale_price) 
+    VALUES (dataPartnerID, dataName, dataCount, dataPrice, dataSalePrice);
+                    
+    IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+END $$ 
+DELIMITER ;
+
+
+call procPartnerPC_Setting_PeriodCoupon_put(401,'6객',2,'2.1','20','200','1','1',5000,10000,'2','1','수정','');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_PeriodCoupon_put $$
+CREATE PROCEDURE procPartnerPC_Setting_PeriodCoupon_put(
+    dataIdx INT,
+    dataName VARCHAR(255),
+    dataCount INT,
+    dataPrice INT,
+    dataSalePrice INT
+)
+BEGIN
+	/**
+		유치원 기간 쿠폰 수정
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;   
+    
+	UPDATE tb_playroom_allday_pass 
+    SET name = dataName,  count = dataCount,  price = dataPrice,  sale_price = dataSalePrice, update_dt = NOW()
+	WHERE pap_seq = dataIdx;
+	
+    IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+END $$ 
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Setting_PeriodCoupon_delete $$
+CREATE PROCEDURE procPartnerPC_Setting_PeriodCoupon_delete(
+    dataIdx INT,
+	dataDel CHAR(1),
+    dataDelMsg VARCHAR(255)
+)
+BEGIN
+	/**
+		유치원 기간쿠폰 삭제
+   */
+    DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
+
+	START TRANSACTION;   
+	
+	UPDATE tb_playroom_allday_pass SET
+		is_delete = dataDel,
+		delete_msg = dataDelMsg,
+		delete_dt = NOW()
+	WHERE pap_seq = dataIdx;
+			
+    IF aErr < 0 THEN
+		ROLLBACK;
+	ELSE
+		COMMIT;
+	END IF;
+	
+	SELECT aErr AS err;  
+END $$ 
+DELIMITER ;
+					SELECT *
+					FROM tb_playroom_allday_pass
+					WHERE artist_id = 'itseokbeom@gmail.com'
+						AND is_delete = '2'
+#================
 call procPartnerPC_Setting_KindergardenProduct_get('itseokbeom@gmail.com');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Setting_KindergardenProduct_get $$
@@ -405,9 +524,6 @@ END $$
 DELIMITER ;
 
 
-	SELECT * 
-	FROM tb_playroom_product
-	WHERE artist_id = 'itseokbeom@gmail.com';
 
     
 DELIMITER $$
