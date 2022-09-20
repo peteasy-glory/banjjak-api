@@ -47,9 +47,10 @@ class TDog(TProduct):
         try:
             body = {}
             if args[0] == 'POST' or args[0] == 'PUT':
+                
+                value, rows, columns = self.db.resultDBQuery(
+                                    PROC_SETTING_BEAUTY_COMMON_OPTION_DELETE % (args[1]["partner_id"],), QUERY_DB)
                 if len(args[1]["addition_bath_hair"]) > 0:
-                    value, rows, columns = self.db.resultDBQuery(
-                                        PROC_SETTING_BEAUTY_COMMON_OPTION_DELETE % (args[1]["partner_id"],), QUERY_DB)
                     tmp_arr = args[1]["addition_bath_hair"].split(",")
                     for word in tmp_arr:
                         try:
