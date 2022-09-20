@@ -86,8 +86,8 @@ class TDog(TProduct):
         insert = "INSERT INTO tb_product_dog_static "
         tail =      "WHERE customer_id          = '%s' " \
                     "	 AND first_type = '%s' " \
-                    "   AND second_type = '%s' " \
-                    "   AND if( second_type != '직접입력',(direct_title = '%s' OR direct_title IS NULL),direct_title = '%s') " \
+                    "   AND (second_type = '%s' OR second_type = '%s') " \
+                    "   AND if( second_type != '직접입력',(direct_title = '' OR direct_title IS NULL),direct_title = '%s') " \
                     % (args[1]["partner_id"], args[1]["first_type"], args[1]["second_type"], args[1]["direct_title"], args[1]["direct_title"])
         middle =        "SET " \
                         "customer_id                 = '%s', " \
