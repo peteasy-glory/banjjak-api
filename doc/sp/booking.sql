@@ -78,6 +78,7 @@ BEGIN
     DECLARE aPetId TEXT DEFAULT '';
     
     SET @beauty_date = '';
+    SET @beauty_close_date = '';
     SET @worker = '';
     SET @is_noshow = '';
     SET @noshow_count = 0;
@@ -91,9 +92,10 @@ BEGIN
         
      # 회원아이디 가져오기    
     SELECT customer_id, artist_id , cellphone, pet_seq, etc_memo, is_no_show, worker, 
-				CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(hour,2,0),':',LPAD(minute,2,0)), spend_point, reserve_point, 
+				CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(hour,2,0),':',LPAD(minute,2,0)),
+                CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0),' ',LPAD(to_hour,2,0),':',LPAD(to_minute,2,0)),spend_point, reserve_point, 
                 discount_num, discount_type, is_coupon,is_confirm, product  
-				INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date,@spend_point, @reserve_point, 
+				INTO aCustomerId, aPartnerId, aPhone , aPetId, aMemo, @is_noshow , @worker, @beauty_date, @beauty_close_date,@spend_point, @reserve_point, 
                 @discount_num, @discount_type, @is_coupon, @is_confirm, @product
     FROM tb_payment_log 
 	WHERE payment_log_seq = dataPaymentCode;
@@ -163,15 +165,16 @@ BEGIN
 		#예약 펫 정보
 		pet_seq, name, name_for_owner, type, pet_type, gender, weight, photo, CONCAT(year,'-',LPAD(month,2,0),'-',LPAD(day,2,0)) AS birth, neutral, etc,
 		beauty_exp, vaccination, dermatosis, heart_trouble, marking, mounting, #미용경험, 예방접종, 피부병, 심장질환, 마킹, 마운팅 
-        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, @is_approve AS is_approve,
-        @worker_nick AS worker_nick, @spend_point AS spend_point, @reserve_point AS reserve_point, 
-                @discount_num AS discount_num, @discount_type AS discount_type, @is_coupon AS is_coupon, @is_confirm AS is_confirm, @product AS product
+        bite, luxation, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part,@beauty_close_date AS beauty_close_date ,
+        @is_approve AS is_approve,@worker_nick AS worker_nick, @spend_point AS spend_point, @reserve_point AS reserve_point, 
+		@discount_num AS discount_num, @discount_type AS discount_type, @is_coupon AS is_coupon, @is_confirm AS is_confirm, @product AS product
 	FROM tb_mypet WHERE pet_seq = aPetId;
 
 END $$ 
 DELIMITER ;
 
-select * from tb_payment_log 
+select payment_log_seq, to_year, to_month, to_day,
+	to_hour, to_minute from tb_payment_log 
 order by payment_log_seq desc;
 
 

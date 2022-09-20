@@ -81,7 +81,8 @@ BEGIN
     FROM tb_grade_of_shop A JOIN tb_grade_of_customer B
 		ON A.idx = B.grade_idx
     WHERE A.artist_id = dataPartnerId AND A.is_delete = 0
-			AND B.customer_id = dataCustomerId;
+			AND B.customer_id = dataCustomerId
+	ORDER BY B.idx DESC LIMIT 1;
 	IF @grade_ord  < 1 THEN
 		RETURN "";
 	ELSE
