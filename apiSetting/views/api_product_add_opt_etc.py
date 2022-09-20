@@ -103,6 +103,9 @@ class TDog(TProduct):
                         "short_hair_price              = %s, " \
                         "long_hair_price             = %s, " \
                         "double_hair_price            = %s, " \
+                        "bell_price            = %s, "\
+                        "toenail_price            = %s, " \
+                        "trumpet_etc_price            = %s, " \
                         "addition_face_product             = %s, " \
                         "addition_work_product             = %s, " \
                         "addition_option_product             = %s, " \
@@ -124,7 +127,9 @@ class TDog(TProduct):
                         "update_time         = NOW() " % (self.isNull(args[1]["in_shop_product"]), self.isNull(args[1]["out_shop_product"]),
                         self.isNull(args[1]["basic_face_price"]), self.isNull(args[1]["broccoli_price"]),
                         self.isNull(args[1]["highba_price"]), self.isNull(args[1]["bear_price"]), self.isNull(args[1]["hair_clot_price"]), self.isNull(args[1]["ferocity_price"]), self.isNull(args[1]["tick_price"]),
-                        self.isNull(args[1]["short_hair_price"]), self.isNull(args[1]["long_hair_price"]), self.isNull(args[1]["double_hair_price"]), self.isNull(args[1]["addition_face_product"]), self.isNull(args[1]["addition_work_product"]),
+                        self.isNull(args[1]["short_hair_price"]), self.isNull(args[1]["long_hair_price"]), self.isNull(args[1]["double_hair_price"]),
+                        self.isNull(args[1]["bell_price"]), self.isNull(args[1]["toenail_price"]),self.isNull(args[1]["trumpet_etc_price"]),
+                        self.isNull(args[1]["addition_face_product"]), self.isNull(args[1]["addition_work_product"]),
                         self.isNull(args[1]["addition_option_product"]), self.isNull(args[1]["spa_option_product"]), self.isNull(args[1]["dyeing_option_product"]), self.isNull(args[1]["etc_option_product"]),
                         self.isNull(args[1]["beauty_length_1"]),
                         self.isNull(args[1]["beauty_length_1_price"]), self.isNull(args[1]["beauty_length_2"]), self.isNull(args[1]["beauty_length_2_price"]), self.isNull(args[1]["beauty_length_3"]), self.isNull(args[1]["beauty_length_3_price"]),
