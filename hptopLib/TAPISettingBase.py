@@ -348,6 +348,10 @@ class TAPISettingBase(TAPIBase):
                     sub['ferocity'] = value[31]
                 if value[32] is not None and value[32] != "":
                     sub['tick'] = value[32]
+                if value[33] is not None and value[33] != "":
+                    place_plus_add = value[33].split(',')
+                    for i, s in enumerate(place_plus_add):
+                        sub[s.split(':')[0]] = s.split(':')[1]
 
                 tmp["etc"] = {}
                 sub = tmp["etc"]
