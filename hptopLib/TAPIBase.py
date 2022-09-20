@@ -502,9 +502,9 @@ class TAPIBase(APIView):
                 if p_split[pos].isdigit():
                     max = int(p_split[pos])
                     for i in range(0, max):
-                        products["add"]["leg"]["type1"] = {}
-                        products["add"]["leg"]["type1"]["unit"] = p_split[pos+1].split(":")[0]
-                        products["add"]["leg"]["type1"]["price"] = p_split[pos+1].split(":")[1]
+                        products["add"]["leg"]["type"+str(i+1)] = {}
+                        products["add"]["leg"]["type"+str(i+1)]["unit"] = p_split[pos+1].split(":")[0]
+                        products["add"]["leg"]["type"+str(i+1)]["price"] = p_split[pos+1].split(":")[1]
                         pos += 1
             pos += 1
             if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 스파 개수
