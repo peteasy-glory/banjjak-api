@@ -147,11 +147,14 @@ class TAPIBase(APIView):
 
     def getBodyHome(self, partner_id):
         try:
+            DURATION = 0
+            DURATION = funcLib.nowToMilliSecond("start", DURATION)
+
             yy = datetime.today().strftime("%Y")
             mm = datetime.today().strftime("%m")
             dd = datetime.today().strftime("%d")
             data, rows, columns = self.db.resultDBQuery(PROC_TOP_INFO_GET % (partner_id, yy, mm, dd), QUERY_DB)
-            #          ret = self.message.successOk()
+            DURATION =  funcLib.nowToMilliSecond("PROC_TOP_INFO_GET", DURATION)
             body = {}
             if data is not None:
                 body["partner"] = True
@@ -164,6 +167,8 @@ class TAPIBase(APIView):
                 body["new_review_count"] = data[5]
                 body["total_count"] = data[6]
             value, rows, columns = self.db.resultDBQuery(PROC_SPETIAL_MALL_GET % (), QUERY_DB)
+            DURATION = funcLib.nowToMilliSecond("PROC_SPETIAL_MALL_GET", DURATION)
+
             data = []
             if rows < 2:
                 data.append(value)
@@ -183,6 +188,8 @@ class TAPIBase(APIView):
                     tmp["end_dt"] = d[9].strftime("%Y-%m-%d %H:%M:%S") if d[9] is not None else ""
                     body["banner"].append(tmp)
             value, rows, columns = self.db.resultDBQuery(PROC_NOTICE_MGR_GET % (0, "", ""), QUERY_DB)
+            DURATION =funcLib.nowToMilliSecond("PROC_NOTICE_MGR_GET", DURATION)
+
             data = []
             if rows < 2:
                 data.append(value)
@@ -200,7 +207,10 @@ class TAPIBase(APIView):
                     tmp["image"] = d[6]
                     tmp["reg_date"] = d[8].strftime("%Y-%m-%d %H:%M:%S") if d[8] is not None else ""
                     body["notice"].append(tmp)
+
             value, rows, columns = self.db.resultDBQuery(PROC_CONSULT_MGR_GET % (partner_id,), QUERY_DB)
+            DURATION =funcLib.nowToMilliSecond("PROC_CONSULT_MGR_GET", DURATION)
+
             data = []
             if rows < 2:
                 data.append(value)
@@ -251,7 +261,10 @@ class TAPIBase(APIView):
                     tmp["consult_photo"]=photo
                     body["consulting"].append(tmp)
 
+#==================================================================================================================================================
             value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            DURATION =funcLib.nowToMilliSecond("PROC_BEAUTY_BOOKING_GET", DURATION)
+
             data = []
             if rows < 2:
                 data.append(value)
@@ -263,6 +276,8 @@ class TAPIBase(APIView):
                     body["beauty"].append(self.setBeautyData(d))
 
             value, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            DURATION =funcLib.nowToMilliSecond("PROC_HOTEL_BOOKING_GET", DURATION)
+
             data = []
             if rows < 2:
                 data.append(value)
@@ -296,6 +311,8 @@ class TAPIBase(APIView):
                     tmp["product"] = product
                     body["hotel"].append(tmp)
             value, rows, columns = self.db.resultDBQuery(PROC_KINDERGADEN_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            DURATION =funcLib.nowToMilliSecond("PROC_KINDERGADEN_BOOKING_GET", DURATION)
+
             data = []
             if rows < 2:
                 data.append(value)
@@ -328,6 +345,7 @@ class TAPIBase(APIView):
                     tmp["pet"] = pet
                     tmp["product"] = product
                     body["kindergarden"].append(tmp)
+# ==================================================================================================================================================
             return 0, body
         except Exception as e:
             return -1, e.args[0]

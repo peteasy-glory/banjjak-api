@@ -33,6 +33,7 @@ DELIMITER ;
     
 call procPartnerPC_Home_TopInfo_get('jack@peteasy.kr', 2022, 09, 08);
 call procPartnerPC_Home_TopInfo_get('pettester@peteasy.kr', 2022, 8, 24);
+call procPartnerPC_Home_TopInfo_get('me2mj@naver.com', 2022, 09, 21)
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_TopInfo_get $$
 CREATE PROCEDURE procPartnerPC_Home_TopInfo_get(
@@ -246,7 +247,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Home_BeautyBookingMgr_get('pettester@peteasy.kr', 2022, 3);
+call procPartnerPC_Home_BeautyBookingMgr_get('pettester@peteasy.kr', 2022, 9);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Home_BeautyBookingMgr_get $$
 CREATE PROCEDURE procPartnerPC_Home_BeautyBookingMgr_get(

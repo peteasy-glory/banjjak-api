@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from curses.ascii import isdigit
 from datetime import datetime
+import time
 
 
 def totalPrice(src):
@@ -83,3 +84,12 @@ def nowdateFormat(format):
     now = datetime.now()
     return now.strftime(format)
 
+def nowToMicroSecond():
+    dt = datetime.now()
+    return dt.microsecond
+
+def nowToMilliSecond(name, origin):
+    milles = int(round(time.time() * 1000))
+    print("duration(%s): %f" % (name,(milles - origin) / 1000))
+    origin = milles
+    return milles
