@@ -11,9 +11,9 @@ from hptopLib.TS3 import TS3
 
 class TGallery(TAPIBookingBase):
 
-    def getInfo(self, payment_idx, *args):
+    def getInfo(self, pet_idx, *args):
         try:
-            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_BEAUTY_GALLERY_GET % (payment_idx,),
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_BEAUTY_GALLERY_GET % (pet_idx,args[0]["artist_id"]),
                                                          QUERY_DB)
             body = {}
             if value is not None:
