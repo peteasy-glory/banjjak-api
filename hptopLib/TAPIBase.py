@@ -262,89 +262,89 @@ class TAPIBase(APIView):
                     body["consulting"].append(tmp)
 
 #==================================================================================================================================================
-            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
-            DURATION =funcLib.nowToMilliSecond("PROC_BEAUTY_BOOKING_GET", DURATION)
-
-            data = []
-            if rows < 2:
-                data.append(value)
-            else:
-                data = value
-            body["beauty"] = []
-            if value is not None:
-                for d in data:
-                    body["beauty"].append(self.setBeautyData(d))
-
-            value, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
-            DURATION =funcLib.nowToMilliSecond("PROC_HOTEL_BOOKING_GET", DURATION)
-
-            data = []
-            if rows < 2:
-                data.append(value)
-            else:
-                data = value
-            body["hotel"] = []
-            if value is not None:
-                for d in data:
-                    tmp = {}
-                    d_format = "%Y-%m-%d %H:%M:%S"
-                    check_in = "%s %s" % (d[47], d[48])
-                    check_out = "%s %s" % (d[49], d[50])
-
-                    customer = {"customer_id": d[2], "phone": d[3]}
-                    pet = {"pet_seq": d[66], "animal": d[69], "type": d[70], "name": d[68]}  # 66~ 펫
-                    product = {
-                        "idx": d[1],
-                        "partner_id": d[6],
-                        "is_no_show": d[29],
-                        "receipt_type": d[20],  # 접수방법(1-android,2-iOS,3-매장(POS)0-선택없음)
-                        "pay_type": d[21],  # 결제방법(1-PG, 2-계좌이체, 0-선택없음)
-                        "pay_status": d[22],  # 결제상태(1-진행중, 2-입금대기, 3-결제완료, 8-보류, 9-실패)
-                        "payment": {"point": d[16], "card": d[17], "cash": d[18], },
-                        "date": {"regist": str(d[34])  # self.datetimeToStr(d[34], d_format)
-                            , "check_in": check_in
-                            , "check_out": check_out},
-                        "memo": d[31]
-                    }
-                    tmp["customer"] = customer
-                    tmp["pet"] = pet
-                    tmp["product"] = product
-                    body["hotel"].append(tmp)
-            value, rows, columns = self.db.resultDBQuery(PROC_KINDERGADEN_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
-            DURATION =funcLib.nowToMilliSecond("PROC_KINDERGADEN_BOOKING_GET", DURATION)
-
-            data = []
-            if rows < 2:
-                data.append(value)
-            else:
-                data = value
-            body["kindergarden"] = []
-            if value is not None:
-                for d in data:
-                    tmp = {}
-                    d_format = "%Y-%m-%d %H:%M:%S"
-                    check_in = "%s %s" % (d[48], d[49])
-                    check_out = "%s %s" % (d[50], d[51])
-
-                    customer = {"customer_id": d[2], "phone": d[3]}
-                    pet = {"pet_seq": d[69], "animal": d[72], "type": d[73], "name": d[71]}  # 69~ 펫
-                    product = {
-                        "idx": d[1],
-                        "partner_id": d[6],
-                        "is_no_show": d[29],
-                        "receipt_type": d[20],  # 접수방법(1-android,2-iOS,3-매장(POS)0-선택없음)
-                        "pay_type": d[21],  # 결제방법(1-PG, 2-계좌이체, 0-선택없음)
-                        "pay_status": d[22],  # 결제상태(1-진행중, 2-입금대기, 3-결제완료, 8-보류, 9-실패)
-                        "payment": {"point": d[16], "card": d[17], "cash": d[18], },
-                        "date": {"regist": str(d[34])  # self.datetimeToStr(d[34], d_format)
-                            , "check_in": check_in
-                            , "check_out": check_out},
-                        "memo": d[31]
-                    }
-                    tmp["customer"] = customer
-                    tmp["pet"] = pet
-                    tmp["product"] = product
-                    body["kindergarden"].append(tmp)
+            # value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            # DURATION =funcLib.nowToMilliSecond("PROC_BEAUTY_BOOKING_GET", DURATION)
+            #
+            # data = []
+            # if rows < 2:
+            #     data.append(value)
+            # else:
+            #     data = value
+            # body["beauty"] = []
+            # if value is not None:
+            #     for d in data:
+            #         body["beauty"].append(self.setBeautyData(d))
+            #
+            # value, rows, columns = self.db.resultDBQuery(PROC_HOTEL_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            # DURATION =funcLib.nowToMilliSecond("PROC_HOTEL_BOOKING_GET", DURATION)
+            #
+            # data = []
+            # if rows < 2:
+            #     data.append(value)
+            # else:
+            #     data = value
+            # body["hotel"] = []
+            # if value is not None:
+            #     for d in data:
+            #         tmp = {}
+            #         d_format = "%Y-%m-%d %H:%M:%S"
+            #         check_in = "%s %s" % (d[47], d[48])
+            #         check_out = "%s %s" % (d[49], d[50])
+            #
+            #         customer = {"customer_id": d[2], "phone": d[3]}
+            #         pet = {"pet_seq": d[66], "animal": d[69], "type": d[70], "name": d[68]}  # 66~ 펫
+            #         product = {
+            #             "idx": d[1],
+            #             "partner_id": d[6],
+            #             "is_no_show": d[29],
+            #             "receipt_type": d[20],  # 접수방법(1-android,2-iOS,3-매장(POS)0-선택없음)
+            #             "pay_type": d[21],  # 결제방법(1-PG, 2-계좌이체, 0-선택없음)
+            #             "pay_status": d[22],  # 결제상태(1-진행중, 2-입금대기, 3-결제완료, 8-보류, 9-실패)
+            #             "payment": {"point": d[16], "card": d[17], "cash": d[18], },
+            #             "date": {"regist": str(d[34])  # self.datetimeToStr(d[34], d_format)
+            #                 , "check_in": check_in
+            #                 , "check_out": check_out},
+            #             "memo": d[31]
+            #         }
+            #         tmp["customer"] = customer
+            #         tmp["pet"] = pet
+            #         tmp["product"] = product
+            #         body["hotel"].append(tmp)
+            # value, rows, columns = self.db.resultDBQuery(PROC_KINDERGADEN_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            # DURATION =funcLib.nowToMilliSecond("PROC_KINDERGADEN_BOOKING_GET", DURATION)
+            #
+            # data = []
+            # if rows < 2:
+            #     data.append(value)
+            # else:
+            #     data = value
+            # body["kindergarden"] = []
+            # if value is not None:
+            #     for d in data:
+            #         tmp = {}
+            #         d_format = "%Y-%m-%d %H:%M:%S"
+            #         check_in = "%s %s" % (d[48], d[49])
+            #         check_out = "%s %s" % (d[50], d[51])
+            #
+            #         customer = {"customer_id": d[2], "phone": d[3]}
+            #         pet = {"pet_seq": d[69], "animal": d[72], "type": d[73], "name": d[71]}  # 69~ 펫
+            #         product = {
+            #             "idx": d[1],
+            #             "partner_id": d[6],
+            #             "is_no_show": d[29],
+            #             "receipt_type": d[20],  # 접수방법(1-android,2-iOS,3-매장(POS)0-선택없음)
+            #             "pay_type": d[21],  # 결제방법(1-PG, 2-계좌이체, 0-선택없음)
+            #             "pay_status": d[22],  # 결제상태(1-진행중, 2-입금대기, 3-결제완료, 8-보류, 9-실패)
+            #             "payment": {"point": d[16], "card": d[17], "cash": d[18], },
+            #             "date": {"regist": str(d[34])  # self.datetimeToStr(d[34], d_format)
+            #                 , "check_in": check_in
+            #                 , "check_out": check_out},
+            #             "memo": d[31]
+            #         }
+            #         tmp["customer"] = customer
+            #         tmp["pet"] = pet
+            #         tmp["product"] = product
+            #         body["kindergarden"].append(tmp)
 # ==================================================================================================================================================
             return 0, body
         except Exception as e:
