@@ -1625,7 +1625,7 @@ BODY: BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Booking_CustomerCoupon_get (
+call procPartnerPC_Booking_CustomerCoupon_get ('itseokbeom@gmail.com','itseokbeom@gmail.com',0);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_CustomerCoupon_get $$
 CREATE PROCEDURE procPartnerPC_Booking_CustomerCoupon_get(
@@ -1654,9 +1654,7 @@ SELECT *
 		FROM tb_user_coupon #where artist_id = 'pettester@peteasy.kr'
 		WHERE customer_id = 'jack@peteasy.kr' AND artist_id = 'pettester@peteasy.kr' AND del_yn = 'N';
 
-select * from tb_payment_log
-where cellphone = '01053906571'
-group by customer_id;
+
 
 call procPartnerPC_Booking_BeautyCoupon_modify( 582771, 151591,'','pettester@peteasy.kr',796, 'C',10000);
 DELIMITER $$
@@ -1669,7 +1667,7 @@ CREATE PROCEDURE procPartnerPC_Booking_BeautyCoupon_modify(
     dataCouponIdx INT		#795
 )
 BEGIN
-	/**
+/**
 		쿠폰 사용자 등록
    */
 	DECLARE aErr INT DEFAULT 0;
@@ -1717,7 +1715,7 @@ BEGIN
  	SET coupon_seq  = dataCouponIdx, user_coupon_seq = @user_coupon_seq, payment_log_seq = dataPaymentIdx, 
 		amount = @given_amount_balance, balance = @given_amount_balance, customer_id = IF(dataCustomerID = '',NULL,dataCustomerID), 
 		tmp_seq  = IF(dataTmpUserIdx = 0,NULL,dataTmpUserIdx), 
-		artist_id = dataPartnerID, memo = '쿠폰구매', type = 'N';
+		artist_id = dataPartnerID, memo = '매장 접수', type = 'U';
 
 	IF aErr < 0 THEN
 		ROLLBACK;
@@ -1725,11 +1723,62 @@ BEGIN
 		COMMIT;
     END IF;
     
-    SELECT aErr AS err;    
+    SELECT aErr AS err; 
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Booking_CustomerCoupon_get ('itseokbeom@gmail.com','itseokbeom@gmail.com',0);
+call procPartnerPC_Booking_BeautyCoupon_put(605253,1,8,1367);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyCoupon_put $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyCoupon_put(
+	dataPaymentIdx INT, #406418
+    dataUserCouponIdx INT,
+    dataAmount INT,
+    dataBalance INT
+)
+BEGIN
+/**
+		사용자 쿠폰 변경
+   */
+	DECLARE aErr INT DEFAULT 0;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION  SET aErr = -1; 
 
+	SET @coupon_seq = 0;
+    SET @user_coupon_seq = 0;
+    SET @customer_id = '';
+    SET @tmp_seq = 0;
+    SET @artist_id = '';
+    SET @balance = 0;
+
+    SELECT coupon_seq, user_coupon_seq, customer_id, tmp_seq, artist_id, balance 
+		INTO @coupon_seq, @user_coupon_seq, @customer_id, @tmp_seq, @artist_id, @balance 
+    FROM tb_coupon_history 
+    WHERE user_coupon_seq = dataUserCouponIdx 
+    ORDER BY history_seq DESC LIMIT 1;
+	
+    SET @balance = IF(dataBalance > 0, dataBalance, @balance);
+
+    START TRANSACTION;
+	
+ 	INSERT INTO tb_coupon_history 
+ 	SET coupon_seq  = @coupon_seq, user_coupon_seq = @user_coupon_seq, payment_log_seq = dataPaymentIdx, 
+		amount = -dataAmount, balance = @balance-dataAmount, customer_id = @customer_id, 
+		tmp_seq  = NULLIF(@tmp_seq,''),artist_id = @artist_id, memo = '매장 접수', type = 'U';
+
+    UPDATE tb_user_coupon 
+    SET tb_user_coupon.use = tb_user_coupon.use + dataAmount, update_date = NOW() 
+    WHERE user_coupon_seq = 1367;
+    
+	IF aErr < 0 THEN
+		ROLLBACK;
+    ELSE
+		COMMIT;
+    END IF;
+    
+    SELECT aErr AS err; 
+END $$ 
+DELIMITER ;
 
 call procPartnerPC_Booking_Coupon_get('pettester@peteasy.kr', 'B', 'A');
 DELIMITER $$
@@ -1802,6 +1851,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+  
 call procPartnerPC_Booking_BeautyCardCash_put(590002, 33500, 0);
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyCardCash_put $$

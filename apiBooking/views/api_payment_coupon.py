@@ -2,10 +2,10 @@
 
 import traceback
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_BEAUTY_BOOKING_BEAUTY_PRODUCT_PUT, PROC_BEAUTY_BOOKING_COUPON_PUT
+from apiShare.sqlQuery import PROC_BEAUTY_BOOKING_COUPON_PUT
 from hptopLib.TAPIBookingBase import TAPIBookingBase
 
-class TPaymentProduct(TAPIBookingBase):
+class TPaymentCoupon(TAPIBookingBase):
 
     def getInfo(self, payment_idx, *args):
         try:
@@ -17,10 +17,10 @@ class TPaymentProduct(TAPIBookingBase):
         try:
             body = {}
             if args[1] == 'PUT':
-                value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_BEAUTY_PRODUCT_PUT % (args[0]["payment_idx"],
-                                                                                                    args[0]["use_coupon"],
-                                                                                                    args[0]["price"],
-                                                                                                    args[0]["product"]), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_COUPON_PUT % (args[0]["payment_idx"],
+                                                                                                        args[0]["user_coupon_idx"],
+                                                                                                        args[0]["amount"],
+                                                                                                        args[0]["balance"]), QUERY_DB)
                 if value is not None:
                     body = self.queryDataToDic(value, rows, columns)
                 return 0, "success", body
