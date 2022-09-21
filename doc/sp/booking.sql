@@ -1733,9 +1733,9 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyCoupon_put $$
 CREATE PROCEDURE procPartnerPC_Booking_BeautyCoupon_put(
 	dataPaymentIdx INT, #406418
-    dataCount INT,
-    dataBalance INT,
-    dataUserCouponIdx INT		#795
+    dataUserCouponIdx INT,
+    dataAmount INT,
+    dataBalance INT
 )
 BEGIN
 /**
@@ -1763,11 +1763,11 @@ BEGIN
 	
  	INSERT INTO tb_coupon_history 
  	SET coupon_seq  = @coupon_seq, user_coupon_seq = @user_coupon_seq, payment_log_seq = dataPaymentIdx, 
-		amount = -dataCount, balance = @balance-dataCount, customer_id = @customer_id, 
+		amount = -dataAmount, balance = @balance-dataAmount, customer_id = @customer_id, 
 		tmp_seq  = NULLIF(@tmp_seq,''),artist_id = @artist_id, memo = '매장 접수', type = 'U';
 
     UPDATE tb_user_coupon 
-    SET tb_user_coupon.use = tb_user_coupon.use + dataCount, update_date = NOW() 
+    SET tb_user_coupon.use = tb_user_coupon.use + dataAmount, update_date = NOW() 
     WHERE user_coupon_seq = 1367;
     
 	IF aErr < 0 THEN
