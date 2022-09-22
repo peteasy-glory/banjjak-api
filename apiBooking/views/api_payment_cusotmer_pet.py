@@ -26,7 +26,7 @@ class TCustomerPetInfo(TAPIBookingBase):
                 if value is not None:
                     for d in data:
                         if args[0]["is_beauty"]:
-                            tmp = {"payment_idx":d[0], "pet_seq":d[1], "cutomer_id":d[3], "product":d[36], "booking_date":d[71]}
+                            tmp = {"payment_idx":d[0], "pet_seq":d[1], "cutomer_id":d[3], "product":d[36], "booking_date":d[71], "local_price":d[13], "local_price_cash":d[14]}
                         else:
                             tmp = {"payment_idx": d[0], "pet_seq": d[1], "cutomer_id": d[3], "memo": d[58],  "booking_date": d[71]}
                         if "product" in tmp:
