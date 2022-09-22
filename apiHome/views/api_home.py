@@ -155,6 +155,9 @@ class TConsulting(TAPIBase):
                     tmp["luxation"] = d[20]
                     tmp["dermatosis"] = zeroToBool(d[21])
                     tmp["photocounseling"] = d[22]
+                    tmp["like"] = d[23]
+                    tmp["dislike"] = d[24]
+                    tmp["dislike_string"] = self.setDisLike(d[24])
                     photo = []
                     try:
                         if d[22] is not None and len(d[22]) > 0:
@@ -172,7 +175,17 @@ class TConsulting(TAPIBase):
             return HttpResponse(self.json.dicToJson(ret))
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(e.args[0])))
-
+    def setDisLike(self, dislike):
+        body = ["눈","코","입","귀","목","몸통","다리","꼬리","생식기","없음"]
+        ret = ""
+        if len(dislike) < 1:
+            return []
+        for i in range(10):
+            if dislike[i] == '1':
+                if len(ret) > 0:
+                    ret += ","
+                ret += body[i]
+        return ret
 
 class TConsultBookingWaiting(TAPIBase):
     def get(self, request, partner_id):
