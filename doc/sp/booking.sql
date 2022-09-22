@@ -24,6 +24,37 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Booking_BeautyPeroid_get_opt('eaden@peteasy.kr', '2022-07-01', '2022-07-10');
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyPeroid_get_opt $$
+CREATE PROCEDURE procPartnerPC_Booking_BeautyPeroid_get_opt(
+	dataPartnerId VARCHAR(64),
+    dataStDate VARCHAR(10), # format yyyy-mm-dd
+    dataFiDate VARCHAR(10)  # format yyyy-mm-dd
+)
+BEGIN
+	/**
+		미용 예약 현황 기간으로 검색 
+   */
+   
+	SELECT A.payment_log_seq,A.pet_seq,A.customer_id, A.total_price,A.spend_point,A.reserve_point,A.local_price, A.local_price_cash,A.discount_num, A.discount_type,
+			A.year, A.month, A.day, A.hour, A.minute, A.to_hour, A.to_minute, A.cellphone, A.pay_type, #10
+			A.worker, A.status,A.is_no_show,A.is_cancel,A.product,A.is_vat, A.etc_memo, A.buy_time, A.is_confirm, #19
+			B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo AS pet_photo, C.idx, C.is_approve #28
+	FROM 
+	(
+		SELECT payment_log_seq, pet_seq, customer_id, worker, is_no_show,is_cancel,status,product,is_vat, etc_memo, buy_time, is_confirm, cellphone,
+			discount_num, discount_type, pay_type, local_price, local_price_cash, reserve_point, total_price,spend_point, year, month, day,hour, minute, to_hour, to_minute
+        FROM gobeautypet.tb_payment_log 
+		WHERE data_delete = 0 AND artist_id = dataPartnerId
+	) A LEFT JOIN (SELECT pet_seq, tmp_seq, name, type, pet_type, photo FROM tb_mypet WHERE data_delete = 0) B ON A.pet_seq = B.pet_seq 
+    LEFT JOIN (SELECT idx, payment_log_seq,is_approve FROM tb_grade_reserve_approval_mgr WHERE is_delete = 0) C ON A.payment_log_seq = C.payment_log_seq
+	WHERE gobeautypet.funcYMDToDate(A.year, A.month, A.day) >= dataStDate AND
+			gobeautypet.funcYMDToDate(A.year, A.month, A.day) < dataFiDate;      
+        
+        
+END $$ 
+DELIMITER ;
 
 call procPartnerPC_Booking_BeautyPeroid_get('eaden@peteasy.kr', '2022-07-01', '2022-07-10');
 DELIMITER $$

@@ -32,7 +32,8 @@ PROC_NO_SHOW_COUNT_GET = "call procPartnerPC_Home__NoShowCount_get('%s','%s')"
 
 
 #BOOKING
-PROC_BEAUTY_BOOKING_PEROID_GET = "call procPartnerPC_Booking_BeautyPeroid_get('%s', '%s', '%s')"
+#PROC_BEAUTY_BOOKING_PEROID_GET = "call procPartnerPC_Booking_BeautyPeroid_get('%s', '%s', '%s')"
+PROC_BEAUTY_BOOKING_PEROID_GET_OPT = "call procPartnerPC_Booking_BeautyPeroid_get_opt('%s', '%s', '%s')"
 PROC_BEAUTY_BOOKING_COUNT_GET = "call procPartnerPC_Booking_BeautyCount_get('%s', '%s', '%s')"
 PROC_BEAUTY_BOOKING_PAY_COUNT_GET = "call procPartnerPC_Booking_BeautyPayCount_get('%s', '%s', '%s')"
 PROC_BEAUTY_BOOKING_PETTYPE_COUNT_GET = "call procPartnerPC_Booking_BeautyPetTypeCount_get('%s', '%s', '%s')"
