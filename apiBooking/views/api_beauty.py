@@ -16,7 +16,7 @@ class TBooking(TAPIBase):
             if request.GET.get('st_date') is not None and request.GET.get('fi_date') is not None:
                 st_date = request.GET.get('st_date')
                 fi_date = request.GET.get('fi_date')
-                value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_PEROID_GET % (partner_id, st_date, fi_date), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_PEROID_GET_OPT % (partner_id, st_date, fi_date), QUERY_DB)
                 data = []
                 if rows < 2:
                     data.append(value)
