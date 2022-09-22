@@ -113,7 +113,7 @@ class TAPIBase(APIView):
         #price = totalPrice(d[36])
 
         customer = {"customer_id": d[2], "phone": d[17]}
-        pet = {"idx": d[1], "animal": d[30], "type": d[31], "name": d[29], "photo":d[32]}  # 71~ 펫
+        pet = {"idx": d[1], "animal": d[31], "type": d[32], "name": d[30], "photo":d[33]}  # 71~ 펫
         product = {
             "payment_idx": d[0],
             "worker": d[19],

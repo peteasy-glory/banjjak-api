@@ -1,5 +1,5 @@
 
-call procPartnerPC_Booking_BeautyPeroid_get('eaden@peteasy.kr', '2022-07-01', '2022-07-10');
+call procPartnerPC_Booking_BeautyPeroid_get('me2mj@naver.com', '2022-08-01', '2022-10-01');
 #call procPartnerPC_Booking_BeautyBookingPeroid_get(\'eaden@peteasy.kr\', \'2022-07-02\', \'2022-07-20\')
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyPeroid_get $$
@@ -24,7 +24,7 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Booking_BeautyPeroid_get_opt('eaden@peteasy.kr', '2022-07-01', '2022-07-10');
+call procPartnerPC_Booking_BeautyPeroid_get_opt('pettester@peteasy.kr', '2022-09-01', '2022-10-01');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyPeroid_get_opt $$
 CREATE PROCEDURE procPartnerPC_Booking_BeautyPeroid_get_opt(
@@ -56,7 +56,13 @@ BEGIN
 END $$ 
 DELIMITER ;
 
-call procPartnerPC_Booking_BeautyPeroid_get('eaden@peteasy.kr', '2022-07-01', '2022-07-10');
+select is_appro from tb_payment_log
+where payment_log_seq in (592559, 596938,597009,597010,597011);
+
+select count(*) from tb_grade_reserve_approval_mgr
+where payment_log_seq in (592559, 596938,597009,597010,597011);
+;
+call procPartnerPC_Booking_BeautyPeroid_get('@peteasy.kr', '2022-07-01', '2022-07-10');
 DELIMITER $$
 DROP PROCEDURE IF EXISTS procPartnerPC_Booking_BeautyPeroid_get $$
 CREATE PROCEDURE procPartnerPC_Booking_BeautyPeroid_get(
@@ -1423,8 +1429,6 @@ BODY : BEGIN
 	END;
     ELSE
     BEGIN
-            SELeCT 4, @customer_id;
-
 		UPDATE tb_mypet 
         SET type = dataAnimal, pet_type = dataPetType, 
 		year = dataPetYear, month = dataPetMonth, day = dataPetDay, 
