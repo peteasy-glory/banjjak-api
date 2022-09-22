@@ -287,6 +287,52 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+call procPartnerPC_Home_BeautyBookingMgr_get('me2mj@naver.com', 2022, 9);
+call procPartnerPC_Home_BeautyBookingMgr_get_opt('me2mj@naver.com', 2022, 9);
+DELIMITER $$
+DROP PROCEDURE IF EXISTS procPartnerPC_Home_BeautyBookingMgr_get_opt $$
+CREATE PROCEDURE procPartnerPC_Home_BeautyBookingMgr_get_opt(
+	dataPartnerId VARCHAR(64),
+    dataYear INT,
+    dataMonth INT
+)
+BEGIN
+	/**
+		미용 예약 현황 관리
+   */
+    DECLARE aYear VARCHAR(4);
+    DECLARE aMonth VARCHAR(2);
+	DECLARE aNextYear VARCHAR(4);
+	DECLARE aNextMonth VARCHAR(2);
+   
+	SET aYear = CAST(dataYear AS CHAR(4));
+    SET aMonth = LPAD(CAST(dataMonth AS CHAR(2)), 2, '0');
+	SET aNextYear = dataYear;
+	SET aNextMonth = LPAD(CAST((dataMonth+1) AS CHAR(2)), 2, '0');
+    
+	if dataMonth = 12 THEN
+    BEGIN
+		SET aNextYear = CAST((dataYear+1) AS CHAR(4));
+        SET aNextMonth = 1;
+    END;
+    END IF;
+ 
+	SELECT A.payment_log_seq,A.pet_seq,A.customer_id, A.total_price,A.spend_point,A.reserve_point,A.local_price, A.local_price_cash,A.discount_num, A.discount_type,
+			A.year, A.month, A.day, A.hour, A.minute, A.to_hour, A.to_minute, A.cellphone,
+			A.worker, A.status,A.is_no_show,A.is_cancel,A.product,A.is_vat, A.etc_memo, A.buy_time, A.is_confirm, 
+			B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo AS pet_photo, C.payment_log_seq, C.is_approve
+	FROM 
+	(
+		SELECT payment_log_seq, pet_seq, customer_id, worker, is_no_show,is_cancel,status,product,is_vat, etc_memo, buy_time, is_confirm, cellphone
+			discount_num, discount_type, local_price, local_price_cash, reserve_point, total_price,spend_point, year, month, day,hour, minute, to_hour, to_minute
+        FROM gobeautypet.tb_payment_log 
+		WHERE data_delete = 0 AND artist_id = dataPartnerId
+	) A LEFT JOIN (SELECT pet_seq, tmp_seq, name, type, pet_type, photo FROM tb_mypet WHERE data_delete = 0) B ON A.pet_seq = B.pet_seq 
+    LEFT JOIN (SELECT payment_log_seq,is_approve FROM tb_grade_reserve_approval_mgr WHERE is_delete = 0) C ON A.payment_log_seq = C.payment_log_seq
+	WHERE gobeautypet.funcYMDToDate(A.year, A.month, A.day) >= CONCAT(aYear, '-', aMonth, '-01') AND
+		gobeautypet.funcYMDToDate(A.year, A.month, A.day) < CONCAT(aNextYear, '-', aNextMonth, '-01');
+END $$ 
+DELIMITER ;	
 
 call procPartnerPC_Home_HotelBookingMgr_get('choi7072@naver.com', 2022, 7);
 DELIMITER $$

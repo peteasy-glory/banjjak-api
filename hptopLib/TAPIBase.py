@@ -103,40 +103,40 @@ class TAPIBase(APIView):
 
     def setBeautyData(self, d):
         booking_st = "%s-%s-%s %s:%s" % (
-            d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[26]).zfill(2), str(d[27]).zfill(2))
+            d[10], str(d[11]).zfill(2), str(d[12]).zfill(2), str(d[13]).zfill(2), str(d[14]).zfill(2))
         booking_fi = "%s-%s-%s %s:%s" % (
-            d[23], str(d[24]).zfill(2), str(d[25]).zfill(2), str(d[31]).zfill(2), str(d[32]).zfill(2))
+            d[10], str(d[11]).zfill(2), str(d[12]).zfill(2), str(d[15]).zfill(2), str(d[16]).zfill(2))
         # if d[36] is not None:
         #     p_split = d[36].split('|')
         # else:
         #     p_split = ("","")
         #price = totalPrice(d[36])
 
-        customer = {"customer_id": d[3], "phone": d[39]}
-        pet = {"idx": d[1], "animal": d[74], "type": d[75], "name": d[73], "photo":d[76]}  # 71~ 펫
+        customer = {"customer_id": d[2], "phone": d[17]}
+        pet = {"idx": d[1], "animal": d[30], "type": d[31], "name": d[29], "photo":d[32]}  # 71~ 펫
         product = {
             "payment_idx": d[0],
-            "worker": d[18],
-            "is_no_show": d[51],
-            "is_cancel": d[50],
-            "category": "" if d[36] is None else  d[36].split('|')[3],
-            "category_sub": "" if d[36] is None else  d[36].split('|')[4],
-            "pay_type": d[40],    # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
-            "pay_status": d[19],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
-            "product_detail": d[36],
-            "product_detail_parsing": {} if d[36] is None else self.productToDic(d[36]),
-            "is_vat": True if d[59] == 1 else False,
+            "worker": d[19],
+            "is_no_show": d[21],
+            "is_cancel": d[22],
+            "category": "" if d[23] is None else  d[23].split('|')[3],
+            "category_sub": "" if d[23] is None else  d[23].split('|')[4],
+            "pay_type": d[18],    # pos-card 매장접수(카드), pos-cash:매장접수(현금), offline-card:앱예약 매장결제(카드), offline-cash:앱예약 매장결제(현금), card:앱예약 카드결제, bank:앱예약 계좌이체
+            "pay_status": d[20],  # POS:매장접수 ///// [앱예약] R0:카드결제전, BR:계좌이체결제전, R1:결제완료, OR:매장결제
+            "product_detail": d[23],
+            "product_detail_parsing": {} if d[23] is None else self.productToDic(d[23]),
+            "is_vat": True if d[24] == 1 else False,
            "origin_price": 0,
-            "store_payment": {"discount_type": d[15], "discount": d[16], "card": d[13], "cash": d[14],
-                              "reserve_point": d[9]},
-            "app_payment": {"total_price": d[7], "spend_point": d[8]},
-            "date": {"regist": str(d[62])  # self.datetimeToStr(d[62], d_format)
+            "store_payment": {"discount_type": d[9], "discount": d[8], "card": d[6], "cash": d[7],
+                              "reserve_point": d[5]},
+            "app_payment": {"total_price": d[3], "spend_point": d[4]},
+            "date": {"regist": str(d[26])  # self.datetimeToStr(d[62], d_format)
                 , "booking_st": booking_st
                 , "booking_fi": booking_fi},
-            "memo": d[58],
-            "approve_idx": d[77],
-            "is_approve": d[78],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
-            "is_confirm": zeroToBool(d[67])   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
+            "memo": d[25],
+            "approve_idx": d[34],
+            "is_approve": d[35],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
+            "is_confirm": zeroToBool(d[27])   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
 
         }
         tmp = {}
@@ -262,7 +262,7 @@ class TAPIBase(APIView):
                     body["consulting"].append(tmp)
 
 #==================================================================================================================================================
-            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET_OPT % (partner_id, yy, mm), QUERY_DB)
             DURATION =funcLib.nowToMilliSecond("PROC_BEAUTY_BOOKING_GET", DURATION)
 
             data = []
@@ -353,7 +353,7 @@ class TAPIBase(APIView):
     def getBodyHomePeriodStatus(self, partner_id, yy, mm):
         try:
             body = {}
-            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET_OPT % (partner_id, yy, mm), QUERY_DB)
             data = []
             if rows < 2:
                 data.append(value)

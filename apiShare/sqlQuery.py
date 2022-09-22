@@ -18,7 +18,7 @@ PROC_CONSULT_MGR_GET= "call procPartnerPC_Home_ConsultinMgr_get('%s')"
 PROC_CONSULT_MGR_PUT= "call procPartnerPC_Home_ConsultinMgr_put(%d,%d)"
 PROC_CONSULT_PHOTO_GET= "call procPartnerPC_Home_ConsultingPhoto_get(%s)"
 PROC_NOTICE_MGR_GET= "call procPartnerPC_Home_NoticeMgr_get(%s, '%s', '%s')"
-PROC_BEAUTY_BOOKING_GET= "call procPartnerPC_Home_BeautyBookingMgr_get('%s', %s, %s)"
+PROC_BEAUTY_BOOKING_GET_OPT= "call procPartnerPC_Home_BeautyBookingMgr_get_opt('%s', %s, %s)"
 PROC_HOTEL_BOOKING_GET= "call procPartnerPC_Home_HotelBookingMgr_get('%s', %s, %s)"
 PROC_KINDERGADEN_BOOKING_GET= "call procPartnerPC_Home_KindergardenBookingMgr_get('%s', %s, %s)"
 
