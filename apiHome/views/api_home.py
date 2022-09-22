@@ -154,10 +154,10 @@ class TConsulting(TAPIBase):
                     tmp["mounting"] = zeroToBool(d[19])
                     tmp["luxation"] = d[20]
                     tmp["dermatosis"] = zeroToBool(d[21])
-                    tmp["photocounseling"] = d[22]
-                    tmp["like"] = d[23]
+                    tmp["memo"] = d[23]
                     tmp["dislike"] = d[24]
                     tmp["dislike_string"] = self.setDisLike(d[24])
+                    tmp["photocounseling"] = d[22]
                     photo = []
                     try:
                         if d[22] is not None and len(d[22]) > 0:
