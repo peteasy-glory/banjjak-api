@@ -127,7 +127,7 @@ BEGIN
 	SELECT A.approval, A.update_time, A.payment_log_seq, C.id, C.usr_name, A.cellphone, B.pet_seq, B.name, B.pet_type
 		, CONCAT(B.year,'-', LPAD(B.month,2,0),'-', LPAD(B.day,2,0)) AS birth,
         B.gender, B.neutral, B.weight, B.photo, B.beauty_exp, B.vaccination, B.bite, B.heart_trouble, B.marking, B.mounting, B.luxation, B.dermatosis
-        , B.photo_counseling, A.etc_memo, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, A.payment_log_seq 
+        , B.photo_counseling, A.etc_memo, CONCAT(dt_eye,dt_nose,dt_mouth,dt_ear,dt_neck,dt_body,dt_leg,dt_tail,dt_genitalia,nothing) as disliked_part, A.payment_log_seq
 	FROM tb_payment_log A, tb_mypet B, tb_customer C
 	WHERE A.pet_seq = B.pet_seq	AND A.customer_id = C.id AND 
 			A.artist_id = dataPartnerId AND A.data_delete = 0
@@ -318,17 +318,17 @@ BEGIN
     END IF;
  
 	SELECT A.payment_log_seq,A.pet_seq,A.customer_id, A.total_price,A.spend_point,A.reserve_point,A.local_price, A.local_price_cash,A.discount_num, A.discount_type,
-			A.year, A.month, A.day, A.hour, A.minute, A.to_hour, A.to_minute, A.cellphone,
-			A.worker, A.status,A.is_no_show,A.is_cancel,A.product,A.is_vat, A.etc_memo, A.buy_time, A.is_confirm, 
-			B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo AS pet_photo, C.payment_log_seq, C.is_approve
+			A.year, A.month, A.day, A.hour, A.minute, A.to_hour, A.to_minute, A.cellphone, A.pay_type, #10
+			A.worker, A.status,A.is_no_show,A.is_cancel,A.product,A.is_vat, A.etc_memo, A.buy_time, A.is_confirm, #19
+			B.pet_seq, B.tmp_seq, B.name, B.type, B.pet_type, B.photo AS pet_photo, C.idx, C.is_approve #28
 	FROM 
 	(
-		SELECT payment_log_seq, pet_seq, customer_id, worker, is_no_show,is_cancel,status,product,is_vat, etc_memo, buy_time, is_confirm, cellphone
-			discount_num, discount_type, local_price, local_price_cash, reserve_point, total_price,spend_point, year, month, day,hour, minute, to_hour, to_minute
+		SELECT payment_log_seq, pet_seq, customer_id, worker, is_no_show,is_cancel,status,product,is_vat, etc_memo, buy_time, is_confirm, cellphone,
+			discount_num, discount_type, pay_type, local_price, local_price_cash, reserve_point, total_price,spend_point, year, month, day,hour, minute, to_hour, to_minute
         FROM gobeautypet.tb_payment_log 
 		WHERE data_delete = 0 AND artist_id = dataPartnerId
 	) A LEFT JOIN (SELECT pet_seq, tmp_seq, name, type, pet_type, photo FROM tb_mypet WHERE data_delete = 0) B ON A.pet_seq = B.pet_seq 
-    LEFT JOIN (SELECT payment_log_seq,is_approve FROM tb_grade_reserve_approval_mgr WHERE is_delete = 0) C ON A.payment_log_seq = C.payment_log_seq
+    LEFT JOIN (SELECT idx, payment_log_seq,is_approve FROM tb_grade_reserve_approval_mgr WHERE is_delete = 0) C ON A.payment_log_seq = C.payment_log_seq
 	WHERE gobeautypet.funcYMDToDate(A.year, A.month, A.day) >= CONCAT(aYear, '-', aMonth, '-01') AND
 		gobeautypet.funcYMDToDate(A.year, A.month, A.day) < CONCAT(aNextYear, '-', aNextMonth, '-01');
 END $$ 
