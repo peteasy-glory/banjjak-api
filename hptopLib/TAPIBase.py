@@ -433,7 +433,7 @@ class TAPIBase(APIView):
             # if data is not None:
             #     body["shop_name"] = data[0]
             # return 0, body
-            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_WORKER_TO_CEO_GET % (partner_id), QUERY_DB)
             data = []
             body = {"partner": False, "partner_id": partner_id, "beauty": []}
 
