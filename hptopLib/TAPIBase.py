@@ -136,7 +136,8 @@ class TAPIBase(APIView):
             "memo": d[25],
             "approve_idx": d[34],
             "is_approve": d[35],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
-            "is_confirm": zeroToBool(d[27])   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
+            "is_confirm": zeroToBool(d[27]),   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
+            "noshow_cnt": d[36] # noshow 카운트
 
         }
         tmp = {}
