@@ -174,7 +174,11 @@ class TBookingJoin(TAPIBase):
                     body["hair_length"].append({"type": unit[0 ] +"mm", "price": unit[1]})
 
         for s in static:
-            tmp = {"size": s[2], "in_shop": s[4], "out_shop": s[5],
+            if s[2] == '직접입력':
+                size = s[3]
+            else: size = s[2]
+            
+            tmp = {"size": size, "in_shop": s[4], "out_shop": s[5],
                    "surcharge": {"is_have": s[36], "kg": s[38], "price": s[39]},
                    "comment": s[40],
                    "svc": []}
