@@ -20,7 +20,7 @@ class TNotice(TAPIBookingIDBase):
                 else:
                     data = value
                 for d in data:
-                    tmp = {"idx":d[0], "id":d[1], "title":d[2], "type":d[4], "image":d[7], "req_date":d[8],"mod_date":"" if d[9] is None else d[9]}
+                    tmp = {"idx":d[0], "id":d[1], "title":d[2], "notice":d[3], "type":d[4], "image":d[7], "req_date":d[8],"mod_date":"" if d[9] is None else d[9]}
                     body.append(tmp)
             return 0, "success", body
         except Exception as err:
