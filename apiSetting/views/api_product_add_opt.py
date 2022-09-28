@@ -128,6 +128,7 @@ class TDog(TProduct):
                         "is_over_kgs                = %s, " \
                         "what_over_kgs              = %s, " \
                         "over_kgs_price             = %s, " \
+                        "is_kgs_by_price             = %s, " \
                         "add_comment                = %s, " \
                         "update_time                = NOW() " % (args[1]["partner_id"],
                         self.isNull(args[1]["first_type"]), self.isNull(args[1]["second_type"]), self.isNull(args[1]["direct_title"]), self.isNull(args[1]["in_shop_product"]), self.isNull(args[1]["out_shop_product"]),
@@ -137,7 +138,7 @@ class TDog(TProduct):
                         self.isNull(args[1]["is_consult_bath"]), self.isNull(args[1]["is_consult_part"]), self.isNull(args[1]["is_consult_bath_part"]), self.isNull(args[1]["is_consult_sanitation"]), self.isNull(args[1]["is_consult_sanitation_bath"]),
                         self.isNull(args[1]["is_consult_all"]), self.isNull(args[1]["is_consult_spoting"]), self.isNull(args[1]["is_consult_scissors"]), self.isNull(args[1]["is_consult_summercut"]), self.isNull(args[1]["is_consult_beauty1"]),
                         self.isNull(args[1]["is_consult_beauty2"]), self.isNull(args[1]["is_consult_beauty3"]), self.isNull(args[1]["is_consult_beauty4"]), self.isNull(args[1]["is_consult_beauty5"]), self.isNull(args[1]["is_over_kgs"]),
-                        self.isNull(args[1]["what_over_kgs"]), self.isNull(args[1]["over_kgs_price"]), self.isNull(args[1]["add_comment"]))
+                        self.isNull(args[1]["what_over_kgs"]), self.isNull(args[1]["over_kgs_price"]), self.isNull(args[1]["is_kgs_by_price"]), self.isNull(args[1]["add_comment"]))
 
         return update+middle+tail, insert+middle
 
