@@ -142,6 +142,7 @@ class TAPISettingBase(TAPIBase):
                         tmp["out_shop"] = d[5]
                         tmp["comment"] = d[40]
                         tmp["is_over_kgs"] = d[36]
+                        tmp["is_huge_weight"] = d[37]
                         tmp["over_kg"] = d[38]
                         tmp["over_price"] = d[39]
                         kgs = d[35].split(',')

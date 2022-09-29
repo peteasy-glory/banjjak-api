@@ -186,7 +186,7 @@ class TBookingJoin(TAPIBase):
             else: size = s[2]
             
             tmp = {"size": size, "in_shop": s[4], "out_shop": s[5],
-                   "surcharge": {"is_have": s[36], "kg": s[38], "price": s[39]},
+                   "surcharge": {"is_have": s[36], "is_huge_weight": s[37], "kg": s[38], "price": s[39]},
                    "comment": s[40],
                    "svc": []}
             for i in range(14):
