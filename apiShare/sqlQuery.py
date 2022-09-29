@@ -234,6 +234,9 @@ PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s'
 PROC_ALLIM_WITHBTN_POST = "call procPartnerPC_Allim_WithBtn_post('%s','%s','%s','%s')"
 PROC_ALLIM_WITHOUTBTN_POST = "call procPartnerPC_Allim_WithoutBtn_post('%s','%s','%s')"
 
+#Hotel Booking
+PROC_HOTEL_BOOKING_PEROID_GET_OPT = "call procPartnerPC_Booking_HotelPeroid_get_opt('%s', '%s', '%s')"
+
 #Hotel Product
 PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"
 PROC_SETTING_HOTEL_PUT = "call procPartnerPC_Setting_Hotel_put(%d,'%s','%s','%s','%s','%s','%s','%s')"
