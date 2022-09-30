@@ -33,4 +33,5 @@ urlpatterns = [
     path('partner/', include('apiPerformance.urls')),
     path('partner/', include('apiEtc.urls')),
     path('partner/', include('apiAllim.urls')),
+    path('partner/', include('apiReserve.urls')),
 ]
