@@ -266,7 +266,10 @@ class TJoin(TAPIBookingBase):
                         args[0]["is_vat"],
                         args[0]["product"],
                         args[0]["reserve_yn"],
-                        args[0]["aday_ago_yn"]
+                        args[0]["aday_ago_yn"],
+                        args[0]["is_reserve_pay"],
+                        args[0]["reserve_pay_price"],
+                        args[0]["reserve_pay_deadline"]
                     ), QUERY_DB)
 
                 body = {}
