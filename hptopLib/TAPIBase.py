@@ -138,7 +138,12 @@ class TAPIBase(APIView):
             "is_approve": d[35],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
             "is_confirm": zeroToBool(d[27]),   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
             "noshow_cnt": d[36], # noshow 카운트
-            "worker_nick": d[37]  # 미용사 닉네임
+            "worker_nick": d[37],  # 미용사 닉네임
+            "is_reserve_pay": d[38],
+            "reserve_pay_price": d[39],
+            "reserve_pay_yn": d[40],
+            "reserve_pay_deadline": d[41],
+            "reserve_pay_confirm_time": d[42]
 
         }
         tmp = {}
