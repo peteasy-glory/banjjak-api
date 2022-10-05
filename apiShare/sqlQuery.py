@@ -85,7 +85,7 @@ PROC_BEAUTY_BOOKING_PET_INFO_PUT = "call procPartnerPC_Booking_PetInfo_put(%d,'%
                                    "'%s','%s','%s','%s',%d,%d,%d,%d,'%s')"
 PROC_BEAUTY_BOOKING_POST = "call procPartnerPC_Booking_post('%s','%s','%s','%s',%d,'%s','%s','%s',%d, %d, %d,'%s'," \
                            "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',%d, %d, %d,%d, %d,'%s','%s','%s','%s'," \
-                           "'%s','%s',%d,%d,'%s','%s','%s','%s','%s')"
+                           "'%s','%s',%d,%d,'%s','%s','%s','%s','%s',%s,%s,'%s')"
 
 PROC_BEAUTY_BOOKING_PROHIBITION_GET = "call procPartnerPC_Booking_Prohibition_get('%s','%s','%s');"
 PROC_BEAUTY_BOOKING_PROHIBITION_POST = "call procPartnerPC_Booking_Prohibition_post('%s','%s','%s','%s','%s');"
