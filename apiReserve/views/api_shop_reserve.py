@@ -33,9 +33,13 @@ class TShop(TAPIBookingIDBase):
             row = None
             columns = None
             if args[0] == 'PUT':
-                value, rows, columns = self.db.resultDBQuery(PROC_RESERVE_SHOP_PUT % (args[1]["artist_id"],
-                                                          args[1]["reserve_price"], args[1]["deadline"], args[1]["bank_name"],
-                                                          args[1]["account_num"]), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(
+                    PROC_RESERVE_SHOP_PUT % (
+                        args[1]["artist_id"],
+                        args[1]["reserve_price"],
+                        args[1]["deadline"],
+                        args[1]["bank_name"],
+                        args[1]["account_num"]), QUERY_DB)
             else:
                 return -1, "undefined method", {}
             body = {}
