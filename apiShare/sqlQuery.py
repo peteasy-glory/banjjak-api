@@ -233,7 +233,14 @@ PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s'
 #RESERVE
 PROC_RESERVE_SHOP_GET = "call procPartnerPC_Reserve_Shop_get('%s')"
 PROC_RESERVE_SHOP_PUT = "call procPartnerPC_Reserve_Shop_put('%s',%s,%s,'%s','%s')"
-PROC_RESERVE_PAYMENT_PUT = "call procPartnerPC_Reserve_Payment_put('%s')"
+PROC_RESERVE_PAYMENT_PUT = "call procPartnerPC_Reserve_Payment_put('%s','%s')"
+PROC_RESERVE_DIARY_GET = "call procPartnerPC_Reserve_Diary_get(%s)"
+PROC_RESERVE_DIARY_POST = "call procPartnerPC_Reserve_Diary_post('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s')"
 
 #ALLIMTALK
 PROC_ALLIM_WITHBTN_POST = "call procPartnerPC_Allim_WithBtn_post('%s','%s','%s','%s')"

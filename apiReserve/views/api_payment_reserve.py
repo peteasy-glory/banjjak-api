@@ -20,7 +20,7 @@ class TPayment(TAPIBookingIDBase):
             row = None
             columns = None
             if args[0] == 'PUT':
-                value, rows, columns = self.db.resultDBQuery(PROC_RESERVE_PAYMENT_PUT % (args[1]["payment_log_seq"]), QUERY_DB)
+                value, rows, columns = self.db.resultDBQuery(PROC_RESERVE_PAYMENT_PUT % (args[1]["payment_log_seq"], args[1]["reserve_pay_yn"]), QUERY_DB)
             else:
                 return -1, "undefined method", {}
             body = {}
