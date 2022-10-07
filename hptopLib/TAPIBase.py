@@ -143,7 +143,9 @@ class TAPIBase(APIView):
             "reserve_pay_price": d[39],
             "reserve_pay_yn": d[40],
             "reserve_pay_deadline": d[41],
-            "reserve_pay_confirm_time": d[42]
+            "reserve_pay_confirm_time": d[42],
+            "diary_idx": d[43],
+            "diary_time": d[44]
 
         }
         tmp = {}
