@@ -10,7 +10,10 @@ urlpatterns = [
     path('reserve/shop-reserve', api_shop_reserve.TShop.as_view()),
     path('reserve/payment-reserve', api_payment_reserve.TPayment.as_view()),
 
-    path('reserve/diary/<int:idx>', api_diary.TShop.as_view()),
-    path('reserve/diary', api_diary.TShop.as_view()),
+    path('reserve/diary/<int:idx>', api_diary.TDiary.as_view()),
+    path('reserve/diary', api_diary.TDiary.as_view()),
+    path('reserve/diary-history', api_diary.TDiaryHistory.as_view()),
+    path('reserve/diary-list', api_diary.TDiaryList.as_view()),
+    path('reserve/diary-select', api_diary.TDiaryListSelect.as_view()),
 
 ]
