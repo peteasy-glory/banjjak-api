@@ -244,6 +244,7 @@ PROC_RESERVE_DIARY_POST = "call procPartnerPC_Reserve_Diary_post('%s','%s','%s',
 PROC_RESERVE_DIARY_HISTORY_GET = "call procPartnerPC_Reserve_Diary_History_get('%s','%s','%s')"
 PROC_RESERVE_DIARY_LIST_GET = "call procPartnerPC_Reserve_Diary_List_get('%s','%s')"
 PROC_RESERVE_DIARY_LIST_SELECT_GET = "call procPartnerPC_Reserve_Diary_List_Select_get('%s','%s','%s')"
+PROC_RESERVE_DIARY_RECENT_GET = "call procPartnerPC_Reserve_Diary_Recent_Time_get('%s','%s')"
 
 #ALLIMTALK
 PROC_ALLIM_WITHBTN_POST = "call procPartnerPC_Allim_WithBtn_post('%s','%s','%s','%s')"

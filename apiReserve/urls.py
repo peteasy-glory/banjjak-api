@@ -15,5 +15,6 @@ urlpatterns = [
     path('reserve/diary-history', api_diary.TDiaryHistory.as_view()),
     path('reserve/diary-list', api_diary.TDiaryList.as_view()),
     path('reserve/diary-select', api_diary.TDiaryListSelect.as_view()),
+    path('reserve/diary-recent', api_diary.TDiaryRecent.as_view()),
 
 ]

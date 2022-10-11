@@ -2,7 +2,7 @@
 import traceback
 
 from apiShare.constVar import QUERY_DB
-from apiShare.sqlQuery import PROC_RESERVE_DIARY_GET, PROC_RESERVE_DIARY_POST, PROC_RESERVE_DIARY_HISTORY_GET, PROC_RESERVE_DIARY_LIST_GET, PROC_RESERVE_DIARY_LIST_SELECT_GET
+from apiShare.sqlQuery import PROC_RESERVE_DIARY_GET, PROC_RESERVE_DIARY_POST, PROC_RESERVE_DIARY_HISTORY_GET, PROC_RESERVE_DIARY_LIST_GET, PROC_RESERVE_DIARY_LIST_SELECT_GET, PROC_RESERVE_DIARY_RECENT_GET
 from hptopLib.TAPIBookingBase import TAPIBookingBase
 from hptopLib.TAPIBooking import TAPIBooking
 
@@ -139,6 +139,25 @@ class TDiaryListSelect(TAPIBooking):
             print(args[0])
             body = []
             value, rows, columns = self.db.resultDBQuery(PROC_RESERVE_DIARY_LIST_SELECT_GET % (args[0]['artist_id'],args[0]['cellphone'],args[0]['date']),QUERY_DB)
+
+            if value is not None:
+                body = self.queryDataToDic(value, rows, columns)
+                # if rows < 2:
+                #     data.append(value)
+                # else:
+                #     data = value
+                # body.append(data)
+            return 0, "success", body
+        except Exception as err:
+            return -1, traceback.format_exc(), None
+
+class TDiaryRecent(TAPIBooking):
+
+    def getInfo(self, *args):
+        try:
+            print(args[0])
+            body = []
+            value, rows, columns = self.db.resultDBQuery(PROC_RESERVE_DIARY_RECENT_GET % (args[0]['artist_id'],args[0]['cellphone']),QUERY_DB)
 
             if value is not None:
                 body = self.queryDataToDic(value, rows, columns)
