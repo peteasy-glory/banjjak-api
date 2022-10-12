@@ -63,6 +63,8 @@ urlpatterns = [
 
     #hotel
     path('booking/h/<str:partner_id>', api_hotel.TBooking.as_view()),
+    path('booking/hotel-customer-pet/<str:idx>', api_payment_cusotmer_pet.TCustomerPetInfoHotel.as_view()),
+    path('booking/hotel-before-etc/<str:idx>', api_payment_cusotmer_pet.TCustomerPetInfoHotel.as_view()),
 
 
 ]

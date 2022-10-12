@@ -252,6 +252,8 @@ PROC_ALLIM_WITHOUTBTN_POST = "call procPartnerPC_Allim_WithoutBtn_post('%s','%s'
 
 #Hotel Booking
 PROC_HOTEL_BOOKING_PEROID_GET_OPT = "call procPartnerPC_Booking_HotelPeroid_get_opt('%s', '%s', '%s')"
+PROC_BEAUTY_BOOKING_CUSTOMER_PET_INFO_HOTEL_GET = "call procPartnerPC_Booking_CustomerPetInfo_Hotel_get('%s')"
+PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_HOTEL_GET = "call procPartnerPC_Booking_BeforePaymentInfo_Hotel_get('%s', %s, %s)"
 
 #Hotel Product
 PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"
