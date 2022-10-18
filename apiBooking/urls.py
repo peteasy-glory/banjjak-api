@@ -62,10 +62,12 @@ urlpatterns = [
 
 
     #hotel
-    path('booking/h/<str:partner_id>', api_hotel.TBooking.as_view()),
-    path('booking/hotel-customer-pet/<str:idx>', api_payment_cusotmer_pet.TCustomerPetInfoHotel.as_view()),
-    path('booking/hotel-before-etc/<str:idx>', api_payment_cusotmer_pet.TCustomerPetInfoHotel.as_view()),
-    path('booking/hotel-memo', api_payment_memo.TMemoHotel.as_view()),
-    path('booking/hotel-noshow', api_noshow.TNoShowHotel.as_view()),
+    path('booking/h/<str:partner_id>', api_hotel.TBooking.as_view()), #기간별 예약 불러오기
+    path('booking/h/join/', api_join.TJoinHotel.as_view()), # 예약하기
+    path('booking/hotel-customer-pet/<str:idx>', api_payment_cusotmer_pet.TCustomerPetInfoHotel.as_view()), # 작업/결제관리 불러오기
+    path('booking/hotel-before-etc/<str:idx>', api_payment_cusotmer_pet.TCustomerPetInfoHotel.as_view()), # 이전호텔이용 및 이전 특이사항 가져오기
+    path('booking/hotel-memo', api_payment_memo.TMemoHotel.as_view()), # 특이사항 수정/등록하기
+    path('booking/hotel-noshow', api_noshow.TNoShowHotel.as_view()), # 노쇼 등록/수정하기
+
 
 ]

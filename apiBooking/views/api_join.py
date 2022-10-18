@@ -287,3 +287,76 @@ class TJoin(TAPIBookingBase):
         date = nowdateFormat("%Y%m%d%H%M%S")
         rand = str(random.randint(10000, 99999) ) +str(random.randint(10000, 99999))
         return strToHex(id +"_ " +rand +"_ " +date)
+
+
+class TJoinHotel(TAPIBookingBase):
+
+    def getInfo(self, payment_idx, *args):
+        pass
+
+    def modifyInfo(self, *args):
+        try:
+            if args[1] == 'POST':
+                if len(args[0]) < 40:
+                    return -1, "post data를 확인 해주세요.", None
+                value, rows, columns = self.db.resultDBQuery(
+                    PROC_BEAUTY_BOOKING_HOTEL_POST % (
+                        args[0]["artist_id"],
+                        args[0]["customer_id"],
+                        args[0]["cellphone"],
+                        args[0]["animal"],
+                        args[0]["pet_type"],
+                        args[0]["pet_name"],
+                        args[0]["pet_year"],
+                        args[0]["pet_month"],
+                        args[0]["pet_day"],
+                        args[0]["gender"],
+                        args[0]["neutral"],
+                        args[0]["weight"],
+                        args[0]["beauty_exp"],
+                        args[0]["vaccination"],
+                        args[0]["luxation"],
+                        args[0]["bite"],
+                        args[0]["dermatosis"],
+                        args[0]["heart_trouble"],
+                        args[0]["marking"],
+                        args[0]["mounting"],
+                        args[0]["pet_seq"],
+                        args[0]["order_num"],
+                        args[0]["hp_seq"],
+                        args[0]["check_in_date"],
+                        args[0]["check_in_time"],
+                        args[0]["check_out_date"],
+                        args[0]["check_out_time"],
+                        args[0]["room_weight"],
+                        args[0]["room_name"],
+                        args[0]["room_price"],
+                        args[0]["room_sort"],
+                        args[0]["h_seq"],
+                        args[0]["hotel_name"],
+                        args[0]["is_pickup"],
+                        args[0]["zipcode"],
+                        args[0]["addr1"],
+                        args[0]["addr2"],
+                        args[0]["addr3"],
+                        args[0]["addr4"],
+                        args[0]["product_price"],
+                        args[0]["point_price"],
+                        args[0]["add_price_card"],
+                        args[0]["add_price_cash"],
+                        args[0]["total_price"],
+                        args[0]["pay_data"],
+                        args[0]["product_data"],
+                        args[0]["is_vat"],
+                        args[0]["is_notice"],
+                        args[0]["etc_memo"]
+                    ), QUERY_DB)
+
+                body = {}
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            else:
+                return -1, "no post method", None
+        except Exception as e:
+            return -1, traceback.format_exc(), None

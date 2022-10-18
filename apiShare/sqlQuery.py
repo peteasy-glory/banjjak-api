@@ -257,6 +257,11 @@ PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_HOTEL_GET = "call procPartnerPC_Booking_
 PROC_BEAUTY_BOOKING_PAYMENT_MEMO_HOTEL_PUT = "call procPartnerPC_Booking_PaymentInfoEtcMemo_Hotel_put('%s', '%s')"
 PROC_BEAUTY_BOOKING_NO_SHOW_HOTEL_PUT = "call procPartnerPC_Booking_NoShow_Hotel_put('%s', %s)"
 PROC_BEAUTY_BOOKING_NO_SHOW_ALL_HOTEL_PUT = "call procPartnerPC_Booking_NoShow_All_Hotel_put('%s','%s', %s)"
+PROC_BEAUTY_BOOKING_HOTEL_POST = "call procPartnerPC_Booking_Hotel_post('%s','%s','%s','%s','%s','%s',%s,%s,%s, '%s'," \
+                           "'%s','%s','%s','%s','%s','%s','%s','%s','%s', '%s'," \
+                            "%s,'%s','%s','%s','%s','%s','%s','%s','%s', %s," \
+                            "'%s','%s','%s','%s','%s','%s','%s','%s','%s', %s," \
+                           "%s,%s,%s,%s,'%s','%s','%s','%s','%s')"
 
 #Hotel Product
 PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"
