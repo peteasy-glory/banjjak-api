@@ -68,6 +68,9 @@ urlpatterns = [
     path('booking/hotel-before-etc/<str:idx>', api_payment_cusotmer_pet.TCustomerPetInfoHotel.as_view()), # 이전호텔이용 및 이전 특이사항 가져오기
     path('booking/hotel-memo', api_payment_memo.TMemoHotel.as_view()), # 특이사항 수정/등록하기
     path('booking/hotel-noshow', api_noshow.TNoShowHotel.as_view()), # 노쇼 등록/수정하기
+    path('booking/time-hotel', api_payment_time.TTimeHotel.as_view()), # 시간변경
+    path('booking/date-hotel', api_payment_worker_date.TDateHotel.as_view()), # 날짜변경
+    path('booking/pickup-hotel', api_hotel.TPickUp.as_view()),  # 픽업 여부 및 주소 수정하기
 
 
 ]

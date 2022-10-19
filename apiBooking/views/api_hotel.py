@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from apiShare.constVar import QUERY_DB
 from apiShare.sqlQuery import *
 from hptopLib.TAPIBase import TAPIBase
+from hptopLib.TAPIBookingBase import TAPIBookingBase
 
 class TBooking(TAPIBase):
 
@@ -33,6 +34,28 @@ class TBooking(TAPIBase):
         except Exception as e:
             return HttpResponse(self.json.dicToJson(self.message.error(self.errorInfo(e))))
 
+
+class TPickUp(TAPIBookingBase):
+    def getInfo(self, payment_idx, *args):
+        try:
+            pass
+        except Exception as err:
+            return -1, self.errorInfo(err), None
+
+    def modifyInfo(self, *args):
+        try:
+            body = {}
+            if args[1] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_PICKUP_HOTEL_PUT % (args[0]["order_num"]
+                                                            , args[0]["is_pickup"], args[0]["zipcode"]
+                                                            , args[0]["addr1"], args[0]["addr2"]
+                                                            , args[0]["addr4"]), QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None
 
 
 

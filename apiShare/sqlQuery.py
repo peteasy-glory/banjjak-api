@@ -262,6 +262,9 @@ PROC_BEAUTY_BOOKING_HOTEL_POST = "call procPartnerPC_Booking_Hotel_post('%s','%s
                             "%s,'%s','%s','%s','%s','%s','%s','%s','%s', %s," \
                             "'%s','%s','%s','%s','%s','%s','%s','%s','%s', %s," \
                            "%s,%s,%s,%s,'%s','%s','%s','%s','%s')"
+PROC_BEAUTY_BOOKING_TIME_HOTEL_PUT = "call procPartnerPC_Booking_Time_Hotel_put('%s','%s','%s')"
+PROC_BEAUTY_BOOKING_DATE_HOTEL_PUT = "call procPartnerPC_Booking_Date_Hotel_put('%s','%s','%s')"
+PROC_BEAUTY_BOOKING_PICKUP_HOTEL_PUT = "call procPartnerPC_Booking_Pickup_Hotel_put('%s','%s','%s','%s','%s','%s')"
 
 #Hotel Product
 PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"
