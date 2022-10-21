@@ -71,6 +71,7 @@ urlpatterns = [
     path('booking/time-hotel', api_payment_time.TTimeHotel.as_view()), # 시간변경
     path('booking/date-hotel', api_payment_worker_date.TDateHotel.as_view()), # 날짜변경
     path('booking/pickup-hotel', api_hotel.TPickUp.as_view()),  # 픽업 여부 및 주소 수정하기
+    path('booking/payment-hotel', api_hotel.TPayment.as_view()),  # 픽업 여부 및 주소 수정하기
 
 
 ]

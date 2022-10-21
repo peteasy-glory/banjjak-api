@@ -57,6 +57,30 @@ class TPickUp(TAPIBookingBase):
         except Exception as err:
             return -1, self.errorInfo(err), None
 
+class TPayment(TAPIBookingBase):
+    def getInfo(self, payment_idx, *args):
+        try:
+            pass
+        except Exception as err:
+            return -1, self.errorInfo(err), None
+
+    def modifyInfo(self, *args):
+        try:
+            body = {}
+            if args[1] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_PAYMENT_HOTEL_PUT % (args[0]["order_num"]
+                                                            , args[0]["hp_seq"], args[0]["room_name"]
+                                                            , args[0]["weight"], args[0]["room_price"]
+                                                            , args[0]["neutral_price"], args[0]["extra_price"]
+                                                            , args[0]["pickup_price"], args[0]["room_sort"]
+                                                            , args[0]["coupon_data"], args[0]["etc_product_data"]), QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None
+
 
 
 
