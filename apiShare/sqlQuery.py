@@ -85,7 +85,7 @@ PROC_BEAUTY_BOOKING_PET_INFO_PUT = "call procPartnerPC_Booking_PetInfo_put(%d,'%
                                    "'%s','%s','%s','%s',%d,%d,%d,%d,'%s')"
 PROC_BEAUTY_BOOKING_POST = "call procPartnerPC_Booking_post('%s','%s','%s','%s',%d,'%s','%s','%s',%d, %d, %d,'%s'," \
                            "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',%d, %d, %d,%d, %d,'%s','%s','%s','%s'," \
-                           "'%s','%s',%d,%d,'%s','%s','%s','%s','%s')"
+                           "'%s','%s',%d,%d,'%s','%s','%s','%s','%s',%s,%s,'%s')"
 
 PROC_BEAUTY_BOOKING_PROHIBITION_GET = "call procPartnerPC_Booking_Prohibition_get('%s','%s','%s');"
 PROC_BEAUTY_BOOKING_PROHIBITION_POST = "call procPartnerPC_Booking_Prohibition_post('%s','%s','%s','%s','%s');"
@@ -230,9 +230,42 @@ PROC_ETC_PASSWORD_PUT = "call procPartnerPC_Etc_Password_put('%s', '%s')"
 
 PROC_ETC_SALES_PERFORMANCE = "call procPartnerPC_Sales_Performance_get('%s','%s','%s','%s','%s')"
 
+#RESERVE
+PROC_RESERVE_SHOP_GET = "call procPartnerPC_Reserve_Shop_get('%s')"
+PROC_RESERVE_SHOP_PUT = "call procPartnerPC_Reserve_Shop_put('%s',%s,%s,'%s','%s')"
+PROC_RESERVE_PAYMENT_PUT = "call procPartnerPC_Reserve_Payment_put('%s','%s')"
+PROC_RESERVE_DIARY_GET = "call procPartnerPC_Reserve_Diary_get(%s)"
+PROC_RESERVE_DIARY_POST = "call procPartnerPC_Reserve_Diary_post('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'," \
+                          "'%s','%s')"
+PROC_RESERVE_DIARY_HISTORY_GET = "call procPartnerPC_Reserve_Diary_History_get('%s','%s','%s')"
+PROC_RESERVE_DIARY_LIST_GET = "call procPartnerPC_Reserve_Diary_List_get('%s','%s')"
+PROC_RESERVE_DIARY_LIST_SELECT_GET = "call procPartnerPC_Reserve_Diary_List_Select_get('%s','%s','%s')"
+PROC_RESERVE_DIARY_RECENT_GET = "call procPartnerPC_Reserve_Diary_Recent_Time_get('%s','%s')"
+
 #ALLIMTALK
 PROC_ALLIM_WITHBTN_POST = "call procPartnerPC_Allim_WithBtn_post('%s','%s','%s','%s')"
 PROC_ALLIM_WITHOUTBTN_POST = "call procPartnerPC_Allim_WithoutBtn_post('%s','%s','%s')"
+
+#Hotel Booking
+PROC_HOTEL_BOOKING_PEROID_GET_OPT = "call procPartnerPC_Booking_HotelPeroid_get_opt('%s', '%s', '%s')"
+PROC_BEAUTY_BOOKING_CUSTOMER_PET_INFO_HOTEL_GET = "call procPartnerPC_Booking_CustomerPetInfo_Hotel_get('%s')"
+PROC_BEAUTY_BOOKING_BEFORE_PAYMENT_INFO_HOTEL_GET = "call procPartnerPC_Booking_BeforePaymentInfo_Hotel_get('%s', %s, %s)"
+PROC_BEAUTY_BOOKING_PAYMENT_MEMO_HOTEL_PUT = "call procPartnerPC_Booking_PaymentInfoEtcMemo_Hotel_put('%s', '%s')"
+PROC_BEAUTY_BOOKING_NO_SHOW_HOTEL_PUT = "call procPartnerPC_Booking_NoShow_Hotel_put('%s', %s)"
+PROC_BEAUTY_BOOKING_NO_SHOW_ALL_HOTEL_PUT = "call procPartnerPC_Booking_NoShow_All_Hotel_put('%s','%s', %s)"
+PROC_BEAUTY_BOOKING_HOTEL_POST = "call procPartnerPC_Booking_Hotel_post('%s','%s','%s','%s','%s','%s',%s,%s,%s, '%s'," \
+                           "'%s','%s','%s','%s','%s','%s','%s','%s','%s', '%s'," \
+                            "%s,'%s','%s','%s','%s','%s','%s','%s','%s', %s," \
+                            "'%s','%s','%s','%s','%s','%s','%s','%s','%s', %s," \
+                           "%s,%s,%s,%s,'%s','%s','%s','%s','%s')"
+PROC_BEAUTY_BOOKING_TIME_HOTEL_PUT = "call procPartnerPC_Booking_Time_Hotel_put('%s','%s','%s')"
+PROC_BEAUTY_BOOKING_DATE_HOTEL_PUT = "call procPartnerPC_Booking_Date_Hotel_put('%s','%s','%s')"
+PROC_BEAUTY_BOOKING_PICKUP_HOTEL_PUT = "call procPartnerPC_Booking_Pickup_Hotel_put('%s','%s','%s','%s','%s','%s')"
+PROC_BEAUTY_BOOKING_PAYMENT_HOTEL_PUT = "call procPartnerPC_Booking_Payment_Hotel_put('%s','%s','%s','%s',%s,%s,%s,%s,'%s','%s','%s')"
 
 #Hotel Product
 PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"

@@ -45,7 +45,7 @@ class TLogin(TAPIBase):
                 if data is not None:
                     dic["id"] = data[1]
                 err, body = self.getBodyBooking(dic["id"])
-                body["shop_name"] = self.db.resultDBQuery(PROC_SHOP_NAME_GET % (dic["id"].strip(),), QUERY_DB)[0][0]
+                #body["shop_name"] = self.db.resultDBQuery(PROC_SHOP_NAME_GET % (dic["id"].strip(),), QUERY_DB)[0][0]
             else:
                 err, body = self.getBodyHome(dic["id"])
             if err < 0:

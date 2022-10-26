@@ -28,3 +28,26 @@ class TTime(TAPIBookingBase):
             return - 1, "undefined method", body
         except Exception as err:
             return -1, self.errorInfo(err), None
+
+
+class TTimeHotel(TAPIBookingBase):
+
+
+    def getInfo(self, payment_idx, *args):
+        try:
+            pass
+        except Exception as err:
+            return -1, self.errorInfo(err), None
+
+    def modifyInfo(self, *args):
+        try:
+            body = {}
+            if args[1] == 'PUT':
+                value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_TIME_HOTEL_PUT % (args[0]["order_num"]
+                                                            , args[0]["check_in_time"], args[0]["check_out_time"]),QUERY_DB)
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            return - 1, "undefined method", body
+        except Exception as err:
+            return -1, self.errorInfo(err), None

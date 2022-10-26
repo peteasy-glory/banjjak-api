@@ -136,7 +136,40 @@ class TAPIBase(APIView):
             "memo": d[25],
             "approve_idx": d[34],
             "is_approve": d[35],  # 승인여부(0: 대기, 1: 보류, 2: 승인, 3: 반려, 4:견주가 취소 )
-            "is_confirm": zeroToBool(d[27])   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
+            "is_confirm": zeroToBool(d[27]),   # 결제완료여부, 돈 받았는지 확인용(0-미완료,1-완료)
+            "noshow_cnt": d[36], # noshow 카운트
+            "worker_nick": d[37],  # 미용사 닉네임
+            "is_reserve_pay": d[38],
+            "reserve_pay_price": d[39],
+            "reserve_pay_yn": d[40],
+            "reserve_pay_deadline": d[41],
+            "reserve_pay_confirm_time": d[42],
+            "diary_idx": d[43],
+            "diary_time": d[44]
+
+        }
+        tmp = {}
+        tmp["customer"] = customer
+        tmp["pet"] = pet
+        tmp["product"] = product
+        return tmp
+
+    def setHotelData(self, d):
+
+        customer = {"customer_id": d[2], "phone": d[3], "tmp_seq": d[4]}
+        pet = {"idx": d[20], "animal": d[22], "type": d[23], "type2": d[24], "name": d[21], "photo":d[25]}  # 71~ 펫
+        product = {
+            "order_num": d[1],
+            "artist_id": d[5],
+            "etc_memo": d[11],
+            "is_no_show": d[10],
+            "is_cancel": d[12],
+            "payment": {"product_price": d[6], "card": d[7], "cash": d[8], "total_price": d[9]},
+            "date": {"check_in": d[14], "check_out": d[15]},
+            "room_idx": d[13],
+            "room_name": d[16],
+            "weight": d[17],
+            "room_sort": d[19]
 
         }
         tmp = {}
@@ -432,7 +465,7 @@ class TAPIBase(APIView):
             # if data is not None:
             #     body["shop_name"] = data[0]
             # return 0, body
-            value, rows, columns = self.db.resultDBQuery(PROC_BEAUTY_BOOKING_GET % (partner_id, yy, mm), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_WORKER_TO_CEO_GET % (partner_id), QUERY_DB)
             data = []
             body = {"partner": False, "partner_id": partner_id, "beauty": []}
 

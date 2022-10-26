@@ -129,43 +129,50 @@ class TBookingJoin(TAPIBase):
 
         for i in range(len(face_type)):
             body["face"].append({"type": face_type[i], "price": common[0][6 + i]})
-        sub_face = common[0][38].split(",")
-        for face in sub_face:
-            unit = face.split(":")
-            if unit[0].strip() != '':
-                body["face"].append({"type": unit[0], "price": unit[1]})
+        if common[0][38] is not None:
+            sub_face = common[0][38].split(",")
+            for face in sub_face:
+                unit = face.split(":")
+                if unit[0].strip() != '':
+                    body["face"].append({"type": unit[0], "price": unit[1]})
         for i in range(len(leg_type)):
             body["leg"].append({"type": leg_type[i], "price": common[0][23 + i]})
         body["leg"].append({"type": "방울", "price": common[0][37]})
-        sub_leg = common[0][26].split(",")
-        for leg in sub_leg:
-            unit = leg.split(":")
-            if unit[0].strip() != '':
-                body["leg"].append({"type": unit[0], "price": unit[1]})
-        sub_spa = common[0][27].split(",")
-        for spa in sub_spa:
-            unit = spa.split(":")
-            if unit[0].strip() != '':
-                body["spa"].append({"type": unit[0], "price": unit[1]})
-        sub_dyeing = common[0][28].split(",")
-        for dyeing in sub_dyeing:
-            unit = dyeing.split(":")
-            if unit[0].strip() != '':
-                body["dyeing"].append({"type": unit[0], "price": unit[1]})
-        sub_etc = common[0][29].split(",")
-        for etc in sub_etc:
-            unit = etc.split(":")
-            if unit[0].strip() != '':
-                body["etc"].append({"type": unit[0], "price": unit[1]})
+        if common[0][26] is not None:
+            sub_leg = common[0][26].split(",")
+            for leg in sub_leg:
+                unit = leg.split(":")
+                if unit[0].strip() != '':
+                    body["leg"].append({"type": unit[0], "price": unit[1]})
+        if common[0][27] is not None:
+            sub_spa = common[0][27].split(",")
+            for spa in sub_spa:
+                unit = spa.split(":")
+                if unit[0].strip() != '':
+                    body["spa"].append({"type": unit[0], "price": unit[1]})
+        if common[0][28] is not None:
+            sub_dyeing = common[0][28].split(",")
+            for dyeing in sub_dyeing:
+                unit = dyeing.split(":")
+                if unit[0].strip() != '':
+                    body["dyeing"].append({"type": unit[0], "price": unit[1]})
+        if common[0][29] is not None:
+            sub_etc = common[0][29].split(",")
+            for etc in sub_etc:
+                unit = etc.split(":")
+                if unit[0].strip() != '':
+                    body["etc"].append({"type": unit[0], "price": unit[1]})
         for i in range(len(add_opt)):
                 body["add_opt"].append({"type": add_opt[i], "price": common[0][30 + i]})
-        sub_add_opt = common[0][33].split(",")
-        for add in sub_add_opt:
-            unit = add.split(":")
-            if unit[0].strip() != '':
-                body["add_opt"].append({"type": unit[0], "price": unit[1]})
+        if common[0][33] is not None:
+            sub_add_opt = common[0][33].split(",")
+            for add in sub_add_opt:
+                unit = add.split(":")
+                if unit[0].strip() != '':
+                    body["add_opt"].append({"type": unit[0], "price": unit[1]})
         for i in range(len(lenth_type)):
-            body["hair_length"].append({"type": common[0][(i*2) +10]+"mm", "price" :common[0][(i*2) +11]})
+            if common[0][(i*2) +10] is not None:
+                body["hair_length"].append({"type": common[0][(i*2) +10]+"mm", "price" :common[0][(i*2) +11]})
         if common[0][34] is not None:
             sub_hair = common[0][34].split(",")
             for h in sub_hair:
@@ -174,8 +181,12 @@ class TBookingJoin(TAPIBase):
                     body["hair_length"].append({"type": unit[0 ] +"mm", "price": unit[1]})
 
         for s in static:
-            tmp = {"size": s[2], "in_shop": s[4], "out_shop": s[5],
-                   "surcharge": {"is_have": s[36], "kg": s[38], "price": s[39]},
+            if s[2] == '직접입력':
+                size = s[3]
+            else: size = s[2]
+            
+            tmp = {"size": size, "in_shop": s[4], "out_shop": s[5],
+                   "surcharge": {"is_have": s[36], "is_huge_weight": s[37], "kg": s[38], "price": s[39]},
                    "comment": s[40],
                    "svc": []}
             for i in range(14):
@@ -188,8 +199,11 @@ class TBookingJoin(TAPIBase):
                 if s[ i +6] is not None and len(s[ i +6]) > 0:
                     sub_price = s[ i +6].split(",")
                     sub_kg = s[35].split(",")
-                    sub_consult = s[ i +20].split(",")
-                    for j in range(len(sub_kg)):
+                    if s[ i +20] is not None:
+                        sub_consult = s[ i +20].split(",")
+                    else:
+                        sub_consult = '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'
+                    for j in range(len(sub_price)):
                         p_k.append({"kg" :sub_kg[j], "price" :sub_price[j], "is_consulting" :sub_consult[j]})
                 sub_svc["unit"] = p_k
                 tmp["svc"].append(sub_svc)
@@ -252,7 +266,10 @@ class TJoin(TAPIBookingBase):
                         args[0]["is_vat"],
                         args[0]["product"],
                         args[0]["reserve_yn"],
-                        args[0]["aday_ago_yn"]
+                        args[0]["aday_ago_yn"],
+                        args[0]["is_reserve_pay"],
+                        args[0]["reserve_pay_price"],
+                        args[0]["reserve_pay_deadline"]
                     ), QUERY_DB)
 
                 body = {}
@@ -270,3 +287,76 @@ class TJoin(TAPIBookingBase):
         date = nowdateFormat("%Y%m%d%H%M%S")
         rand = str(random.randint(10000, 99999) ) +str(random.randint(10000, 99999))
         return strToHex(id +"_ " +rand +"_ " +date)
+
+
+class TJoinHotel(TAPIBookingBase):
+
+    def getInfo(self, payment_idx, *args):
+        pass
+
+    def modifyInfo(self, *args):
+        try:
+            if args[1] == 'POST':
+                if len(args[0]) < 40:
+                    return -1, "post data를 확인 해주세요.", None
+                value, rows, columns = self.db.resultDBQuery(
+                    PROC_BEAUTY_BOOKING_HOTEL_POST % (
+                        args[0]["artist_id"],
+                        args[0]["customer_id"],
+                        args[0]["cellphone"],
+                        args[0]["animal"],
+                        args[0]["pet_type"],
+                        args[0]["pet_name"],
+                        args[0]["pet_year"],
+                        args[0]["pet_month"],
+                        args[0]["pet_day"],
+                        args[0]["gender"],
+                        args[0]["neutral"],
+                        args[0]["weight"],
+                        args[0]["beauty_exp"],
+                        args[0]["vaccination"],
+                        args[0]["luxation"],
+                        args[0]["bite"],
+                        args[0]["dermatosis"],
+                        args[0]["heart_trouble"],
+                        args[0]["marking"],
+                        args[0]["mounting"],
+                        args[0]["pet_seq"],
+                        args[0]["order_num"],
+                        args[0]["hp_seq"],
+                        args[0]["check_in_date"],
+                        args[0]["check_in_time"],
+                        args[0]["check_out_date"],
+                        args[0]["check_out_time"],
+                        args[0]["room_weight"],
+                        args[0]["room_name"],
+                        args[0]["room_price"],
+                        args[0]["room_sort"],
+                        args[0]["h_seq"],
+                        args[0]["hotel_name"],
+                        args[0]["is_pickup"],
+                        args[0]["zipcode"],
+                        args[0]["addr1"],
+                        args[0]["addr2"],
+                        args[0]["addr3"],
+                        args[0]["addr4"],
+                        args[0]["product_price"],
+                        args[0]["point_price"],
+                        args[0]["add_price_card"],
+                        args[0]["add_price_cash"],
+                        args[0]["total_price"],
+                        args[0]["pay_data"],
+                        args[0]["product_data"],
+                        args[0]["is_vat"],
+                        args[0]["is_notice"],
+                        args[0]["etc_memo"]
+                    ), QUERY_DB)
+
+                body = {}
+                if value is not None:
+                    body = self.queryDataToDic(value, rows, columns)
+                return 0, "success", body
+            else:
+                return -1, "no post method", None
+        except Exception as e:
+            return -1, traceback.format_exc(), None
