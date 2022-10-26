@@ -59,6 +59,7 @@ urlpatterns = [
     #===============
     path('setting/hotel/<str:partner_id>', api_hotel.THotel.as_view()),
     path('setting/hotel', api_hotel.THotel.as_view()),
+    path('setting/hotel_info', api_hotel.THotelInfo.as_view()),
     path('setting/hotel-product/<str:partner_id>', api_h_product.TRoom.as_view()),
     path('setting/hotel-product', api_h_product.TRoom.as_view()),
 
