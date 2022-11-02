@@ -93,6 +93,7 @@ PROC_BEAUTY_BOOKING_PROHIBITION_DELETE = "call procPartnerPC_Booking_Prohibition
 
 PROC_BEAUTY_BOOKING_SHOP_WORKING_TIME_GET = "call procPartnerPC_Booking_ShopWorkingTime_get('%s')"
 PROC_BEAUTY_BOOKING_STATUTORY_HOLIDAYS_GET = "call procPartnerPC_Booking_StatutoryHolidays_get(%d, %d)"
+PROC_BEAUTY_BOOKING_CHECKPHONE_GET = "call procPartnerPC_Booking_CheckPhone_get('%s','%s')"
 
 
 #CUSTOMER MGR

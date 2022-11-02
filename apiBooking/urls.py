@@ -36,6 +36,7 @@ urlpatterns = [
 
     path('booking/beauty-sign', api_beauty_sign.TSign.as_view()),
     path('booking/beauty-sign/<str:partner_id>', api_beauty_sign.TSign.as_view()),
+    path('booking/beauty-chkphone/<str:partner_id>', api_beauty_check.TCheckPhone.as_view()),
 
     path('booking/coupon/<str:partner_id>', api_coupon.TCoupon.as_view()),
     path('booking/payment-coupon', api_payment_coupon.TPaymentCoupon.as_view()),

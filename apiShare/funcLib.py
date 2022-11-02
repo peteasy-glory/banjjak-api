@@ -60,8 +60,8 @@ def setOffSet(st, count, list):
             tmpStr += ","
         tmpStr += list[st+i+1]
     body = setArr(tmpStr)
-    return len(body), body
-
+    #return len(body), body
+    return count, body
 
 def judgeStrOrInt(value):
     return isdigit(value);
