@@ -535,7 +535,7 @@ class TAPIBase(APIView):
                 }
             }
             pos = 14
-            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 스파 개수
+            if len(p_split) > pos and p_split[pos].strip() != "":# and int(p_split[pos]) > 0:  # 추가다리 개수
                 if p_split[pos].isdigit():
                     max = int(p_split[pos])
                     for i in range(0, max):
