@@ -202,7 +202,10 @@ class TBookingJoin(TAPIBase):
                     sub_kg = s[35].split(",")
                     sub_consult = s[ i +20].split(",")
                     for j in range(len(sub_kg)):
-                        p_k.append({"kg" :sub_kg[j], "price" :sub_price[j], "is_consulting" :sub_consult[j]})
+                        if len(sub_price) < j+1:
+                            p_k.append({"kg" :sub_kg[j], "price" :0, "is_consulting" :sub_consult[j]})
+                        else:
+                            p_k.append({"kg" :sub_kg[j], "price" :sub_price[j], "is_consulting" :sub_consult[j]})
                 sub_svc["unit"] = p_k
                 tmp["svc"].append(sub_svc)
             body["base_svc"].append(tmp)
