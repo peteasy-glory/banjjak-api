@@ -6,7 +6,7 @@ from apiBooking.views import api_beauty, api_payment_cusotmer_pet, api_noshow, a
     api_waiting, api_customer_memo, api_join, api_prohibition, api_working_time, api_statutory_holidays, \
     api_payment_memo, api_payment_worker_date, api_payment_time, api_payment_cancel, api_beauty_gallery, \
     api_beauty_sign, api_coupon, api_payment_product, api_payment_discount, api_payment_card_cash, api_payment_confirm, \
-    api_payment_coupon, api_hotel
+    api_payment_coupon, api_hotel, api_beauty_check
 from apiSetting.views import api_schedule_artist
 
 urlpatterns = [
@@ -36,6 +36,8 @@ urlpatterns = [
 
     path('booking/beauty-sign', api_beauty_sign.TSign.as_view()),
     path('booking/beauty-sign/<str:partner_id>', api_beauty_sign.TSign.as_view()),
+    path('booking/beauty-chkphone/<str:partner_id>', api_beauty_check.TCheckPhone.as_view()),
+    path('booking/beauty-repeatreservechk/<str:partner_id>', api_beauty_check.TCheckRepeatReserve.as_view()),
 
     path('booking/coupon/<str:partner_id>', api_coupon.TCoupon.as_view()),
     path('booking/payment-coupon', api_payment_coupon.TPaymentCoupon.as_view()),

@@ -88,11 +88,13 @@ PROC_BEAUTY_BOOKING_POST = "call procPartnerPC_Booking_post('%s','%s','%s','%s',
                            "'%s','%s',%d,%d,'%s','%s','%s','%s','%s',%s,%s,'%s')"
 
 PROC_BEAUTY_BOOKING_PROHIBITION_GET = "call procPartnerPC_Booking_Prohibition_get('%s','%s','%s');"
-PROC_BEAUTY_BOOKING_PROHIBITION_POST = "call procPartnerPC_Booking_Prohibition_post('%s','%s','%s','%s','%s');"
-PROC_BEAUTY_BOOKING_PROHIBITION_DELETE = "call procPartnerPC_Booking_Prohibition_delete(%d);"
+PROC_BEAUTY_BOOKING_PROHIBITION_POST = "call procPartnerPC_Booking_Prohibition_post('%s','%s','%s','%s','%s')"
+PROC_BEAUTY_BOOKING_PROHIBITION_DELETE = "call procPartnerPC_Booking_Prohibition_delete(%d)"
 
 PROC_BEAUTY_BOOKING_SHOP_WORKING_TIME_GET = "call procPartnerPC_Booking_ShopWorkingTime_get('%s')"
 PROC_BEAUTY_BOOKING_STATUTORY_HOLIDAYS_GET = "call procPartnerPC_Booking_StatutoryHolidays_get(%d, %d)"
+PROC_BEAUTY_BOOKING_CHECKPHONE_GET = "call procPartnerPC_Booking_CheckPhone_get('%s','%s')"
+PROC_BEAUTY_BOOKING_REPEATRESERVCHK_GET = "call procPartnerPC_Booking_RepeatReservChk_get('%s','%s','%s','%s')"
 
 
 #CUSTOMER MGR
@@ -106,7 +108,7 @@ PROC_CUSTOMER_JOIN_POST = "call procPartnerPC_CustomerJoin_post('%s','%s','%s','
 
 
 PROC_CUSTOMER_BEAUTY_USAGE_HISTORY_GET = "call procPartnerPC_BeautyUsageHistory_get('%s', '%s')"
-PROC_CUSTOMER_PET_LIST_GET = "call procPartnerPC_PetList_get('%s')"
+PROC_CUSTOMER_PET_LIST_GET = "call procPartnerPC_PetList_get('%s', '%s')"
 PROC_CUSTOMER_PET_INFO_GET = "call procPartnerPC_PetInfo_get(%d)"
 PROC_CUSTOMER_UNIQUE_MEMO_GET = "call procPartnerPC_UniqueMemo_get('%s', '%s')"
 PROC_CUSTOMER_RESERVES_GET = "call procPartnerPC_Reserves_get(%d,'%s',%d,'%s', '%s')"
@@ -270,6 +272,7 @@ PROC_BEAUTY_BOOKING_PAYMENT_HOTEL_PUT = "call procPartnerPC_Booking_Payment_Hote
 #Hotel Product
 PROC_SETTING_HOTEL_GET = "call procPartnerPC_Setting_Hotel_get('%s')"
 PROC_SETTING_HOTEL_PUT = "call procPartnerPC_Setting_Hotel_put(%d,'%s','%s','%s','%s','%s','%s','%s')"
+PROC_SETTING_HOTEL_PUT_HOTELINFO = "call procPartnerPC_Setting_Hotel_put_hotelinfo(%d,'%s','%s')"
 PROC_SETTING_HOTEL_PRODUCT_GET = "call procPartnerPC_Setting_HotelProduct_get('%s')"
 PROC_SETTING_HOTEL_PRODUCT_POST = "call procPartnerPC_Setting_HotelProduct_post(%d,'%s','%s','%s',%d,'%s','%s','%s','%s','%s',%d,%d,'%s','%s','%s','%s')"
 PROC_SETTING_HOTEL_PRODUCT_PUT = "call procPartnerPC_Setting_HotelProduct_put(%d,'%s',%d,'%s','%s','%s',%d,'%s','%s',%d,%d,'%s','%s','%s','%s')"

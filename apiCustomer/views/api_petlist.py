@@ -10,7 +10,7 @@ class TPetList(TAPIIDBase):
 
         try:
             body = {}
-            value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_PET_LIST_GET % (args[0]["cellphone"]), QUERY_DB)
+            value, rows, columns = self.db.resultDBQuery(PROC_CUSTOMER_PET_LIST_GET % (partner_id, args[0]["cellphone"]), QUERY_DB)
             if value is not None:
                 body = self.queryDataToDic(value, rows, columns)
                 data = []

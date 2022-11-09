@@ -184,9 +184,10 @@ class TBookingJoin(TAPIBase):
             if s[2] == '직접입력':
                 size = s[3]
             else: size = s[2]
-            
+
+            #tmp = {"size": s[2], "in_shop": s[4], "out_shop": s[5],
             tmp = {"size": size, "in_shop": s[4], "out_shop": s[5],
-                   "surcharge": {"is_have": s[36], "is_huge_weight": s[37], "kg": s[38], "price": s[39]},
+                   "surcharge": {"is_have": s[36], "kg": s[38], "price": s[39]},
                    "comment": s[40],
                    "svc": []}
             for i in range(14):
@@ -199,11 +200,8 @@ class TBookingJoin(TAPIBase):
                 if s[ i +6] is not None and len(s[ i +6]) > 0:
                     sub_price = s[ i +6].split(",")
                     sub_kg = s[35].split(",")
-                    if s[ i +20] is not None:
-                        sub_consult = s[ i +20].split(",")
-                    else:
-                        sub_consult = '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'
-                    for j in range(len(sub_price)):
+                    sub_consult = s[ i +20].split(",")
+                    for j in range(len(sub_kg)):
                         p_k.append({"kg" :sub_kg[j], "price" :sub_price[j], "is_consulting" :sub_consult[j]})
                 sub_svc["unit"] = p_k
                 tmp["svc"].append(sub_svc)
